@@ -1,0 +1,1 @@
+# Telltale-Script-Editor

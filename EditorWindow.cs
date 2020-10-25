@@ -289,5 +289,10 @@ namespace Telltale_Script_Editor
         {
             Process.Start("https://github.com/Telltale-Modding-Group/Telltale-Script-Editor");
         }
+
+        private void documentationToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Process.Start("https://github.com/Telltale-Modding-Group/Telltale-Script-Editor/wiki");
+        }
     }
 }

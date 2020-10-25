@@ -203,7 +203,7 @@ namespace Telltale_Script_Editor
             // buildToolStripMenuItem
             // 
             this.buildToolStripMenuItem.Name = "buildToolStripMenuItem";
-            this.buildToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.buildToolStripMenuItem.Size = new System.Drawing.Size(101, 22);
             this.buildToolStripMenuItem.Text = "Build";
             this.buildToolStripMenuItem.Click += new System.EventHandler(this.buildToolStripMenuItem_Click);
             // 
@@ -222,6 +222,7 @@ namespace Telltale_Script_Editor
             this.documentationToolStripMenuItem.Name = "documentationToolStripMenuItem";
             this.documentationToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.documentationToolStripMenuItem.Text = "Docs";
+            this.documentationToolStripMenuItem.Click += new System.EventHandler(this.documentationToolStripMenuItem_Click);
             // 
             // aboutToolStripMenuItem
             // 
@@ -259,6 +260,7 @@ namespace Telltale_Script_Editor
             this.highlightedTextBox.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.highlightedTextBox.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
             this.highlightedTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.highlightedTextBox.Font = new System.Drawing.Font("Courier New", 9.75F);
             this.highlightedTextBox.IsReplaceMode = false;
             this.highlightedTextBox.Location = new System.Drawing.Point(0, 0);
             this.highlightedTextBox.Margin = new System.Windows.Forms.Padding(0);

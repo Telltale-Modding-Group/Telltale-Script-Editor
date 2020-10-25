@@ -66,12 +66,6 @@
       <DependentUpon>EditorWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
-    <Compile Include="ProjectCreator.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ProjectCreator.Designer.cs">
-      <DependentUpon>ProjectCreator.cs</DependentUpon>
-    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Util\JSON\EditorProject.cs" />
     <Compile Include="Util\FileManagement\FileManagement.cs" />
@@ -88,9 +82,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="EditorWindow.resx">
       <DependentUpon>EditorWindow.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ProjectCreator.resx">
-      <DependentUpon>ProjectCreator.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

@@ -12,4 +12,4 @@ An experimental script editor for Telltale games.
 
 # Special Thanks
 
-Thanks to ![Lightning](https://twitter.com/nekoblitz_) and ![Hamilton Productions](https://www.reddit.com/user/BlackBoxKid) for designing & coloring the program icon respectively.
+Thanks to [Lightning](https://twitter.com/nekoblitz_) and [HamiltonProductions](https://www.reddit.com/user/BlackBoxKid) for designing & coloring the program icon respectively.

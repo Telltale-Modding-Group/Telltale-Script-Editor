@@ -2,8 +2,6 @@
 
 An experimental script editor for Telltale games.
 
-# Screenshots
-
 ![Editor Window](/Screenshots/editor.png?raw=true)
 
 # Limitations

@@ -224,7 +224,7 @@ namespace Telltale_Script_Editor
             if (!Directory.Exists($"{fileManager.WorkingDirectory}\\{archive}"))
                 Directory.CreateDirectory($"{fileManager.WorkingDirectory}\\{archive}");
 
-            File.Create($"{fileManager.WorkingDirectory}\\{archive}\\{scriptName}");
+            File.Create($"{fileManager.WorkingDirectory}\\{archive}\\{scriptName}").Close();
         }
 
         //open ttarch

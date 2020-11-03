@@ -318,7 +318,7 @@ namespace Telltale_Script_Editor.Util.FileManagement
 
             if(!Directory.Exists(x))
             {
-                MessageBox.Show("Fuck this fucking program and everything it stands for.");
+                MessageBox.Show("How did this even happen? Literally you should never ever see this message box. Something went catastrophically wrong.");
                 return;
             }
 

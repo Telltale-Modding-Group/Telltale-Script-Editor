@@ -1,5 +1,10 @@
 # 🧟‍♀️ Telltale-Script-Editor
 
+
+> # THIS IS THE EXPERIMENTAL BRANCH. IT MAY CONTAIN BROKEN CODE, UNFORESEEN BUGS, OR OTHER ISSUES. PLEASE BACK UP YOUR PROJECTS BEFORE USING!
+
+
+
 An experimental script editor for Telltale games.
 
 ![Editor Window](/Screenshots/editor.png?raw=true)

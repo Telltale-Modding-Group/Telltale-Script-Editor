@@ -258,7 +258,7 @@ namespace Telltale_Script_Editor.Util.FileManagement
         /// Import & Unpack a TTARCH2 Archive
         /// </summary>
         /// <param name="x">The location of the archive to import</param>
-        public void ImportTelltaleArchive(string x)
+        public void ImportTelltaleArchive(string x, bool additionalConsoleOutput)
         {
             string exeLocation = System.Reflection.Assembly.GetEntryAssembly().Location;
             var ttarch = $"{Path.GetDirectoryName(exeLocation)}\\ttarchext.exe";
@@ -300,7 +300,7 @@ namespace Telltale_Script_Editor.Util.FileManagement
             while (!process.StandardOutput.EndOfStream)
             {
                 string line = process.StandardOutput.ReadLine();
-                Console.WriteLine(line);
+                if (additionalConsoleOutput) Console.WriteLine(line);
                 Application.DoEvents();
             }
             process.WaitForExit();
@@ -318,14 +318,14 @@ namespace Telltale_Script_Editor.Util.FileManagement
                 {
                     var newFileName = WorkingDirectory + "\\" + Path.GetFileNameWithoutExtension(x) + "\\" + Path.GetFileNameWithoutExtension(file) + "_temp.lua";
                     File.Move(file, newFileName);
-                    Console.WriteLine("Moved file " + file);
+                    if (additionalConsoleOutput) Console.WriteLine("Moved file " + file);
                     Application.DoEvents();
                 }
 
                 foreach (var file in files)
                 {
                     var newFileName = WorkingDirectory + "\\" + Path.GetFileNameWithoutExtension(x) + "\\" + Path.GetFileNameWithoutExtension(file) + "_temp.lua";
-                    DecompileLuaScript(newFileName, file);
+                    DecompileLuaScript(newFileName, file, additionalConsoleOutput);
                     Application.DoEvents();
                 }
 
@@ -340,7 +340,7 @@ namespace Telltale_Script_Editor.Util.FileManagement
         /// </summary>
         /// <param name="x">The location of the compiled script</param>
         /// <param name="y">The location of the decompiled script</param>
-        private void DecompileLuaScript(string x, string y)
+        private void DecompileLuaScript(string x, string y, bool additionalConsoleOutput)
         {
             var luaDecompTemp = $"{Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location)}\\luadec.exe";
 
@@ -368,13 +368,13 @@ namespace Telltale_Script_Editor.Util.FileManagement
             while (!luaDecomp.StandardOutput.EndOfStream)
             {
                 string line = luaDecomp.StandardOutput.ReadLine();
-                Console.WriteLine(line);
+                if (additionalConsoleOutput) Console.WriteLine(line);
                 Application.DoEvents();
             }
             if (luaDecomp.HasExited)
             {
                 File.Delete(x);
-                Console.WriteLine($"Decompiled {y}! Exit code {luaDecomp.ExitCode}");
+                if (additionalConsoleOutput) Console.WriteLine($"Decompiled {y}! Exit code {luaDecomp.ExitCode}");
                 Application.DoEvents();
             }
         }

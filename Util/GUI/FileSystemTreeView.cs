@@ -38,6 +38,7 @@ namespace Telltale_Script_Editor.Util.GUI
                 DirectoryInfo di = new DirectoryInfo(subdirectory);
                 TreeNode tds = y.Nodes.Add(di.Name);
                 tds.StateImageIndex = 0;
+
                 tds.Tag = di.FullName;
                 LoadFiles(subdirectory, tds);
                 LoadSubDirectories(subdirectory, tds);
@@ -55,6 +56,8 @@ namespace Telltale_Script_Editor.Util.GUI
                 FileInfo fi = new FileInfo(file);
                 TreeNode tds = y.Nodes.Add(fi.Name);
                 tds.Tag = fi.FullName;
+                if(fi.Name.EndsWith(".tseproj")) tds.ForeColor = Color.FromArgb(230, 20, 20);
+                if (fi.Name.EndsWith(".lua")) tds.ForeColor = Color.FromArgb(20, 230, 20);
                 tds.StateImageIndex = 1;
                 UpdateProgress();
             }

@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Win32;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -50,6 +51,8 @@ namespace Telltale_Script_Editor
         private void projectToolStripMenuItem2_Click(object sender, EventArgs e)
         {
             OpenFileDialog choofdlog = new OpenFileDialog();
+            choofdlog.InitialDirectory = Application.StartupPath;
+
             choofdlog.Filter = "Telltale Script Editor Project (*.tseproj)|*.tseproj";
             choofdlog.FilterIndex = 1;
             choofdlog.Multiselect = false;
@@ -85,7 +88,7 @@ namespace Telltale_Script_Editor
                         return;
                     else if(importArchive == DialogResult.Yes)
                     {
-                        fileManager.ImportTelltaleArchive(e.Node.Tag.ToString());
+                        fileManager.ImportTelltaleArchive(e.Node.Tag.ToString(), additionalDebugInfoToolStripMenuItem.Checked);
                     }
 
                     return;
@@ -161,6 +164,7 @@ namespace Telltale_Script_Editor
             string newProjectPath = null;
             using (var fbd = new FolderBrowserDialog())
             {
+                fbd.SelectedPath = Application.StartupPath;
                 fbd.Description = "Select a folder for your project.";
                 DialogResult result = fbd.ShowDialog();
 
@@ -230,7 +234,6 @@ namespace Telltale_Script_Editor
         //open ttarch
         private void tTARCH2ArchiveToolStripMenuItem1_Click(object sender, EventArgs e)
         {
-
             if (fileManager == null)
             {
                 MessageBox.Show("You need to open or create a project first.", "You can't do that!");
@@ -238,6 +241,7 @@ namespace Telltale_Script_Editor
             }
 
             OpenFileDialog choofdlog = new OpenFileDialog();
+            
             choofdlog.Filter = "Telltale Archive (*.ttarch2)|*.ttarch2";
             choofdlog.FilterIndex = 1;
             choofdlog.Multiselect = false;
@@ -246,7 +250,7 @@ namespace Telltale_Script_Editor
             {
                 string sFileName = choofdlog.FileName;
 
-                fileManager.ImportTelltaleArchive(sFileName);
+                fileManager.ImportTelltaleArchive(sFileName, additionalDebugInfoToolStripMenuItem.Checked);
             }
         }
 

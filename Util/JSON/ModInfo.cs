@@ -8,9 +8,10 @@ namespace Telltale_Script_Editor.Util.JSON
 {
     class ModInfo
     {
-        public string author { get; set; }
-        public string name { get; set; }
-        public string modver { get; set; }
-        public string gamever { get; set; }
+        public string ModDisplayName { get; set; }
+        public string ModVersion { get; set; }
+        public string ModAuthor { get; set; }
+        public string ModCompatibility { get; set; }
+        public List<string> ModFiles { get; set; }
     }
 }

@@ -200,17 +200,8 @@ namespace Telltale_Script_Editor.Util.FileManagement
             else
                 ClearDirectory(tempDirectory);
 
-            //create JSON manifest
-
-            ModInfo manifest = new ModInfo
-            {
-                author = CurrentProject.mod.author,
-                name = CurrentProject.mod.name,
-                modver = CurrentProject.mod.version,
-                gamever = CurrentProject.tool.game
-            };
-
-            File.WriteAllText($"{tempDirectory}\\modinfo.json", JsonConvert.SerializeObject(manifest, Formatting.Indented));
+            List<string> ttarchNames = new List<string>();
+            List<string> luaNames = new List<string>();
 
             foreach (string dirPath in Directory.GetDirectories(WorkingDirectory, "*", SearchOption.TopDirectoryOnly))
             {
@@ -239,12 +230,29 @@ namespace Telltale_Script_Editor.Util.FileManagement
                     string temp = ttarchName.Substring(7, ttarchName.Length - 7);
                     string logicalName = temp.Substring(0, temp.LastIndexOf("_"));
 
+                    ttarchNames.Add(ttarchName + $"_{Regex.Replace(CurrentProject.mod.name, @"[^A-Za-z0-9]+", "")}.ttarch2");
+                    ttarchNames.Add("_resdesc_50_" + logicalName + "_" + Regex.Replace(CurrentProject.mod.name, @"[^A-Za-z0-9]+", "") + ".lua");
+
                     BuildTtarchArchive(
                         tempDirectory + "\\" + new DirectoryInfo(archiveDirPath).Name,
                         logicalName
                         );        
                 }
             }
+
+            //create JSON manifest
+
+            ModInfo manifest = new ModInfo
+            {
+                ModDisplayName = CurrentProject.mod.name,
+                ModVersion = CurrentProject.mod.version,
+                ModAuthor = CurrentProject.mod.author,
+                ModCompatibility = "The_Walking_Dead_Definitive_Edition",
+                ModFiles = ttarchNames
+            };
+
+            File.WriteAllText($"{tempDirectory}\\modinfo_{Regex.Replace(CurrentProject.mod.name, @"[^A-Za-z0-9]+", "")}.json", JsonConvert.SerializeObject(manifest, Formatting.Indented));
+
 
             if (File.Exists(buildZip))
                 File.Delete(buildZip);

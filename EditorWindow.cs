@@ -216,7 +216,16 @@ namespace Telltale_Script_Editor
             }
 
             var archive = Prompt.ShowDialog("What archive should the script be created in?", "Create new Script");
+
+            //if the user exists the prompt, the string will be empty, so do not continue
+            if (string.IsNullOrEmpty(archive) || string.IsNullOrWhiteSpace(archive))
+                return;
+
             var scriptName = Prompt.ShowDialog("What should the script be called?", "Create new Script");
+
+            //if the user exists the prompt, the string will be empty, so do not continue
+            if (string.IsNullOrEmpty(scriptName) || string.IsNullOrWhiteSpace(scriptName))
+                return;
 
             if (!scriptName.EndsWith(".lua"))
                 scriptName += ".lua";

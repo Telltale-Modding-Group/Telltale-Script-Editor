@@ -73,6 +73,7 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Util\GUI\Prompt_Dropdown.cs" />
     <Compile Include="Util\JSON\EditorProject.cs" />
     <Compile Include="Util\FileManagement\FileManagement.cs" />
     <Compile Include="Util\FileManagement\SOExtension.cs" />

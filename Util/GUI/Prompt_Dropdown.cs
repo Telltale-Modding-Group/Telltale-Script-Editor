@@ -22,7 +22,7 @@ namespace Telltale_Script_Editor.Util.GUI
             Label textLabel = new Label() { Left = 50, Top = 20, Text = text, AutoSize = true };
 
             //create a new combobox
-            ComboBox comboBox = new ComboBox() { Left = 50, Top = 50, Width = 400, DropDownStyle = ComboBoxStyle.DropDownList };
+            ComboBox comboBox = new ComboBox() { Left = 50, Top = 50, Width = 400, DropDownStyle = ComboBoxStyle.DropDown };
 
             //run a loop to add each of the combobox items string into the actual combobox element
             foreach (string item in comboboxItems)

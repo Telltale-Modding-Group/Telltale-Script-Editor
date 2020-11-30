@@ -250,7 +250,7 @@ namespace Telltale_Script_Editor
             List<string> archiveNames = GetArchiveFolders();
 
             //opens a dropdown prompt with the 'archiveNames' as the dropdown items
-            var archive = Prompt_Dropdown.ShowDialog("What archive should the script be created in?", "Create new Script", archiveNames);
+            var archive = Prompt_Dropdown.ShowDialog("Select an existing archive for the script location.\nOr write a new one into the field.", "Create new Script", archiveNames);
 
             //if the user exists the prompt, the string will be empty, so do not continue
             if (string.IsNullOrEmpty(archive) || string.IsNullOrWhiteSpace(archive))

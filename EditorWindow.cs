@@ -207,6 +207,37 @@ namespace Telltale_Script_Editor
             }
         }
 
+        /// <summary>
+        /// Gets the 'archive' folders in the project
+        /// </summary>
+        /// <returns></returns>
+        private List<string> GetArchiveFolders()
+        {
+            //temp list to contain our 'archives'
+            List<string> result = new List<string>();
+
+            //get the build and temporary folder directory (since apparently these are the only ones in the project not included in the project building)
+            var buildDirectory = $"{WorkingDirectory}\\Builds";
+            var tempDirectory = $"{buildDirectory}\\Temp";
+
+            //run a loop to go through all of the directories in the project working directory
+            foreach (string dirPath in Directory.GetDirectories(WorkingDirectory, "*", SearchOption.AllDirectories))
+            {
+                //if the current path is not the 'build directory' or 'temp directory' then we found an archive folder
+                if (dirPath != buildDirectory && dirPath != tempDirectory)
+                {
+                    //get the name of the folder
+                    string directoryName = dirPath.Remove(0, Directory.GetParent(dirPath).FullName.Length + 1);
+
+                    //add the name of the folder
+                    result.Add(directoryName);
+                }
+            }
+
+            //return the final list
+            return result;
+        }
+
         private void scriptToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if(fileManager == null)
@@ -215,7 +246,11 @@ namespace Telltale_Script_Editor
                 return;
             }
 
-            var archive = Prompt.ShowDialog("What archive should the script be created in?", "Create new Script");
+            //gets the list of the archive folder names (to be used for the dropdown)
+            List<string> archiveNames = GetArchiveFolders();
+
+            //opens a dropdown prompt with the 'archiveNames' as the dropdown items
+            var archive = Prompt_Dropdown.ShowDialog("What archive should the script be created in?", "Create new Script", archiveNames);
 
             //if the user exists the prompt, the string will be empty, so do not continue
             if (string.IsNullOrEmpty(archive) || string.IsNullOrWhiteSpace(archive))

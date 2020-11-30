@@ -20,9 +20,12 @@ namespace Telltale_Script_Editor.Util.GUI
                 StartPosition = FormStartPosition.CenterScreen
             };
             Label textLabel = new Label() { Left = 50, Top = 20, Text = text, AutoSize = true };
-            ComboBox comboBox = new ComboBox() { Left = 50, Top = 50, Width = 400 };
 
-            foreach(string item in comboboxItems)
+            //create a new combobox
+            ComboBox comboBox = new ComboBox() { Left = 50, Top = 50, Width = 400, DropDownStyle = ComboBoxStyle.DropDownList };
+
+            //run a loop to add each of the combobox items string into the actual combobox element
+            foreach (string item in comboboxItems)
             {
                 comboBox.Items.Add(item);
             }
@@ -34,6 +37,7 @@ namespace Telltale_Script_Editor.Util.GUI
             prompt.Controls.Add(textLabel);
             prompt.AcceptButton = confirmation;
 
+            //if the prompt is accepted, return the string of the selected item, otherwise return an empty string
             return prompt.ShowDialog() == DialogResult.OK ? comboBox.SelectedItem.ToString() : "";
         }
     }

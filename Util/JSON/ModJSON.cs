@@ -11,5 +11,7 @@ namespace Telltale_Script_Editor.Util.JSON
         public string name { get; set; }
         public string version { get; set; }
         public string author { get; set; }
+
+        public int priority { get; set; }
     }
 }

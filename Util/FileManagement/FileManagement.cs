@@ -23,6 +23,8 @@ namespace Telltale_Script_Editor.Util.FileManagement
         public FileSystemWatcher fsWatcher;
         public EditorProject CurrentProject;
 
+        public string gameExecutableLocation = null;
+
         /// <summary>
         /// File management class
         /// </summary>
@@ -94,10 +96,47 @@ namespace Telltale_Script_Editor.Util.FileManagement
         /// Load a project file
         /// </summary>
         /// <param name="x">The location of the project file</param>
-        public void LoadProject(string x)
+        public bool LoadProject(string x)
         {
-            CurrentProject = JsonConvert.DeserializeObject<EditorProject>(File.ReadAllText(x));
-            Console.WriteLine($"Loaded \"{CurrentProject.mod.name}\" by {CurrentProject.mod.author}");
+            try
+            {
+                CurrentProject = JsonConvert.DeserializeObject<EditorProject>(File.ReadAllText(x));
+
+                if(CurrentProject.mod.priority <= 0)
+                {
+                    EditorProject toCreate = new EditorProject
+                    {
+                        formatVersion = "1",
+                        mod = new ModJSON()
+                        {
+                            name = CurrentProject.mod.name,
+                            version = CurrentProject.mod.version,
+                            author = CurrentProject.mod.author,
+                            priority = 950
+                        },
+                        tool = new ToolJSON()
+                        {
+                            game = CurrentProject.mod.name
+                        }
+                    };
+
+                    string modFileName = Regex.Replace(CurrentProject.mod.name, @"[^A-Za-z0-9]+", "");
+                    string modFileDirectory = $"{WorkingDirectory}\\{modFileName}.tseproj";
+
+                    File.WriteAllText(modFileDirectory, JsonConvert.SerializeObject(toCreate, Formatting.Indented));
+
+                    CurrentProject.mod.priority = 650;
+                    MessageBox.Show("Your mod's priority was invalid (must be at least 1) or wasn't set, so I've set it to the default value.", "Just a heads up...");
+                }
+                Console.WriteLine($"Loaded \"{CurrentProject.mod.name}\" by {CurrentProject.mod.author}");
+                return true;
+            }
+            catch(Exception e)
+            {
+                MessageBox.Show("This is not a valid project file! See console for more info.", "Error");
+                Console.WriteLine(e.Message);
+                return false;
+            }
         }
 
         /// <summary>
@@ -181,11 +220,39 @@ namespace Telltale_Script_Editor.Util.FileManagement
         {
             fsWatcher.EnableRaisingEvents = false;
             fileTreeView.Enabled = false;
+
+
+            if (runGameAfterBuild && gameExecutableLocation == null)
+            {
+                MessageBox.Show("One quick thing - before we can build & run the game, you need to find your game's executable.", "Hold up...");
+                using (OpenFileDialog openFileDialog = new OpenFileDialog())
+                {
+                    openFileDialog.InitialDirectory = "c:\\";
+                    openFileDialog.Filter = "WDC.exe (*.exe)|*.exe";
+                    openFileDialog.FilterIndex = 2;
+                    openFileDialog.RestoreDirectory = true;
+
+                    if (openFileDialog.ShowDialog() == DialogResult.OK)
+                    {
+                        gameExecutableLocation = openFileDialog.FileName;
+                    }
+                    else
+                    {
+                        MessageBox.Show("No executable chosen, mod will be built as normal.", "Oops!");
+                        runGameAfterBuild = false;
+                    }
+                }
+            }
+
+            string gameArchiveDirectory = Path.GetDirectoryName(gameExecutableLocation) + "\\Archives\\";
+
+            /*
             if (runGameAfterBuild)
             {
                 MessageBox.Show("This feature is currently not supported.", "Not Implemented");
                 return;
             }
+            */
 
             var buildDirectory = $"{WorkingDirectory}\\Builds";
             var tempDirectory = $"{buildDirectory}\\Temp";
@@ -211,7 +278,21 @@ namespace Telltale_Script_Editor.Util.FileManagement
 
             foreach (string luaFile in Directory.GetFiles(WorkingDirectory, "*.lua", SearchOption.AllDirectories))
             {
-                CompileLuaScript(luaFile, luaFile.Replace(WorkingDirectory, tempDirectory));
+                if(!CompileLuaScript(luaFile, luaFile.Replace(WorkingDirectory, tempDirectory)))
+                {
+                    
+                    var errBoxResult = MessageBox.Show($"An error was encountered while attempting to build {luaFile}. Would you like to continue without building this file?", "Build Error", MessageBoxButtons.YesNo);
+
+                    if(errBoxResult == DialogResult.No)
+                    {
+                        MessageBox.Show("Aborting Build!");
+                        Console.WriteLine("Aborted build due to lua compilation error.");
+                        fsWatcher.EnableRaisingEvents = true;
+                        this.PopulateFileGUI();
+                        fileTreeView.Enabled = true;
+                        return;
+                    }
+                }
             }
 
             foreach (string newPath in Directory.GetFiles(WorkingDirectory, "*.*", SearchOption.AllDirectories).Where(name => !name.EndsWith(".lua") && !name.EndsWith(".tseproj")))
@@ -253,6 +334,40 @@ namespace Telltale_Script_Editor.Util.FileManagement
 
             File.WriteAllText($"{tempDirectory}\\modinfo_{Regex.Replace(CurrentProject.mod.name, @"[^A-Za-z0-9]+", "")}.json", JsonConvert.SerializeObject(manifest, Formatting.Indented));
 
+            if(runGameAfterBuild)
+            {
+                //Directory.Move($"{tempDirectory}", $"{gameArchiveDirectory}");
+                MoveContentsOfDirectory(tempDirectory, gameArchiveDirectory);
+                Process GameProcess = new Process
+                {
+                    StartInfo =
+                     {
+                        UseShellExecute = false,
+                        RedirectStandardOutput = true,
+                        RedirectStandardError = true,
+                        CreateNoWindow = true,
+                        FileName = gameExecutableLocation,
+                        WorkingDirectory = Path.GetDirectoryName(gameExecutableLocation)
+                    }
+                };
+
+                GameProcess.Start();
+                while (!GameProcess.StandardOutput.EndOfStream)
+                {
+                    string line = GameProcess.StandardOutput.ReadLine();
+                    Console.WriteLine(line);
+                    Application.DoEvents();
+                }
+                GameProcess.WaitForExit();
+                if (GameProcess.HasExited)
+                {
+                    Console.WriteLine($"Game process exited! Returning to normal operation. Exit code {GameProcess.ExitCode}");
+                    fsWatcher.EnableRaisingEvents = true;
+                    this.PopulateFileGUI();
+                    fileTreeView.Enabled = true;
+                }
+                return;
+            }
 
             if (File.Exists(buildZip))
                 File.Delete(buildZip);
@@ -265,6 +380,30 @@ namespace Telltale_Script_Editor.Util.FileManagement
             fileTreeView.Enabled = true;
         }
 
+        void MoveContentsOfDirectory(string source, string target)
+        {
+            foreach (var file in Directory.EnumerateFiles(source))
+            {
+                var dest = Path.Combine(target, Path.GetFileName(file));
+                if (File.Exists(dest))
+                    File.Delete(dest);
+
+                File.Move(file, dest);
+            }
+
+            foreach (var dir in Directory.EnumerateDirectories(source))
+            {
+                var dest = Path.Combine(target, Path.GetFileName(dir));
+
+                if (Directory.Exists(dest))
+                    Directory.Delete(dest, true);
+
+                Directory.Move(dir, dest);
+            }
+
+            // optional
+            Directory.Delete(source);
+        }
         private void BuildTtarchArchive(string x, string y)
         {
             string exeLocation = System.Reflection.Assembly.GetEntryAssembly().Location;
@@ -284,22 +423,33 @@ namespace Telltale_Script_Editor.Util.FileManagement
             string luaDirectory = Directory.GetParent(x).FullName + "\\lua\\" + "_resdesc_50_" + y + "_" + modFileName + ".lua";
 
             string luaFinal = Directory.GetParent(x).FullName;
+
+            string enablemode = "constant";
+            string setversion = "dummydata";
+
+            if(y != "DebugMenu")
+            {
+                enablemode = "bootable";
+                setversion = "trunk";
+            }
+
             string[] luaFile =
             {
                 "--This file was automatically generated by the Telltale Script Editor, available at https://github.com/Telltale-Modding-Group/Telltale-Script-Editor",
+               $"--File assocated with '{CurrentProject.mod.name}' by {CurrentProject.mod.author}, version {CurrentProject.mod.version}",
                 "local set = {}",
                $"set.name = \"{setName}\"",
                $"set.setName = \"{setName}\"",
                 "set.descriptionFilenameOverride = \"\"",
                $"set.logicalName = \"<{y}>\"",
                 "set.logicalDestination = \"<>\"",
-                "set.priority = 900",
+               $"set.priority = {CurrentProject.mod.priority}",
                 "set.localDir = _currentDirectory",
-                "set.enableMode = \"bootable\"",
-                "set.version = \"trunk\"",
+               $"set.enableMode = \"{enablemode}\"",
+               $"set.version = \"{setversion}\"",
                 "set.descriptionPriority = 0",
                $"set.gameDataName = \"{setName} Game Data\"",
-                "set.gameDataPriority = 900",
+               $"set.gameDataPriority = {CurrentProject.mod.priority}",
                 "set.gameDataEnableMode = \"constant\"",
                 "set.localDirIncludeBase = true",
                 "set.localDirRecurse = false",
@@ -443,6 +593,8 @@ namespace Telltale_Script_Editor.Util.FileManagement
                         FileName = ttarch,
                         Arguments = $"-f \"*.lua\" 67 \"{x}\" \"{unpackDir}\""
                     }
+                //$"-f \"*.lua\" 63 \"{x}\" \"{unpackDir}\"" MCSM 2
+                //$"-f \"*.lua\" 67 \"{x}\" \"{unpackDir}\"" - TTDS NEW
                 //Arguments = $"67 \"{x}\" \"{unpackDir}\"" TTDS
                 //Arguments = $"-k 96CA999F8DDA9A87D7CDD9986295AAB8D59596E5A4B99BD0C9559F8590CDCD9FC8B39993C6C49DA0A5A4CFCDA39DBBDDACA78B94D4A66F 0 \"{x}\" \"{unpackDir}\"" SEASON 4
                 //Arguments = $"-k 86DE8EA688D594B1E59DA59479DAB4C9CD938EE5B0A6669FAC96D0C79DD5C2A2D276627FA8D89ADED9DDD9DAAA63829F8CD887A5D4DBA0 0 \"{x}\" \"{unpackDir}\"" GOTG
@@ -532,7 +684,7 @@ namespace Telltale_Script_Editor.Util.FileManagement
             }
         }
 
-        private void CompileLuaScript(string x, string y)
+        private bool CompileLuaScript(string x, string y)
         {
             var luaCompileTemp = $"{Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location)}\\luac.exe";
 
@@ -567,7 +719,14 @@ namespace Telltale_Script_Editor.Util.FileManagement
             {
                 Console.WriteLine($"Compiled {y}! Exit code {luaCompile.ExitCode}");
                 Application.DoEvents();
+                if (luaCompile.ExitCode != 0)
+                {
+                    return false;
+                }
+                return true;
             }
+
+            return false;
         }
     }
 }

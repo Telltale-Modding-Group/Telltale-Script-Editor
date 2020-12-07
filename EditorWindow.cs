@@ -62,8 +62,12 @@ namespace Telltale_Script_Editor
                 string sFileName = choofdlog.FileName;
                 WorkingDirectory = Path.GetDirectoryName(sFileName);
                 fileManager = new FileManagement(operationProgressBar, projectFileTree, WorkingDirectory, this);
-                fileManager.LoadProject(sFileName);
-                fileManager.PopulateFileGUI();
+                if(fileManager.LoadProject(sFileName))
+                    fileManager.PopulateFileGUI();
+                else
+                {
+                    fileManager = null;
+                }
             }
         }
 
@@ -134,8 +138,32 @@ namespace Telltale_Script_Editor
                 return;
             }
 
-            highlightedTextBox.SaveToFile(activeFile, Encoding.UTF8);
-            highlightedTextBox.IsChanged = false;
+            if(Path.GetExtension(activeFile) != ".tseproj")
+            {
+                highlightedTextBox.SaveToFile(activeFile, Encoding.UTF8);
+                highlightedTextBox.IsChanged = false;
+            }
+            else
+            {
+                fileManager = new FileManagement(operationProgressBar, projectFileTree, WorkingDirectory, this);
+                var ogBuffer = File.ReadAllText(activeFile);
+                highlightedTextBox.SaveToFile(activeFile, Encoding.UTF8);
+                if (fileManager.LoadProject(activeFile))
+                {
+                    highlightedTextBox.Text = File.ReadAllText(activeFile);
+                    fileManager.PopulateFileGUI();
+                    MessageBox.Show("Project updated!", "Success!");
+                    highlightedTextBox.IsChanged = false;
+                }
+                else
+                {
+                    highlightedTextBox.Text = ogBuffer;
+                    File.WriteAllText(activeFile, ogBuffer);
+                    highlightedTextBox.IsChanged = false;
+                    MessageBox.Show("The tseproj file you tried to save was invalid & won't be saved.", "Something went wrong...");
+                    fileManager.LoadProject(activeFile);
+                }
+            }
         }
 
         private void SaveAs()
@@ -143,6 +171,12 @@ namespace Telltale_Script_Editor
             if (activeFile == null)
             {
                 MessageBox.Show("No file is currently open!", "You can't do that.");
+                return;
+            }
+
+            if (Path.GetExtension(activeFile) == ".tseproj")
+            {
+                MessageBox.Show("Sorry, but you can't use Save As on tseproj files! It'd probably break things.", "You can't do that.");
                 return;
             }
 
@@ -190,7 +224,8 @@ namespace Telltale_Script_Editor
                         {
                             name = modName,
                             version = "1.0",
-                            author = modAuthor
+                            author = modAuthor,
+                            priority = 950
                         },
                         tool = new ToolJSON()
                         {
@@ -346,6 +381,39 @@ namespace Telltale_Script_Editor
         private void consoleOutput_TextChanged(object sender, EventArgs e)
         {
 
+        }
+
+        private void preferencesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Preferences prefsWindow = new Preferences();
+            prefsWindow.ShowDialog();
+        }
+
+        private void openToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void showProjectInfoToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (fileManager == null)
+            {
+                MessageBox.Show("You need to open or create a project first.", "You can't do that!");
+                return;
+            }
+
+            string infoString = 
+               $"Name: {fileManager.CurrentProject.mod.name}\n" +
+               $"Author: {fileManager.CurrentProject.mod.author}\n" +
+               $"Version: {fileManager.CurrentProject.mod.version}\n" +
+               $"Priority: {fileManager.CurrentProject.mod.priority}";
+            MessageBox.Show(infoString, "Project Info");
+
+        }
+
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
         }
     }
 }

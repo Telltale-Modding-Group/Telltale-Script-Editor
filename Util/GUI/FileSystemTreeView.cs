@@ -56,8 +56,18 @@ namespace Telltale_Script_Editor.Util.GUI
                 FileInfo fi = new FileInfo(file);
                 TreeNode tds = y.Nodes.Add(fi.Name);
                 tds.Tag = fi.FullName;
-                if(fi.Name.EndsWith(".tseproj")) tds.ForeColor = Color.FromArgb(230, 20, 20);
-                if (fi.Name.EndsWith(".lua")) tds.ForeColor = Color.FromArgb(20, 230, 20);
+                
+                /*
+                 * not sure if we should keep these - enables colors on the file tree
+                 * commenting out for now as it can be confusing from a UX perspective
+                 * the user generally expects red to mean something went wrong and green to mean everything's fine
+                 * can cause issues when there are compilation errors or make the user believe their project is corrupt.
+                 * will experiment more later!
+                 */
+
+                //if(fi.Name.EndsWith(".tseproj")) tds.ForeColor = Color.FromArgb(230, 20, 20);
+                //if (fi.Name.EndsWith(".lua")) tds.ForeColor = Color.FromArgb(20, 230, 20);
+
                 tds.StateImageIndex = 1;
                 UpdateProgress();
             }

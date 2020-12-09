@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Win32;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -50,6 +51,8 @@ namespace Telltale_Script_Editor
         private void projectToolStripMenuItem2_Click(object sender, EventArgs e)
         {
             OpenFileDialog choofdlog = new OpenFileDialog();
+            choofdlog.InitialDirectory = Application.StartupPath;
+
             choofdlog.Filter = "Telltale Script Editor Project (*.tseproj)|*.tseproj";
             choofdlog.FilterIndex = 1;
             choofdlog.Multiselect = false;
@@ -59,8 +62,12 @@ namespace Telltale_Script_Editor
                 string sFileName = choofdlog.FileName;
                 WorkingDirectory = Path.GetDirectoryName(sFileName);
                 fileManager = new FileManagement(operationProgressBar, projectFileTree, WorkingDirectory, this);
-                fileManager.LoadProject(sFileName);
-                fileManager.PopulateFileGUI();
+                if(fileManager.LoadProject(sFileName))
+                    fileManager.PopulateFileGUI();
+                else
+                {
+                    fileManager = null;
+                }
             }
         }
 
@@ -85,7 +92,7 @@ namespace Telltale_Script_Editor
                         return;
                     else if(importArchive == DialogResult.Yes)
                     {
-                        fileManager.ImportTelltaleArchive(e.Node.Tag.ToString());
+                        fileManager.ImportTelltaleArchive(e.Node.Tag.ToString(), additionalDebugInfoToolStripMenuItem.Checked);
                     }
 
                     return;
@@ -131,8 +138,32 @@ namespace Telltale_Script_Editor
                 return;
             }
 
-            highlightedTextBox.SaveToFile(activeFile, Encoding.UTF8);
-            highlightedTextBox.IsChanged = false;
+            if(Path.GetExtension(activeFile) != ".tseproj")
+            {
+                highlightedTextBox.SaveToFile(activeFile, Encoding.UTF8);
+                highlightedTextBox.IsChanged = false;
+            }
+            else
+            {
+                fileManager = new FileManagement(operationProgressBar, projectFileTree, WorkingDirectory, this);
+                var ogBuffer = File.ReadAllText(activeFile);
+                highlightedTextBox.SaveToFile(activeFile, Encoding.UTF8);
+                if (fileManager.LoadProject(activeFile))
+                {
+                    highlightedTextBox.Text = File.ReadAllText(activeFile);
+                    fileManager.PopulateFileGUI();
+                    MessageBox.Show("Project updated!", "Success!");
+                    highlightedTextBox.IsChanged = false;
+                }
+                else
+                {
+                    highlightedTextBox.Text = ogBuffer;
+                    File.WriteAllText(activeFile, ogBuffer);
+                    highlightedTextBox.IsChanged = false;
+                    MessageBox.Show("The tseproj file you tried to save was invalid & won't be saved.", "Something went wrong...");
+                    fileManager.LoadProject(activeFile);
+                }
+            }
         }
 
         private void SaveAs()
@@ -140,6 +171,12 @@ namespace Telltale_Script_Editor
             if (activeFile == null)
             {
                 MessageBox.Show("No file is currently open!", "You can't do that.");
+                return;
+            }
+
+            if (Path.GetExtension(activeFile) == ".tseproj")
+            {
+                MessageBox.Show("Sorry, but you can't use Save As on tseproj files! It'd probably break things.", "You can't do that.");
                 return;
             }
 
@@ -161,6 +198,7 @@ namespace Telltale_Script_Editor
             string newProjectPath = null;
             using (var fbd = new FolderBrowserDialog())
             {
+                fbd.SelectedPath = Application.StartupPath;
                 fbd.Description = "Select a folder for your project.";
                 DialogResult result = fbd.ShowDialog();
 
@@ -186,7 +224,8 @@ namespace Telltale_Script_Editor
                         {
                             name = modName,
                             version = "1.0",
-                            author = modAuthor
+                            author = modAuthor,
+                            priority = 950
                         },
                         tool = new ToolJSON()
                         {
@@ -207,6 +246,37 @@ namespace Telltale_Script_Editor
             }
         }
 
+        /// <summary>
+        /// Gets the 'archive' folders in the project
+        /// </summary>
+        /// <returns></returns>
+        private List<string> GetArchiveFolders()
+        {
+            //temp list to contain our 'archives'
+            List<string> result = new List<string>();
+
+            //get the build and temporary folder directory (since apparently these are the only ones in the project not included in the project building)
+            var buildDirectory = $"{WorkingDirectory}\\Builds";
+            var tempDirectory = $"{buildDirectory}\\Temp";
+
+            //run a loop to go through all of the directories in the project working directory
+            foreach (string dirPath in Directory.GetDirectories(WorkingDirectory, "*", SearchOption.AllDirectories))
+            {
+                //if the current path is not the 'build directory' or 'temp directory' then we found an archive folder
+                if (dirPath != buildDirectory && dirPath != tempDirectory)
+                {
+                    //get the name of the folder
+                    string directoryName = dirPath.Remove(0, Directory.GetParent(dirPath).FullName.Length + 1);
+
+                    //add the name of the folder
+                    result.Add(directoryName);
+                }
+            }
+
+            //return the final list
+            return result;
+        }
+
         private void scriptToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if(fileManager == null)
@@ -215,8 +285,21 @@ namespace Telltale_Script_Editor
                 return;
             }
 
-            var archive = Prompt.ShowDialog("What archive should the script be created in?", "Create new Script");
+            //gets the list of the archive folder names (to be used for the dropdown)
+            List<string> archiveNames = GetArchiveFolders();
+
+            //opens a dropdown prompt with the 'archiveNames' as the dropdown items
+            var archive = Prompt_Dropdown.ShowDialog("Select an existing archive for the script location.\nOr write a new one into the field.", "Create new Script", archiveNames);
+
+            //if the user exists the prompt, the string will be empty, so do not continue
+            if (string.IsNullOrEmpty(archive) || string.IsNullOrWhiteSpace(archive))
+                return;
+
             var scriptName = Prompt.ShowDialog("What should the script be called?", "Create new Script");
+
+            //if the user exists the prompt, the string will be empty, so do not continue
+            if (string.IsNullOrEmpty(scriptName) || string.IsNullOrWhiteSpace(scriptName))
+                return;
 
             if (!scriptName.EndsWith(".lua"))
                 scriptName += ".lua";
@@ -230,7 +313,6 @@ namespace Telltale_Script_Editor
         //open ttarch
         private void tTARCH2ArchiveToolStripMenuItem1_Click(object sender, EventArgs e)
         {
-
             if (fileManager == null)
             {
                 MessageBox.Show("You need to open or create a project first.", "You can't do that!");
@@ -238,6 +320,7 @@ namespace Telltale_Script_Editor
             }
 
             OpenFileDialog choofdlog = new OpenFileDialog();
+            
             choofdlog.Filter = "Telltale Archive (*.ttarch2)|*.ttarch2";
             choofdlog.FilterIndex = 1;
             choofdlog.Multiselect = false;
@@ -246,7 +329,7 @@ namespace Telltale_Script_Editor
             {
                 string sFileName = choofdlog.FileName;
 
-                fileManager.ImportTelltaleArchive(sFileName);
+                fileManager.ImportTelltaleArchive(sFileName, additionalDebugInfoToolStripMenuItem.Checked);
             }
         }
 
@@ -293,6 +376,44 @@ namespace Telltale_Script_Editor
         private void documentationToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Process.Start("https://github.com/Telltale-Modding-Group/Telltale-Script-Editor/wiki");
+        }
+
+        private void consoleOutput_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void preferencesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Preferences prefsWindow = new Preferences();
+            prefsWindow.ShowDialog();
+        }
+
+        private void openToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void showProjectInfoToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (fileManager == null)
+            {
+                MessageBox.Show("You need to open or create a project first.", "You can't do that!");
+                return;
+            }
+
+            string infoString = 
+               $"Name: {fileManager.CurrentProject.mod.name}\n" +
+               $"Author: {fileManager.CurrentProject.mod.author}\n" +
+               $"Version: {fileManager.CurrentProject.mod.version}\n" +
+               $"Priority: {fileManager.CurrentProject.mod.priority}";
+            MessageBox.Show(infoString, "Project Info");
+
+        }
+
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
         }
     }
 }

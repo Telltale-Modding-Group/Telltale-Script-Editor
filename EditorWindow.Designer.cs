@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
+using System.IO;
 
 namespace Telltale_Script_Editor
 {
@@ -54,6 +55,9 @@ namespace Telltale_Script_Editor
             this.documentationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.gitHubToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.debugToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.additionalDebugInfoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.showProjectInfoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.highlightedTextBox = new FastColoredTextBoxNS.FastColoredTextBox();
             this.mainContainer = new System.Windows.Forms.SplitContainer();
             this.sidebarContainer = new System.Windows.Forms.SplitContainer();
@@ -61,9 +65,7 @@ namespace Telltale_Script_Editor
             this.projectFileTree = new System.Windows.Forms.TreeView();
             this.operationProgressBar = new System.Windows.Forms.ProgressBar();
             this.consoleOutput = new System.Windows.Forms.TextBox();
-            this.debugToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.additionalDebugInfoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.showProjectInfoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.folderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.highlightedTextBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.mainContainer)).BeginInit();
@@ -110,7 +112,8 @@ namespace Telltale_Script_Editor
             // 
             this.openToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.projectToolStripMenuItem1,
-            this.scriptToolStripMenuItem});
+            this.scriptToolStripMenuItem,
+            this.folderToolStripMenuItem});
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
             this.openToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
             this.openToolStripMenuItem.Text = "New";
@@ -197,7 +200,7 @@ namespace Telltale_Script_Editor
             // 
             this.undoToolStripMenuItem.Name = "undoToolStripMenuItem";
             this.undoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z)));
-            this.undoToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.undoToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
             this.undoToolStripMenuItem.Text = "Undo";
             this.undoToolStripMenuItem.Click += new System.EventHandler(this.undoToolStripMenuItem_Click);
             // 
@@ -206,7 +209,7 @@ namespace Telltale_Script_Editor
             this.redoToolStripMenuItem.Name = "redoToolStripMenuItem";
             this.redoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
             | System.Windows.Forms.Keys.Z)));
-            this.redoToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.redoToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
             this.redoToolStripMenuItem.Text = "Redo";
             this.redoToolStripMenuItem.Click += new System.EventHandler(this.redoToolStripMenuItem_Click);
             // 
@@ -266,6 +269,31 @@ namespace Telltale_Script_Editor
             this.gitHubToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.gitHubToolStripMenuItem.Text = "Contribute";
             this.gitHubToolStripMenuItem.Click += new System.EventHandler(this.gitHubToolStripMenuItem_Click);
+            // 
+            // debugToolStripMenuItem
+            // 
+            this.debugToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.additionalDebugInfoToolStripMenuItem,
+            this.showProjectInfoToolStripMenuItem});
+            this.debugToolStripMenuItem.Name = "debugToolStripMenuItem";
+            this.debugToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.debugToolStripMenuItem.Text = "Debug";
+            // 
+            // additionalDebugInfoToolStripMenuItem
+            // 
+            this.additionalDebugInfoToolStripMenuItem.Checked = true;
+            this.additionalDebugInfoToolStripMenuItem.CheckOnClick = true;
+            this.additionalDebugInfoToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.additionalDebugInfoToolStripMenuItem.Name = "additionalDebugInfoToolStripMenuItem";
+            this.additionalDebugInfoToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
+            this.additionalDebugInfoToolStripMenuItem.Text = "Verbose Output";
+            // 
+            // showProjectInfoToolStripMenuItem
+            // 
+            this.showProjectInfoToolStripMenuItem.Name = "showProjectInfoToolStripMenuItem";
+            this.showProjectInfoToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
+            this.showProjectInfoToolStripMenuItem.Text = "Show Project Info";
+            this.showProjectInfoToolStripMenuItem.Click += new System.EventHandler(this.showProjectInfoToolStripMenuItem_Click);
             // 
             // highlightedTextBox
             // 
@@ -363,6 +391,7 @@ namespace Telltale_Script_Editor
             this.projectFileTree.Name = "projectFileTree";
             this.projectFileTree.Size = new System.Drawing.Size(174, 280);
             this.projectFileTree.TabIndex = 0;
+            this.projectFileTree.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.projectFileTree_AfterSelect);
             this.projectFileTree.NodeMouseDoubleClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.projectFileTree_NodeDoubleClick);
             // 
             // operationProgressBar
@@ -389,30 +418,12 @@ namespace Telltale_Script_Editor
             this.consoleOutput.WordWrap = false;
             this.consoleOutput.TextChanged += new System.EventHandler(this.consoleOutput_TextChanged);
             // 
-            // debugToolStripMenuItem
+            // folderToolStripMenuItem
             // 
-            this.debugToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.additionalDebugInfoToolStripMenuItem,
-            this.showProjectInfoToolStripMenuItem});
-            this.debugToolStripMenuItem.Name = "debugToolStripMenuItem";
-            this.debugToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.debugToolStripMenuItem.Text = "Debug";
-            // 
-            // additionalDebugInfoToolStripMenuItem
-            // 
-            this.additionalDebugInfoToolStripMenuItem.Checked = true;
-            this.additionalDebugInfoToolStripMenuItem.CheckOnClick = true;
-            this.additionalDebugInfoToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.additionalDebugInfoToolStripMenuItem.Name = "additionalDebugInfoToolStripMenuItem";
-            this.additionalDebugInfoToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.additionalDebugInfoToolStripMenuItem.Text = "Verbose Output";
-            // 
-            // showProjectInfoToolStripMenuItem
-            // 
-            this.showProjectInfoToolStripMenuItem.Name = "showProjectInfoToolStripMenuItem";
-            this.showProjectInfoToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.showProjectInfoToolStripMenuItem.Text = "Show Project Info";
-            this.showProjectInfoToolStripMenuItem.Click += new System.EventHandler(this.showProjectInfoToolStripMenuItem_Click);
+            this.folderToolStripMenuItem.Name = "folderToolStripMenuItem";
+            this.folderToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.folderToolStripMenuItem.Text = "Folder";
+            this.folderToolStripMenuItem.Click += new System.EventHandler(this.folderToolStripMenuItem_Click);
             // 
             // EditorWindow
             // 
@@ -478,6 +489,7 @@ namespace Telltale_Script_Editor
         private ToolStripMenuItem debugToolStripMenuItem;
         private ToolStripMenuItem additionalDebugInfoToolStripMenuItem;
         private ToolStripMenuItem showProjectInfoToolStripMenuItem;
+        private ToolStripMenuItem folderToolStripMenuItem;
     }
 }
 

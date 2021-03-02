@@ -30,6 +30,123 @@ namespace Telltale_Script_Editor
         public EditorWindow()
         {
             InitializeComponent();
+
+            //add a context menu to the file tree for convience
+            ContextMenu contextMenu = new ContextMenu();
+
+            //create a menu item for opening said item in explorer
+            MenuItem projectFileTree_menuItem1 = new MenuItem("Open In Explorer", projectFileTree_menuItem1_ContextMenuClick);
+
+            //create a menu item for delete said selected item in the tree
+            MenuItem projectFileTree_menuItem2 = new MenuItem("Delete", projectFileTree_menuItem2_ContextMenuClick);
+
+            //create a menu item for renaming said selected item in the tree
+            MenuItem projectFileTree_menuItem3 = new MenuItem("Rename", projectFileTree_menuItem3_ContextMenuClick);
+
+            //add the menus
+            contextMenu.MenuItems.Add(projectFileTree_menuItem3);
+            contextMenu.MenuItems.Add(projectFileTree_menuItem2);
+            contextMenu.MenuItems.Add(projectFileTree_menuItem1);
+
+            //add the context menu
+            projectFileTree.ContextMenu = contextMenu;
+        }
+
+        //rename
+        private void projectFileTree_menuItem3_ContextMenuClick(object sender, EventArgs e)
+        {
+            string filePath = projectFileTree.SelectedNode.Tag.ToString();
+
+            string fileName ;
+            string fileExtension;//returns with the period
+            string fileDirectory;
+            string rename;
+
+            if (File.Exists(filePath))
+            {
+                fileName = Path.GetFileName(projectFileTree.SelectedNode.Tag.ToString());
+                fileExtension = Path.GetExtension(filePath);//returns with the period
+                fileDirectory = Path.GetDirectoryName(filePath);
+
+                rename = Prompt.ShowDialog(fileName, "Rename File");
+
+                if (string.IsNullOrEmpty(rename))
+                    return;
+
+                string newFilePath = fileDirectory + "/" + rename + fileExtension;
+
+                //rename the file
+                File.Move(filePath, newFilePath);
+            }
+            else
+            {
+                fileDirectory = Path.GetDirectoryName(filePath);
+                fileName = filePath.Remove(0, fileDirectory.Length + 1);
+
+                rename = Prompt.ShowDialog(fileName, "Rename Folder");
+
+                if (string.IsNullOrEmpty(rename))
+                    return;
+
+                string newFolderPath = fileDirectory + "/" + rename;
+
+                //rename the folder
+                Directory.Move(filePath, newFolderPath);
+            }
+        }
+
+        //delete
+        private void projectFileTree_menuItem2_ContextMenuClick(object sender, EventArgs e)
+        {
+            string selectedPath = projectFileTree.SelectedNode.Tag.ToString();
+            string fileName;
+            string message;
+
+            if (File.Exists(selectedPath))
+            {
+                fileName = Path.GetFileName(selectedPath);
+                message = string.Format("Are you sure you want to delete '{0}'?", fileName);
+
+                //get our message box
+                DialogResult messageBox = MessageBox.Show(message, "Delete File", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+
+                if (messageBox == DialogResult.Yes)
+                {
+                    //delete file
+                    File.Delete(selectedPath);
+                }
+            }
+            else
+            {
+                fileName = Path.GetDirectoryName(selectedPath);
+                string folderName = selectedPath.Remove(0, fileName.Length + 1);
+                message = string.Format("Are you sure you want to delete the folder '{0}'? This will also delete all of the contents of this folder. This cannot be undone!", folderName);
+
+                //get our message box
+                DialogResult messageBox = MessageBox.Show(message, "Delete Folder", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+
+                if (messageBox == DialogResult.Yes)
+                {
+                    //delete folder
+                    Directory.Delete(selectedPath, true);
+                }
+            }
+        }
+
+        //open in explorer
+        private void projectFileTree_menuItem1_ContextMenuClick(object sender, EventArgs e)
+        {
+            //get directory path
+            string directory = Path.GetDirectoryName(projectFileTree.SelectedNode.Tag.ToString());
+
+            //create a windows explorer processinfo to be exectued
+            ProcessStartInfo processStartInfo = new ProcessStartInfo();
+            processStartInfo.FileName = directory;
+            processStartInfo.UseShellExecute = true;
+            processStartInfo.Verb = "open";
+
+            //start the process
+            Process.Start(processStartInfo);
         }
 
         private void highlightedTextBox_Load(object sender, EventArgs e)
@@ -414,6 +531,29 @@ namespace Telltale_Script_Editor
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Application.Exit();
+        }
+
+        private void projectFileTree_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+
+        }
+
+        private void folderToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (fileManager == null)
+            {
+                MessageBox.Show("You need to open or create a project first.", "You can't do that!");
+                return;
+            }
+
+            string folderName = Prompt.ShowDialog("Folder Name", "Create New Folder");
+
+            if (string.IsNullOrEmpty(folderName))
+                return;
+
+            string newFolder = WorkingDirectory + "/" + folderName;
+
+            Directory.CreateDirectory(newFolder);
         }
     }
 }

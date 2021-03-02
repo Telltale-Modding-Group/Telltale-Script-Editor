@@ -487,7 +487,8 @@ namespace Telltale_Script_Editor.Util.FileManagement
                         UseShellExecute = false,
                         RedirectStandardOutput = true,
                         RedirectStandardError = true,
-                        CreateNoWindow = true,
+                        CreateNoWindow = false,
+                        WindowStyle = ProcessWindowStyle.Normal,
                         FileName = ttarch,
                         Arguments = $"-b 67 \"{ttarchDirectory}\" \"{x}\""
                     }

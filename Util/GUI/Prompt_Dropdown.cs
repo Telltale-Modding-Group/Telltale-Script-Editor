@@ -40,7 +40,15 @@ namespace Telltale_Script_Editor.Util.GUI
             prompt.AcceptButton = confirmation;
 
             //if the prompt is accepted, return the string of the selected item, otherwise return an empty string
-            return prompt.ShowDialog() == DialogResult.OK ? comboBox.SelectedItem.ToString() : "";
+            if (prompt.ShowDialog() == DialogResult.OK)
+            {
+                //edge case: when the text in the input field does not equal one of the selectable options in the items-list
+                if (comboBox.SelectedItem == null && comboBox.Text != null)
+                    return comboBox.Text;
+                else if (comboBox.SelectedItem != null)
+                    return comboBox.SelectedItem.ToString();
+            }
+            return "";
         }
     }
 }

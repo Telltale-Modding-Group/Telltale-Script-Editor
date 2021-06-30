@@ -1,7 +1,7 @@
 # 🧟‍♀️ Telltale-Script-Editor
 
 
-[![Github All Releases](https://img.shields.io/github/downloads/Telltale-Modding-Group/Telltale-Script-Editor/total.svg)](https://github.com/Telltale-Modding-Group/Telltale-Script-Editor/releases)
+[![Github All Releases](https://img.shields.io/github/downloads/Telltale-Modding-Group/Telltale-Script-Editor/total.svg?style=for-the-badge&color=blueviolet](https://github.com/Telltale-Modding-Group/Telltale-Script-Editor/releases)
 
 An experimental script editor for Telltale games. Supports building mods for the [Telltale Mod Launcher](https://github.com/Telltale-Modding-Group/TelltaleModLauncher)!
 

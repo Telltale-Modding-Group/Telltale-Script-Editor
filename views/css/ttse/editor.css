@@ -1,0 +1,11 @@
+.ttse-sidebar {
+    height: 100vh;
+    width: 25vw;
+    max-width: 350px;
+    padding: 0px;
+}
+
+.ttse-sidebar.container {
+    width: initial; height: initial;
+    padding: 15px;
+}

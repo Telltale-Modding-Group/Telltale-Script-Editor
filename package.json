@@ -1,0 +1,15 @@
+{
+  "name": "telltale-script-editor",
+  "version": "2.0.0",
+  "description": "An un-official, open source script editor for games developed by Telltale.",
+  "main": "app.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "author": "Droyti / Telltale Modding Group",
+  "license": "MIT",
+  "homepage": "https://github.com/telltale-modding-group/telltale-script-editor#readme",
+  "devDependencies": {
+    "electron": "^18.2.3"
+  }
+}

@@ -1,6 +1,7 @@
 import * as React from 'react';
-import type { EditorFile as EditorFileType } from '../TestData';
+import type { EditorFile as EditorFileType } from '../../shared/types';
 import styles from './EditorFile.module.css';
+import fileTreeStyles from './FileTree.module.css';
 import {getFileExtension, SUPPORTED_FILE_TYPES} from '../FileUtils';
 import {useMemo} from 'react';
 import {showNotification} from '@mantine/notifications';
@@ -24,5 +25,5 @@ export const EditorFile = ({ file, onFileClicked }: EditorFileProps) => {
 		}
 	}
 
-	return <button className={`${styles.file} ${!isSupported && styles.unsupportedFile}`} onClick={handleClick}>{file.name}</button>;
+	return <button className={`${styles.file} ${fileTreeStyles.label} ${!isSupported && styles.unsupportedFile}`} onClick={handleClick}>{file.name}</button>;
 }

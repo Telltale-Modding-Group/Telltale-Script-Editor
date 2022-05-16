@@ -30,7 +30,6 @@ import * as React from 'react';
 import {createRoot} from 'react-dom/client';
 import {App} from './components/App';
 import {NotificationsProvider} from '@mantine/notifications';
-import {TestFiles} from './TestData';
 
 const container = document.querySelector('#app');
 
@@ -39,7 +38,7 @@ if (!container) throw new Error('Element with ID "app" not found! Unable to star
 createRoot(container).render(
 	<React.StrictMode>
 		<NotificationsProvider>
-			<App root={TestFiles} />
+			<App />
 		</NotificationsProvider>
 	</React.StrictMode>
 );

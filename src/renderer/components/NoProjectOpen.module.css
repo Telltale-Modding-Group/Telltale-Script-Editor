@@ -1,0 +1,29 @@
+.noProjectOpenContainer {
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.openButton {
+    background-color: #cbccc3;
+    border: 1px solid black;
+    border-bottom: 5px solid black;
+    border-radius: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 250px;
+    height: 250px;
+    margin: 0 2rem;
+    cursor: pointer;
+}
+
+.openButton:hover {
+    background-color: #afb1a3;
+}
+
+.openButton:active {
+    border-bottom: 0;
+}

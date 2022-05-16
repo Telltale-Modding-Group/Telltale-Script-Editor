@@ -1,10 +1,9 @@
-// TODO: Make this actually read filesystem
-import {EditorFile} from './TestData';
+import {EditorFile} from '../shared/types';
 
-export const readAllLines = (path: string): string => {
-	return `file contents of ${path}`;
+export const readAllLines = (path: string): Promise<string> => {
+	return (window as any).ipc.getFileContents(path);
 }
 
-export const SUPPORTED_FILE_TYPES = ['.lua'];
+export const SUPPORTED_FILE_TYPES = ['.lua', '.tseproj'];
 
 export const getFileExtension = (file: EditorFile): string => /.*(\.[\da-zA-Z]+)$/g.exec(file.name)![1]

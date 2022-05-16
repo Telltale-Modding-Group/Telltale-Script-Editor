@@ -1,0 +1,26 @@
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.label {
+    margin-right: 0.25rem;
+}
+
+.closeButton {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 20px;
+    width: 20px;
+    border-radius: 100%;
+    color: black;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+}
+
+.closeButton:hover {
+    background-color: gray;
+}

@@ -1,51 +1,24 @@
 import * as React from 'react';
 import 'react-resizable/css/styles.css';
 import 'normalize.css/normalize.css';
-import {useState} from 'react';
-import type {EditorFile as EditorFileType} from '../TestData';
-import {readAllLines} from '../FileUtils';
-import styles from './App.module.css';
-import {OpenFile} from '../types';
-import {EditorContainer} from './EditorContainer';
-import {FileTree} from './FileTree';
+import {useEffect, useState} from 'react';
+import {EditorFile} from '../../shared/types';
+import {NoProjectOpen} from './NoProjectOpen';
+import {Project} from './Project';
 
-type AppProps = {
-	root: EditorFileType
-};
+export const App = () => {
+	const [root, setRoot] = useState<EditorFile | null>(null);
 
-export const App = ({ root }: AppProps) => {
-	const [openFiles, setOpenFiles] = useState<OpenFile[]>([])
-	const [activeFileIndex, setActiveFileIndex] = useState<number | null>(null);
+	useEffect(() => {
+		(window as any).ipc.onMenuOpenProjectClicked(handleOpenProject);
+	}, []);
 
-	const openFile = (file: EditorFileType) => {
-		if (openFiles.some(openFile => openFile.file.path === file.path)) return;
+	const handleOpenProject = async () => {
+		const fileTree = await (window as any).ipc.openProject();
+		if (!fileTree) return;
 
-		const contents = readAllLines(file.path);
-		setOpenFiles([...openFiles, { file, contents, unsaved: false }]);
-		setActiveFileIndex(openFiles.length);
+		setRoot(fileTree);
 	};
 
-	const updateActiveFileContents = (newContents: string) => {
-		const updatedFile = openFiles[activeFileIndex as number];
-		updatedFile.contents = newContents;
-		updatedFile.unsaved = true;
-
-		setOpenFiles([...openFiles]);
-	};
-
-	return <div className={styles.container}>
-		<FileTree root={root} onFileOpened={openFile} />
-
-		{/* TODO: Make file tree width resizable */}
-		<div style={{ width: '1px', cursor: 'col-resize', display: 'flex', justifyContent: 'center' }}>
-			<div style={{ width: '1px', height: '100%', backgroundColor: 'black' }}></div>
-		</div>
-
-		<EditorContainer
-			openFiles={openFiles}
-			activeFileIndex={activeFileIndex}
-			onTabChange={setActiveFileIndex}
-			updateActiveFileContents={updateActiveFileContents}
-		/>
-	</div>
+	return root ? <Project root={root} /> : <NoProjectOpen onOpenProject={handleOpenProject} />
 };

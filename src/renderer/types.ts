@@ -1,4 +1,4 @@
-import {EditorFile} from './TestData';
+import {EditorFile} from '../shared/types';
 
 export type OpenFile = {
 	file: EditorFile,

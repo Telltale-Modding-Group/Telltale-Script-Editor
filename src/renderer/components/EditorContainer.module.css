@@ -18,3 +18,8 @@
     flex-grow: 1;
     background-color: rgb(39, 40, 34);
 }
+
+.tabControl {
+    padding-right: 0.5rem;
+    padding-left: 0.75rem;
+}

@@ -1,6 +1,7 @@
 .filetree {
     overflow: auto;
     user-select: none;
+    border-right: 1px solid black;
 }
 
 .contentInner {
@@ -19,10 +20,6 @@
 
 .button {
     padding: 0.5rem 0;
-}
-
-.label {
-    font-size: 0.75rem;
 }
 
 .dropdownIcon {

@@ -11,7 +11,7 @@ type ProjectProps = {
 	root: EditorFile
 };
 
-const INITIAL_FILETREE_WIDTH = 300;
+const INITIAL_FILETREE_WIDTH = 250;
 
 export const Project = ({ root }: ProjectProps) => {
 	const [openFiles, setOpenFiles] = useState<OpenFile[]>([])
@@ -69,21 +69,22 @@ export const Project = ({ root }: ProjectProps) => {
 	};
 
 	const ref = useRef<HTMLDivElement | null>(null);
-	const mouseDown = useRef(false);
 
 	useEffect(() => {
 		if (!ref.current) return;
 
+		let mouseDown = false;
+
 		const mouseDownListener = () => {
-			mouseDown.current = true;
+			mouseDown = true;
 		};
 
 		const mouseUpListener = () => {
-			mouseDown.current = false;
+			mouseDown = false;
 		};
 
 		const moveListener = (event: DocumentEventMap['mousemove']) => {
-			if (!mouseDown.current) return;
+			if (!mouseDown) return;
 
 			setFiletreeWidth(Math.max(INITIAL_FILETREE_WIDTH, Math.round(event.clientX)));
 		};
@@ -97,13 +98,13 @@ export const Project = ({ root }: ProjectProps) => {
 			document.removeEventListener('mouseup', mouseUpListener);
 			document.removeEventListener('mousemove', moveListener);
 		};
-	}, [ref, mouseDown]);
+	}, [ref]);
 
 	return <div className={styles.container}>
 		<FileTree width={filetreeWidth} root={root} onFileOpened={openFile} />
 
-		{/* TODO: Make file tree width resizable */}
-		<div style={{ width: '1px', height: '100%', backgroundColor: 'black' }}></div>
+		{/* This effectively hovers over the right border of the file tree to give the user more space to select the
+		    border, without requiring a gap between the file tree and the editor container. */}
 		<div className={styles.resizeContainer} style={{ left: `${filetreeWidth}px` }} ref={ref}></div>
 
 		<EditorContainer

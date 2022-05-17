@@ -21,10 +21,6 @@ type EditorContainerProps = {
 export const EditorContainer = ({ openFiles, activeFileIndex, onTabChange, updateActiveFileContents, closeTab, saveActiveFile }: EditorContainerProps) => {
 	const activeFile = useMemo(() => activeFileIndex !== null ? openFiles[activeFileIndex] : null, [openFiles, activeFileIndex]);
 
-	if (activeFile === undefined) {
-		console.log('active file is undefined!', { activeFile, openFiles, activeFileIndex });
-	}
-
 	const [tabIndexToClose, setTabIndexToClose] = useState<number | null>(null);
 	const showModal = useMemo(() => tabIndexToClose !== null, [tabIndexToClose]);
 

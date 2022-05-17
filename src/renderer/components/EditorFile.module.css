@@ -5,17 +5,8 @@
     font-weight: 600;
     width: 100%;
     text-align: left;
-    border-bottom: 1px solid rgb(222, 226, 230);
-    padding: 1rem 0.75rem;
+    padding: 0.5rem 0 0.5rem 1.65rem;
     cursor: pointer;
-}
-
-.file:first-child {
-    border-top: 1px solid rgb(222, 226, 230);
-}
-
-.file:last-child {
-    border-bottom: none;
 }
 
 .file:hover {

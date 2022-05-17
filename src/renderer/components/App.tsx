@@ -17,6 +17,8 @@ export const App = () => {
 		const fileTree = await (window as any).ipc.openProject();
 		if (!fileTree) return;
 
+		console.log(JSON.stringify(fileTree));
+
 		setRoot(fileTree);
 	};
 

@@ -30,6 +30,8 @@ import * as React from 'react';
 import {createRoot} from 'react-dom/client';
 import {App} from './components/App';
 import {NotificationsProvider} from '@mantine/notifications';
+import {Provider} from 'react-redux';
+import {store} from './slices/store';
 
 const container = document.querySelector('#app');
 
@@ -38,7 +40,9 @@ if (!container) throw new Error('Element with ID "app" not found! Unable to star
 createRoot(container).render(
 	<React.StrictMode>
 		<NotificationsProvider>
-			<App />
+			<Provider store={store}>
+				<App />
+			</Provider>
 		</NotificationsProvider>
 	</React.StrictMode>
 );

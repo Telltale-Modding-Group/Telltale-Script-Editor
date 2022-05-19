@@ -3,6 +3,6 @@
     align-items: center;
 }
 
-.label {
-    font-size: 0.75rem;
+.icon {
+    min-width: 18px;
 }

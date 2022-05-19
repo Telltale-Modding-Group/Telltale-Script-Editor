@@ -4,7 +4,7 @@ module.exports = {
    * that runs in the main process.
    */
   entry: {
-    index: './src/index.ts',
+    index: './src/main/index.ts',
     preload: './src/renderer/preload.ts'
   },
   output: {

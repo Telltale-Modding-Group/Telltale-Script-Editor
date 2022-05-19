@@ -1,23 +1,25 @@
 import * as React from 'react';
 import 'react-resizable/css/styles.css';
 import 'normalize.css/normalize.css';
-import {useEffect, useState} from 'react';
+import {useState} from 'react';
 import {EditorFile} from '../../shared/types';
 import {NoProjectOpen} from './NoProjectOpen';
 import {Project} from './Project';
+import {MainProcess} from '../MainProcessUtils';
 
 export const App = () => {
 	const [root, setRoot] = useState<EditorFile | null>(null);
 
-	useEffect(() => {
-		(window as any).ipc.onMenuOpenProjectClicked(handleOpenProject);
-	}, []);
+	// TODO: Reimplement
+	// useEffect(() => {
+	// 	IPC.onMenuOpenProjectClicked(handleOpenProject);
+	// }, []);
 
 	const handleOpenProject = async () => {
-		const fileTree = await (window as any).ipc.openProject();
+		const fileTree = await MainProcess.openProject();
 		if (!fileTree) return;
 
-		console.log(JSON.stringify(fileTree));
+		// console.log(JSON.stringify(fileTree));
 
 		setRoot(fileTree);
 	};

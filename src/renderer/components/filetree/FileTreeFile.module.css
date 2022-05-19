@@ -1,0 +1,14 @@
+.text {
+    white-space: nowrap;
+    user-select: none;
+    padding: 0.5rem 0;
+    font-size: 0.75rem;
+}
+
+.selected {
+    background-color: #f0f0f0;
+}
+
+.unsupported {
+    color: #c2c2c2;
+}

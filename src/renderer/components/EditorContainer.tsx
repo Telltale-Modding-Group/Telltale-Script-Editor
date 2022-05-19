@@ -1,33 +1,27 @@
 import styles from './EditorContainer.module.css';
-import {Button, Center, Group, Modal, Space, Stack, Tab, Tabs, Text, Title} from '@mantine/core';
+import {Center, Tab, Tabs, Text} from '@mantine/core';
 import AceEditor from 'react-ace';
 import * as React from 'react';
-import {OpenFile} from '../types';
 import 'ace-builds/src-noconflict/ext-language_tools';
 import 'ace-builds/src-noconflict/theme-monokai';
 import 'ace-builds/src-noconflict/mode-lua';
-import {useEffect, useMemo, useState} from 'react';
+import {useEffect} from 'react';
 import {EditorTab} from './EditorTab';
+import {useAppDispatch, useAppSelector} from '../slices/store';
+import {EditorActions, EditorAsyncActions} from '../slices/EditorSlice';
 
-type EditorContainerProps = {
-	openFiles: OpenFile[],
-	activeFileIndex: number | null,
-	onTabChange: (newIndex: number) => void,
-	closeTab: (index: number, saveChanges: boolean) => void,
-	updateActiveFileContents: (newContents: string) => void,
-	saveActiveFile: () => void
-};
+export const EditorContainer = () => {
+	const dispatch = useAppDispatch();
 
-export const EditorContainer = ({ openFiles, activeFileIndex, onTabChange, updateActiveFileContents, closeTab, saveActiveFile }: EditorContainerProps) => {
-	const activeFile = useMemo(() => activeFileIndex !== null ? openFiles[activeFileIndex] : null, [openFiles, activeFileIndex]);
+	const activeFileIndex = useAppSelector(state => state.editor.activeFileIndex);
+	const openFiles = useAppSelector(state => state.editor.openFiles);
 
-	const [tabIndexToClose, setTabIndexToClose] = useState<number | null>(null);
-	const showModal = useMemo(() => tabIndexToClose !== null, [tabIndexToClose]);
+	const activeFile = activeFileIndex !== undefined ? openFiles[activeFileIndex] : undefined;
 
 	useEffect(() => {
 		const listener = (event: DocumentEventMap['keydown']) => {
-			if (event.key === 's' && event.ctrlKey) {
-				saveActiveFile();
+			if (event.key === 's' && event.ctrlKey && activeFileIndex) {
+				dispatch(EditorAsyncActions.saveFile(activeFileIndex))
 			}
 		};
 
@@ -36,62 +30,36 @@ export const EditorContainer = ({ openFiles, activeFileIndex, onTabChange, updat
 		return () => {
 			document.removeEventListener('keydown', listener);
 		}
-	}, [saveActiveFile]);
+	}, [activeFile]);
 
-	const handleCloseClicked = (unsaved: boolean, index: number) => {
-		if (!unsaved) return closeTab(index, false);
-
-		setTabIndexToClose(index);
+	const handleTabChange = (newIndex: number) => {
+		dispatch(EditorActions.setActiveFileIndex(newIndex));
 	};
 
-	const hideModal = () => setTabIndexToClose(null);
+	const handleEditorChange = (contents: string) => {
+		dispatch(EditorActions.setActiveFileContents(contents));
+	};
 
 	return <div className={styles.editorContainer}>
-		<Modal
-			centered
-			withCloseButton={false}
-			opened={showModal}
-			onClose={() => setTabIndexToClose(null)}
-		>
-			<Stack>
-				<Title order={2}>Unsaved Changes</Title>
-				<Text>Do you want to save changes before closing?</Text>
-				<Space h="md" />
-				<Group position="right" spacing="xs">
-					<Button color="green" onClick={() => {
-						closeTab(tabIndexToClose!, true);
-						hideModal();
-					}}>
-						Save
-					</Button>
-					<Button color="red" onClick={() => {
-						closeTab(tabIndexToClose!, false);
-						hideModal();
-					}}>
-						Discard
-					</Button>
-					<Button color="gray" onClick={() => setTabIndexToClose(null)}>Cancel</Button>
-				</Group>
-			</Stack>
-		</Modal>
-
-		{ activeFileIndex === null
+		{ openFiles.length === 0
 			? <Center style={{ height: '100%' }}>
 				<Text className={styles.noFileOpenMessage}>Select a file to start editing...</Text>
 			</Center>
 			: <Tabs
 				active={activeFileIndex}
 				classNames={{ root: styles.tabsContainer, body: styles.tabBody, tabControl: styles.tabControl }}
-				onTabChange={onTabChange}
+				onTabChange={handleTabChange}
 			>
-				{openFiles.map(({ file, unsaved }, index) => (
-					<Tab key={file.path} icon={<EditorTab file={file} unsaved={unsaved} onTabClosed={() => handleCloseClicked(unsaved, index)} />}>
+				{openFiles.map((openFile, index) => (
+					<Tab key={openFile.file.path} icon={<EditorTab file={openFile} index={index} />}>
 						<AceEditor
+							enableBasicAutocompletion
+							enableLiveAutocompletion
 							mode="lua"
 							theme="monokai"
 							height="100%"
 							width="100%"
-							onChange={updateActiveFileContents}
+							onChange={handleEditorChange}
 							value={activeFile!.contents}
 						/>
 					</Tab>

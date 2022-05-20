@@ -27,6 +27,8 @@ export const createInvokableChannel = <T,R>(channel: string) => (source: Channel
 	handle: handler => source.handle(channel, (event, data) => handler(data as T))
 });
 
-export const OpenProjectChannel = createInvokableChannel<void, EditorFile | null>('openproject');
+export const OpenProjectChannel = createInvokableChannel<void, string | undefined>('openproject');
+export const GetDirectoryChannel = createInvokableChannel<string, EditorFile | undefined>('getdirectory');
+export const GetParentDirectoryChannel = createInvokableChannel<string, EditorFile | undefined>('getparentdirectory');
 export const GetFileContentsChannel = createInvokableChannel<string, string>('getfilecontents');
 export const SaveFileChannel = createInvokableChannel<{ path: string, contents: string }, void>('savefile');

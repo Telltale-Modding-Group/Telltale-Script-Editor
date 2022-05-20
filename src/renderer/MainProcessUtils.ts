@@ -1,7 +1,10 @@
-import {EditorFile} from '../shared/types';
-import {GetFileContentsChannel, OpenProjectChannel, SaveFileChannel} from '../shared/Channels';
-
-type Unregister = () => void;
+import {
+	GetDirectoryChannel,
+	GetFileContentsChannel,
+	GetParentDirectoryChannel,
+	OpenProjectChannel,
+	SaveFileChannel
+} from '../shared/Channels';
 
 export interface MainProcessUtils {
 	// TODO: I tried making a custom utility type to avoid all this duplication, but Typescript got mad. I got better
@@ -10,11 +13,10 @@ export interface MainProcessUtils {
 	//       openProject: ChannelResponse<typeof OpenProjectChannel>
 	//       Error: Type '(data: void) => Promise<EditorFile>' is not assignable to type '(data: unknown) => Promise<unknown>'.
 	openProject: ReturnType<typeof OpenProjectChannel>["invoke"];
+	getDirectory: ReturnType<typeof GetDirectoryChannel>["invoke"];
+	getParentDirectory: ReturnType<typeof GetParentDirectoryChannel>["invoke"];
 	getFileContents: ReturnType<typeof GetFileContentsChannel>["invoke"];
 	saveFile: ReturnType<typeof SaveFileChannel>["invoke"];
-	openDirectoryContextMenu: (file: EditorFile) => Promise<void>;
-
-	registerOpenNewFileModalHandler: (handler: (path: string) => void) => Unregister;
 }
 
 // window.ipc is populated from preload.ts, which is run before any react code is active.

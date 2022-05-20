@@ -1,9 +1,15 @@
 import {dialog, ipcMain, BrowserWindow, Menu} from 'electron';
-import {opendir, readFile, writeFile} from 'fs/promises';
-import path from 'path';
+import * as fs from 'fs/promises';
+import { constants } from 'fs';
 import {getFiles} from './utils';
 import {EditorFile} from '../shared/types';
-import {ChannelSource, GetFileContentsChannel, OpenProjectChannel, SaveFileChannel} from '../shared/Channels';
+import {
+	ChannelSource,
+	GetDirectoryChannel,
+	GetFileContentsChannel,
+	OpenProjectChannel,
+	SaveFileChannel
+} from '../shared/Channels';
 
 const getIPCMainChannelSource = (window: BrowserWindow): ChannelSource => ({
 	send: window.webContents.send,
@@ -16,33 +22,52 @@ export const registerIPCHandlers = (window: BrowserWindow) => {
 	const IPCMainSource = getIPCMainChannelSource(window);
 
 	OpenProjectChannel(IPCMainSource).handle(async () => {
-		const selection = await dialog.showOpenDialog({
-			title: 'Open project',
-			filters: [
-				{
-					name: 'Telltale Script Editor Project',
-					extensions: ['tseproj']
-				}
-			]
-		});
+		const getProjectPath = async (): Promise<string | undefined> => {
+			const selection = await dialog.showOpenDialog({
+				title: 'Open project directory',
+				properties: [
+					'openDirectory'
+				]
+			});
 
-		if (selection.canceled) return null;
+			if (selection.canceled) return;
 
-		const root = await opendir(path.dirname(selection.filePaths[0]));
+			const projectPath = selection.filePaths[0];
 
-		return getFiles(root);
+			try {
+				await fs.access(projectPath, constants.W_OK);
+			} catch {
+				await dialog.showMessageBox({
+					title: 'Open project directory',
+					type: 'warning',
+					message: 'Invalid directory chosen, no .tseproj file found!'
+				});
+
+				return getProjectPath();
+			}
+
+			return projectPath;
+		};
+
+		return await getProjectPath();
+	});
+
+	GetDirectoryChannel(IPCMainSource).handle(async path => {
+		const root = await fs.opendir(path);
+
+		return getFiles(root)
 	});
 
 	GetFileContentsChannel(IPCMainSource).handle(async path =>
 		// TODO: We should probably handle errors here, e.g. user loads up project, deletes file in explorer.exe,
 		//       then attempts to click on file in filetree
 		// The .trim() ensures any weird empty space characters are removed, which makes life easier
-		(await readFile(path, { encoding: 'utf8' })).trim()
+		(await fs.readFile(path, { encoding: 'utf8' })).trim()
 	);
 
 	SaveFileChannel(IPCMainSource).handle(({ path, contents }) => {
 		// TODO: Handle errors
-		return writeFile(path, contents)
+		return fs.writeFile(path, contents)
 	})
 
 	ipcMain.handle('openmenu:directory', (ev, file: EditorFile) => {

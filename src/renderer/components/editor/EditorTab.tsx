@@ -1,9 +1,9 @@
 import {AiOutlineClose} from 'react-icons/ai';
 import * as React from 'react';
 import styles from './EditorTab.module.css';
-import {OpenFile} from '../types';
-import {useAppDispatch} from '../slices/store';
-import {EditorActions, EditorAsyncActions} from '../slices/EditorSlice';
+import {OpenFile} from '../../types';
+import {useAppDispatch} from '../../slices/store';
+import {EditorActions, EditorAsyncActions} from '../../slices/EditorSlice';
 import {MouseEventHandler, useState} from 'react';
 import {Button, Group, Modal, Space, Stack, Title, Text} from '@mantine/core';
 

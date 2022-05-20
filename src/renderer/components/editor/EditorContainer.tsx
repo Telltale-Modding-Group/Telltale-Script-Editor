@@ -1,15 +1,16 @@
 import styles from './EditorContainer.module.css';
 import {Center, Tab, Tabs, Text} from '@mantine/core';
-import AceEditor from 'react-ace';
 import * as React from 'react';
+import {useEffect} from 'react';
 import 'ace-builds/src-noconflict/ext-language_tools';
 import 'ace-builds/src-noconflict/theme-monokai';
 import 'ace-builds/src-noconflict/mode-lua';
-import {useEffect} from 'react';
 import {EditorTab} from './EditorTab';
-import {useAppDispatch, useAppSelector} from '../slices/store';
-import {EditorActions, EditorAsyncActions} from '../slices/EditorSlice';
-import {ProjectSettings} from './ProjectSettings';
+import {useAppDispatch, useAppSelector} from '../../slices/store';
+import {EditorActions, EditorAsyncActions} from '../../slices/EditorSlice';
+import {ProjectSettings} from '../ProjectSettings';
+import {ProjectActions} from '../../slices/ProjectSlice';
+import {Editor} from './Editor';
 
 export const EditorContainer = () => {
 	const dispatch = useAppDispatch();
@@ -37,8 +38,9 @@ export const EditorContainer = () => {
 		dispatch(EditorActions.setActiveFileIndex(newIndex));
 	};
 
-	const handleEditorChange = (contents: string) => {
-		dispatch(EditorActions.setActiveFileContents(contents));
+	const handleProjectSettingsJSONChange = (content: string) => {
+		// TODO: This assumes the content is valid JSON AND a valid project, add checks
+		dispatch(ProjectActions.setProject(JSON.parse(content)));
 	};
 
 	return <div className={styles.editorContainer}>
@@ -59,28 +61,10 @@ export const EditorContainer = () => {
 									<ProjectSettings />
 								</Tab>
 								<Tab label="JSON Editor">
-									<AceEditor
-										enableBasicAutocompletion
-										enableLiveAutocompletion
-										mode="lua"
-										theme="monokai"
-										height="100%"
-										width="100%"
-										onChange={handleEditorChange}
-										value={activeFile!.contents}
-									/>
+									<Editor onChange={handleProjectSettingsJSONChange} />
 								</Tab>
 							</Tabs>
-							: <AceEditor
-								enableBasicAutocompletion
-								enableLiveAutocompletion
-								mode="lua"
-								theme="monokai"
-								height="100%"
-								width="100%"
-								onChange={handleEditorChange}
-								value={activeFile!.contents}
-							/>
+							: <Editor />
 						}
 
 					</Tab>

@@ -1,5 +1,5 @@
 import styles from './App.module.css';
-import {EditorContainer} from './EditorContainer';
+import {EditorContainer} from './editor/EditorContainer';
 import * as React from 'react';
 import {MutableRefObject, useEffect, useRef, useState} from 'react';
 import { FileTree } from './filetree/FileTree';

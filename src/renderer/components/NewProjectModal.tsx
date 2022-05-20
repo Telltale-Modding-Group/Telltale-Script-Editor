@@ -1,15 +1,13 @@
 import {ContextModalProps, useModals} from '@mantine/modals';
 import * as React from 'react';
-import {Button, Container, Group, NumberInput, Space, Stack, TextInput, Title} from '@mantine/core';
+import {ActionIcon, Button, Container, Group, NumberInput, Space, Stack, TextInput, Title} from '@mantine/core';
 import {AiOutlineFolder} from 'react-icons/ai';
 import {useForm} from '@mantine/form';
-import {FormEventHandler} from 'react';
 import {MainProcess} from '../MainProcessUtils';
 import {createProject} from '../../shared/types';
 import {resetAllSlices, useAppDispatch} from '../slices/store';
 import {FileTreeActions} from '../slices/FileTreeSlice';
 import {ProjectActions} from '../slices/ProjectSlice';
-import {showNotification} from '@mantine/notifications';
 import {formatProjectName} from '../../shared/utils';
 
 export const NewProjectModal = ({context, id}: ContextModalProps) => {
@@ -65,7 +63,7 @@ export const NewProjectModal = ({context, id}: ContextModalProps) => {
 					label="Project location:"
 					placeholder="C:\Projects\My_Awesome_Mod"
 					{...form.getInputProps('path')}
-					rightSection={<AiOutlineFolder onClick={handleFolderClicked} />}
+					rightSection={<ActionIcon onClick={handleFolderClicked} color="dark"><AiOutlineFolder /></ActionIcon>}
 				/>
 			</Stack>
 			<Space h="xl"/>

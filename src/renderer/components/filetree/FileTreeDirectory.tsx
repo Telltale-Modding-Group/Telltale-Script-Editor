@@ -3,7 +3,7 @@ import * as React from 'react';
 import {MouseEventHandler, useState} from 'react';
 import {BiChevronDown, BiChevronUp} from 'react-icons/bi';
 import {AiOutlineFolder} from 'react-icons/ai';
-import {Text} from '@mantine/core';
+import {Collapse, Text} from '@mantine/core';
 import {FileTreeFile} from './FileTreeFile';
 import styles from './FileTreeDirectory.module.css';
 import fileStyles from './FileTreeFile.module.css';
@@ -41,14 +41,11 @@ export const FileTreeDirectory = ({directory, indentation}: FileTreeDirectoryPro
 			onClick={handleClick}
 			onDoubleClick={toggle}
 		>
-			{expanded
-				? <BiChevronUp className={styles.icon} onClick={handleToggleIconClick} />
-				: <BiChevronDown className={styles.icon} onClick={handleToggleIconClick} />
-			}
+			<BiChevronUp className={styles.icon} onClick={handleToggleIconClick} style={{ transform: `rotate(${expanded ? '180deg' : '0'})` }}/>
 			<AiOutlineFolder className={styles.icon} />
 			<Text className={fileStyles.text}>{directory.name}</Text>
 		</div>
-		{expanded && <div className={styles.test}>
+		<Collapse in={expanded}>
 			{directory.children.map(child => child.directory
 				? <FileTreeDirectory
 					key={child.path}
@@ -61,6 +58,6 @@ export const FileTreeDirectory = ({directory, indentation}: FileTreeDirectoryPro
 					indentation={indentation + 1}
 				/>
 			)}
-		</div>}
+		</Collapse>
 	</>
 };

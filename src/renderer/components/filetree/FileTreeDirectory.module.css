@@ -5,4 +5,5 @@
 
 .icon {
     min-width: 18px;
+    transition: transform 0.2s ease-out;
 }

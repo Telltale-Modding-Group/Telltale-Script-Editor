@@ -11,6 +11,7 @@ import {handleOpenProject} from '../utils';
 import {EditorAsyncActions} from '../slices/EditorSlice';
 import {EditorFile} from '../../shared/types';
 import {useModals} from '@mantine/modals';
+import {showNotification} from '@mantine/notifications';
 
 const useMenuOpenProjectListener = (dispatch: AppDispatch) => useEffect(() =>
 	MainProcess.handleMenuOpenProject(() => handleOpenProject(dispatch)),
@@ -26,6 +27,15 @@ const useMenuNewProjectListener = (dispatch: AppDispatch, modals: ReturnType<typ
 	MainProcess.handleMenuNewProject(() => modals.openContextModal('newproject', { innerProps: {} })),
 	[]
 );
+
+// TODO: Remove once everything is good to go
+const useMenuNotImplementedListener = () => useEffect(() =>
+	MainProcess.handleMenuNotImplemented(() => showNotification({
+		title: 'Not Implemented',
+		message: "Sorry, that feature isn't implemented just yet",
+		color: 'yellow'
+	})),
+	[]);
 
 export const App = () => {
 	const dispatch = useAppDispatch();
@@ -43,6 +53,8 @@ export const App = () => {
 	useMenuOpenProjectListener(dispatch);
 	useMenuProjectSettingsListener(dispatch, root?.children.find(file => file.name.includes('.tseproj')));
 	useMenuNewProjectListener(dispatch, modals);
+	// TODO: Remove once everything is good to go
+	useMenuNotImplementedListener();
 
 	return root ? <Project /> : <NoProjectOpen />;
 };

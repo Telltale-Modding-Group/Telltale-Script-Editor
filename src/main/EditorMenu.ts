@@ -1,9 +1,17 @@
 import {BrowserWindow, Menu, shell} from 'electron';
 import {getIPCMainChannelSource} from './utils';
-import {MenuNewProjectChannel, MenuOpenProjectChannel, MenuProjectSettingsChannel} from '../shared/Channels';
+import {
+	MenuNewProjectChannel,
+	MenuNotImplementedChannel,
+	MenuOpenProjectChannel,
+	MenuProjectSettingsChannel
+} from '../shared/Channels';
 
 export const getEditorMenu = (window: BrowserWindow) => {
 	const source = getIPCMainChannelSource(window);
+
+	// TODO: Remove once everything is good to go
+	const notImplemented = () => MenuNotImplementedChannel(source).send();
 
 	return Menu.buildFromTemplate([
 		{
@@ -17,7 +25,8 @@ export const getEditorMenu = (window: BrowserWindow) => {
 							click: () => MenuNewProjectChannel(source).send()
 						},
 						{
-							label: 'Script'
+							label: 'Script',
+							click: notImplemented
 						}
 					]
 				},
@@ -29,15 +38,22 @@ export const getEditorMenu = (window: BrowserWindow) => {
 							click: () => MenuOpenProjectChannel(source).send()
 						},
 						{
-							label: 'TTARCH2 Archive'
+							label: 'TTARCH2 Archive',
+							click: notImplemented
 						}
 					]
 				},
 				{
-					label: 'Save'
+					label: 'Save',
+					click: notImplemented
 				},
 				{
-					label: 'Save As'
+					label: 'Save As',
+					click: notImplemented
+				},
+				{
+					label: 'Reload',
+					click: () => window.reload()
 				},
 				{
 					label: 'Exit',
@@ -52,10 +68,12 @@ export const getEditorMenu = (window: BrowserWindow) => {
 			label: 'Project',
 			submenu: [
 				{
-					label: 'Build'
+					label: 'Build',
+					click: notImplemented
 				},
 				{
-					label: 'Build and Run'
+					label: 'Build and Run',
+					click: notImplemented
 				},
 				{
 					label: 'Project Settings',
@@ -71,7 +89,8 @@ export const getEditorMenu = (window: BrowserWindow) => {
 					click: () => shell.openExternal('https://github.com/Telltale-Modding-Group/Telltale-Script-Editor/wiki')
 				},
 				{
-					label: 'About'
+					label: 'About',
+					click: notImplemented
 				},
 				{
 					label: 'Contribute',
@@ -81,10 +100,12 @@ export const getEditorMenu = (window: BrowserWindow) => {
 					label: 'Debug',
 					submenu: [
 						{
-							label: 'Verbose Output'
+							label: 'Verbose Output',
+							click: notImplemented
 						},
 						{
-							label: 'Show Project Info'
+							label: 'Show Project Info',
+							click: notImplemented
 						}
 					]
 				}

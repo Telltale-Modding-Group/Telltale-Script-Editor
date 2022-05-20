@@ -3,7 +3,7 @@ import {
 	GetDirectoryChannel,
 	GetFileContentsChannel,
 	GetNewProjectLocationChannel,
-	MenuNewProjectChannel,
+	MenuNewProjectChannel, MenuNotImplementedChannel,
 	MenuOpenProjectChannel,
 	MenuProjectSettingsChannel,
 	OpenProjectChannel,
@@ -26,6 +26,9 @@ export interface MainProcessUtils {
 	handleMenuNewProject: ReturnType<typeof MenuNewProjectChannel>["listen"];
 	handleMenuOpenProject: ReturnType<typeof MenuOpenProjectChannel>["listen"];
 	handleMenuProjectSettings: ReturnType<typeof MenuProjectSettingsChannel>["listen"];
+
+	// TODO: Remove once everything is good to go
+	handleMenuNotImplemented: ReturnType<typeof MenuNotImplementedChannel>["listen"];
 }
 
 // window.ipc is populated from preload.ts, which is run before any react code is active.

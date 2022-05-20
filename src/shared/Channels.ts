@@ -39,3 +39,4 @@ export const SaveFileChannel = createInvokableChannel<{ path: string, contents: 
 export const MenuNewProjectChannel = createChannel<void>('menu:newproject');
 export const MenuOpenProjectChannel = createChannel<void>('menu:openproject');
 export const MenuProjectSettingsChannel = createChannel<void>('menu:projectsettings');
+export const MenuNotImplementedChannel = createChannel<void>('menu:notimplemented');

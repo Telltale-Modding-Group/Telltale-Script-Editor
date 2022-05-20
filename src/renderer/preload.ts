@@ -5,7 +5,7 @@ import {
 	GetDirectoryChannel,
 	GetFileContentsChannel,
 	GetNewProjectLocationChannel,
-	MenuNewProjectChannel,
+	MenuNewProjectChannel, MenuNotImplementedChannel,
 	MenuOpenProjectChannel,
 	MenuProjectSettingsChannel,
 	OpenProjectChannel,
@@ -33,7 +33,10 @@ const ipc: MainProcessUtils = {
 
 	handleMenuNewProject: MenuNewProjectChannel(source).listen,
 	handleMenuOpenProject: MenuOpenProjectChannel(source).listen,
-	handleMenuProjectSettings: MenuProjectSettingsChannel(source).listen
+	handleMenuProjectSettings: MenuProjectSettingsChannel(source).listen,
+
+	// TODO: Remove once everything is good to go
+	handleMenuNotImplemented: MenuNotImplementedChannel(source).listen
 };
 
 contextBridge.exposeInMainWorld('ipc', ipc);

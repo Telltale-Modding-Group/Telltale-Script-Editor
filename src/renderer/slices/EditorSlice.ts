@@ -60,10 +60,12 @@ export const EditorSlice = createSlice({
 		setActiveFileIndex: (state, { payload }: PayloadAction<number | undefined>) => {
 			state.activeFileIndex = payload;
 		},
-		setActiveFileContents: (state, { payload }: PayloadAction<string>) => {
+		setActiveFileContents: (state, { payload: newContents }: PayloadAction<string>) => {
 			const openFile = state.openFiles[state.activeFileIndex!];
 
-			openFile.contents = payload;
+			if (openFile.contents === newContents) return;
+
+			openFile.contents = newContents;
 			openFile.hasUnsavedChanges = true;
 		},
 		clear: () => initialState

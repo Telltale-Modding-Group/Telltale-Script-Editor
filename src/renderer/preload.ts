@@ -2,7 +2,7 @@ import {MainProcessUtils} from './MainProcessUtils';
 import { contextBridge, ipcRenderer } from 'electron';
 import {
 	ChannelSource, GetDirectoryChannel,
-	GetFileContentsChannel, MenuOpenProjectChannel,
+	GetFileContentsChannel, MenuOpenProjectChannel, MenuProjectSettingsChannel,
 	OpenProjectChannel,
 	SaveFileChannel
 } from '../shared/Channels';
@@ -24,7 +24,8 @@ const ipc: MainProcessUtils = {
 	getFileContents: GetFileContentsChannel(source).invoke,
 	saveFile: SaveFileChannel(source).invoke,
 
-	handleMenuOpenProject: MenuOpenProjectChannel(source).listen
+	handleMenuOpenProject: MenuOpenProjectChannel(source).listen,
+	handleMenuProjectSettings: MenuProjectSettingsChannel(source).listen
 };
 
 contextBridge.exposeInMainWorld('ipc', ipc);

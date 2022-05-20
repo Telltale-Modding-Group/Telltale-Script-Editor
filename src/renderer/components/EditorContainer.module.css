@@ -16,7 +16,7 @@
 
 .tabBody {
     flex-grow: 1;
-    background-color: rgb(39, 40, 34);
+    padding: 0;
 }
 
 .tabControl {

@@ -1,6 +1,6 @@
 import {BrowserWindow, Menu, shell} from 'electron';
 import {getIPCMainChannelSource} from './utils';
-import {MenuOpenProjectChannel} from '../shared/Channels';
+import {MenuOpenProjectChannel, MenuProjectSettingsChannel} from '../shared/Channels';
 
 export const getEditorMenu = (window: BrowserWindow) => {
 	const source = getIPCMainChannelSource(window);
@@ -55,6 +55,10 @@ export const getEditorMenu = (window: BrowserWindow) => {
 				},
 				{
 					label: 'Build and Run'
+				},
+				{
+					label: 'Project Settings',
+					click: () => MenuProjectSettingsChannel(source).send()
 				}
 			]
 		},

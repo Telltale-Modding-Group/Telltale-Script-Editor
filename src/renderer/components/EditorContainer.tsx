@@ -9,6 +9,7 @@ import {useEffect} from 'react';
 import {EditorTab} from './EditorTab';
 import {useAppDispatch, useAppSelector} from '../slices/store';
 import {EditorActions, EditorAsyncActions} from '../slices/EditorSlice';
+import {ProjectSettings} from './ProjectSettings';
 
 export const EditorContainer = () => {
 	const dispatch = useAppDispatch();
@@ -20,7 +21,7 @@ export const EditorContainer = () => {
 
 	useEffect(() => {
 		const listener = (event: DocumentEventMap['keydown']) => {
-			if (event.key === 's' && event.ctrlKey && activeFileIndex) {
+			if (event.key === 's' && event.ctrlKey && activeFileIndex !== undefined) {
 				dispatch(EditorAsyncActions.saveFile(activeFileIndex))
 			}
 		};
@@ -51,17 +52,37 @@ export const EditorContainer = () => {
 				onTabChange={handleTabChange}
 			>
 				{openFiles.map((openFile, index) => (
-					<Tab key={openFile.file.path} icon={<EditorTab file={openFile} index={index} />}>
-						<AceEditor
-							enableBasicAutocompletion
-							enableLiveAutocompletion
-							mode="lua"
-							theme="monokai"
-							height="100%"
-							width="100%"
-							onChange={handleEditorChange}
-							value={activeFile!.contents}
-						/>
+					<Tab key={openFile.file.path} icon={<EditorTab openFile={openFile} index={index} />}>
+						{openFile.file.name.includes('.tseproj')
+							? <Tabs variant="pills" color="blue" grow  classNames={{ root: styles.tabsContainer, body: styles.tabBody }}>
+								<Tab label="Visual Editor">
+									<ProjectSettings />
+								</Tab>
+								<Tab label="JSON Editor">
+									<AceEditor
+										enableBasicAutocompletion
+										enableLiveAutocompletion
+										mode="lua"
+										theme="monokai"
+										height="100%"
+										width="100%"
+										onChange={handleEditorChange}
+										value={activeFile!.contents}
+									/>
+								</Tab>
+							</Tabs>
+							: <AceEditor
+								enableBasicAutocompletion
+								enableLiveAutocompletion
+								mode="lua"
+								theme="monokai"
+								height="100%"
+								width="100%"
+								onChange={handleEditorChange}
+								value={activeFile!.contents}
+							/>
+						}
+
 					</Tab>
 				))}
 			</Tabs>

@@ -1,6 +1,6 @@
 import {
 	GetDirectoryChannel,
-	GetFileContentsChannel, MenuOpenProjectChannel,
+	GetFileContentsChannel, MenuOpenProjectChannel, MenuProjectSettingsChannel,
 	OpenProjectChannel,
 	SaveFileChannel
 } from '../shared/Channels';
@@ -17,6 +17,7 @@ export interface MainProcessUtils {
 	saveFile: ReturnType<typeof SaveFileChannel>["invoke"];
 
 	handleMenuOpenProject: ReturnType<typeof MenuOpenProjectChannel>["listen"];
+	handleMenuProjectSettings: ReturnType<typeof MenuProjectSettingsChannel>["listen"];
 }
 
 // window.ipc is populated from preload.ts, which is run before any react code is active.

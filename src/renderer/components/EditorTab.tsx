@@ -8,11 +8,11 @@ import {MouseEventHandler, useState} from 'react';
 import {Button, Group, Modal, Space, Stack, Title, Text} from '@mantine/core';
 
 type EditorTabProps = {
-	file: OpenFile,
+	openFile: OpenFile,
 	index: number
 };
 
-export const EditorTab = ({ file, index }: EditorTabProps) => {
+export const EditorTab = ({ openFile, index }: EditorTabProps) => {
 	const dispatch = useAppDispatch();
 
 	const [showModal, setShowModal] = useState(false);
@@ -22,7 +22,7 @@ export const EditorTab = ({ file, index }: EditorTabProps) => {
 	const handleClose: MouseEventHandler<HTMLDivElement> = e => {
 		e.stopPropagation();
 
-		if (!file.hasUnsavedChanges) return dispatch(EditorActions.closeFile(index));
+		if (!openFile.hasUnsavedChanges) return dispatch(EditorActions.closeFile(index));
 		setShowModal(true);
 	};
 
@@ -35,6 +35,8 @@ export const EditorTab = ({ file, index }: EditorTabProps) => {
 		dispatch(EditorAsyncActions.saveFileAndClose(index));
 		hideModal();
 	};
+
+	const label = openFile.file.name.includes('.tseproj') ? 'Project Settings' : openFile.file.name;
 
 	return <>
 		<Modal
@@ -59,7 +61,7 @@ export const EditorTab = ({ file, index }: EditorTabProps) => {
 			</Stack>
 		</Modal>
 		<div className={styles.container}>
-			<span className={styles.label}>{file.file.name} {file.hasUnsavedChanges ? '(*)' : ''}</span>
+			<span className={styles.label}>{label} {openFile.hasUnsavedChanges ? '(*)' : ''}</span>
 			<div onClick={handleClose} className={styles.closeButton}><AiOutlineClose /></div>
 		</div>
 	</>;

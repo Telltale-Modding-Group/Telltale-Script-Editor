@@ -35,3 +35,4 @@ export const GetFileContentsChannel = createInvokableChannel<string, string>('ge
 export const SaveFileChannel = createInvokableChannel<{ path: string, contents: string }, void>('savefile');
 
 export const MenuOpenProjectChannel = createChannel<void>('menu:openproject');
+export const MenuProjectSettingsChannel = createChannel<void>('menu:projectsettings');

@@ -10,7 +10,7 @@ export const App = () => {
 	const root = useAppSelector(state => state.filetree.root);
 	const projectDetails = useAppSelector(state => state.project.currentProject?.mod);
 
-	const title = projectDetails ? `${projectDetails.name} v${projectDetails.version} by ${projectDetails.author}` : 'Telltale Script Editor';
+	const title = `Telltale Script Editor${projectDetails ? ` - ${projectDetails.name} v${projectDetails.version} by ${projectDetails.author}` : ''}`;
 	useDocumentTitle(title);
 
 	return root ? <Project root={root} /> : <NoProjectOpen />;

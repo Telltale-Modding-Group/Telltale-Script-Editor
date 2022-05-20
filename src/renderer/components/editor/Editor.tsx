@@ -2,10 +2,14 @@ import {useAppDispatch, useAppSelector} from '../../slices/store';
 import {EditorActions} from '../../slices/EditorSlice';
 import AceEditor from 'react-ace';
 import * as React from 'react';
+import 'ace-builds/src-noconflict/ext-language_tools';
+import 'ace-builds/src-noconflict/theme-monokai';
+import 'ace-builds/src-noconflict/mode-lua';
 
 type EditorProps = {
 	onChange?: (change: string) => void
 };
+
 export const Editor = ({onChange}: EditorProps) => {
 	const dispatch = useAppDispatch();
 

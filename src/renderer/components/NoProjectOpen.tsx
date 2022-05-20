@@ -5,17 +5,21 @@ import {Text} from '@mantine/core';
 import * as React from 'react';
 import { useAppDispatch } from '../slices/store';
 import { MainProcess } from '../MainProcessUtils';
-import { FileTreeAsyncActions } from '../slices/FileTreeSlice';
+import {FileTreeActions} from '../slices/FileTreeSlice';
+import {ProjectActions} from '../slices/ProjectSlice';
 
 export const NoProjectOpen = () => {
 	const dispatch = useAppDispatch();
 
 	const handleOpenProjectClicked = async () => {
-		const rootPath = await MainProcess.openProject();
+		const project = await MainProcess.openProject();
 
-		if (!rootPath) return;
+		if (!project) return;
 
-		dispatch(FileTreeAsyncActions.setRootDirectory(rootPath));
+		dispatch(FileTreeActions.setRootDirectory(project.root));
+
+		// TODO: Handle invalid .tseproj files
+		dispatch(ProjectActions.setProject(JSON.parse(project.tseproj)));
 	};
 
 	return <div className={styles.noProjectOpenContainer}>

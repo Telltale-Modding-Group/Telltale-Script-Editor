@@ -10,6 +10,7 @@ import {
 	OpenProjectChannel,
 	SaveFileChannel
 } from '../shared/Channels';
+import * as path from 'path';
 
 const getIPCMainChannelSource = (window: BrowserWindow): ChannelSource => ({
 	send: window.webContents.send,
@@ -21,8 +22,8 @@ const getIPCMainChannelSource = (window: BrowserWindow): ChannelSource => ({
 export const registerIPCHandlers = (window: BrowserWindow) => {
 	const IPCMainSource = getIPCMainChannelSource(window);
 
-	OpenProjectChannel(IPCMainSource).handle(async () => {
-		const getProjectPath = async (): Promise<string | undefined> => {
+	OpenProjectChannel(IPCMainSource).handle(() => {
+		const getProjectPath = async (): Promise<{ root: EditorFile, tseproj: string } | undefined> => {
 			const selection = await dialog.showOpenDialog({
 				title: 'Open project directory',
 				properties: [
@@ -34,28 +35,55 @@ export const registerIPCHandlers = (window: BrowserWindow) => {
 
 			const projectPath = selection.filePaths[0];
 
-			try {
-				await fs.access(projectPath, constants.W_OK);
-			} catch {
+			let root = await fs.opendir(projectPath);
+
+			let tseprojFile;
+			for await (const file of root) {
+				if (file.name.includes('.tseproj')) {
+					// If we've already found a .tseproj file and have found another, reject the directory
+					// and warn the user.
+					if (tseprojFile) {
+						await dialog.showMessageBox({
+							title: 'Open project directory',
+							type: 'warning',
+							message: 'Invalid directory chosen, found multiple .tseproj files! Only one .tseproj file should be present.'
+						});
+
+						return getProjectPath();
+					}
+
+					tseprojFile = file;
+				}
+			}
+
+			// If no .tseproj files were found, reject the directory and warn the user.
+			if (!tseprojFile) {
 				await dialog.showMessageBox({
 					title: 'Open project directory',
 					type: 'warning',
 					message: 'Invalid directory chosen, no .tseproj file found!'
 				});
 
-				return getProjectPath();
+				return getProjectPath()
 			}
 
-			return projectPath;
+			const tseproj = (await fs.readFile(path.join(projectPath, tseprojFile.name), { encoding: 'utf8' })).trim();
+
+			// Normally I would have just reused the value from above, but the async iterator automatically closes
+			// the handle after iteration is complete, meaning it now points to a closed handle, so I just reopen
+			// that file handle.
+			root = await fs.opendir(projectPath);
+
+			return { root: await getFiles(root), tseproj };
 		};
 
-		return await getProjectPath();
+		return getProjectPath();
 	});
 
 	GetDirectoryChannel(IPCMainSource).handle(async path => {
 		const root = await fs.opendir(path);
 
-		return getFiles(root)
+		return getFiles(root);
 	});
 
 	GetFileContentsChannel(IPCMainSource).handle(async path =>

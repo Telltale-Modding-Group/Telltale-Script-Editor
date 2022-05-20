@@ -1,7 +1,6 @@
 import {
 	GetDirectoryChannel,
 	GetFileContentsChannel,
-	GetParentDirectoryChannel,
 	OpenProjectChannel,
 	SaveFileChannel
 } from '../shared/Channels';
@@ -14,7 +13,6 @@ export interface MainProcessUtils {
 	//       Error: Type '(data: void) => Promise<EditorFile>' is not assignable to type '(data: unknown) => Promise<unknown>'.
 	openProject: ReturnType<typeof OpenProjectChannel>["invoke"];
 	getDirectory: ReturnType<typeof GetDirectoryChannel>["invoke"];
-	getParentDirectory: ReturnType<typeof GetParentDirectoryChannel>["invoke"];
 	getFileContents: ReturnType<typeof GetFileContentsChannel>["invoke"];
 	saveFile: ReturnType<typeof SaveFileChannel>["invoke"];
 }

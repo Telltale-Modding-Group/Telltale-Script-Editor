@@ -4,9 +4,14 @@ import 'normalize.css/normalize.css';
 import {NoProjectOpen} from './NoProjectOpen';
 import {Project} from './Project';
 import { useAppSelector } from '../slices/store';
+import {useDocumentTitle} from '@mantine/hooks';
 
 export const App = () => {
 	const root = useAppSelector(state => state.filetree.root);
+	const projectDetails = useAppSelector(state => state.project.currentProject?.mod);
+
+	const title = projectDetails ? `${projectDetails.name} v${projectDetails.version} by ${projectDetails.author}` : 'Telltale Script Editor';
+	useDocumentTitle(title);
 
 	return root ? <Project root={root} /> : <NoProjectOpen />;
 };

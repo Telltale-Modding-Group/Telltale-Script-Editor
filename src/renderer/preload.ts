@@ -3,7 +3,6 @@ import { contextBridge, ipcRenderer } from 'electron';
 import {
 	ChannelSource, GetDirectoryChannel,
 	GetFileContentsChannel,
-	GetParentDirectoryChannel,
 	OpenProjectChannel,
 	SaveFileChannel
 } from '../shared/Channels';
@@ -18,7 +17,6 @@ const IPCRendererChannelSource: ChannelSource = {
 const ipc: MainProcessUtils = {
 	openProject: OpenProjectChannel(IPCRendererChannelSource).invoke,
 	getDirectory: GetDirectoryChannel(IPCRendererChannelSource).invoke,
-	getParentDirectory: GetParentDirectoryChannel(IPCRendererChannelSource).invoke,
 	getFileContents: GetFileContentsChannel(IPCRendererChannelSource).invoke,
 	saveFile: SaveFileChannel(IPCRendererChannelSource).invoke,
 };

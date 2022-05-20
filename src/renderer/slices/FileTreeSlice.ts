@@ -9,9 +9,9 @@ interface FileTreeState {
 
 const initialState: FileTreeState = {};
 
-const setRootDirectory = createAsyncThunk('filetree/setrootdirectory', (path: string) => {
-	return MainProcess.getDirectory(path);
-});
+// const setRootDirectory = createAsyncThunk('filetree/setrootdirectory', (path: string) => {
+// 	return MainProcess.getDirectory(path);
+// });
 
 export const FileTreeSlice = createSlice({
 	name: 'filetree',
@@ -19,17 +19,20 @@ export const FileTreeSlice = createSlice({
 	reducers: {
 		setSelectedPath: (state, { payload }: PayloadAction<string | undefined>) => {
 			state.selectedPath = payload;
+		},
+		setRootDirectory: (state, { payload }: PayloadAction<EditorFile | undefined>) => {
+			state.root = payload;
 		}
 	},
-	extraReducers: builder => {
-		builder
-			.addCase(setRootDirectory.fulfilled, (state, { payload }) => {
-				state.root = payload;
-			});
-	}
+	// extraReducers: builder => {
+	// 	builder
+	// 		.addCase(setRootDirectory.fulfilled, (state, { payload }) => {
+	// 			state.root = payload;
+	// 		});
+	// }
 })
 
 export const FileTreeActions = FileTreeSlice.actions;
-export const FileTreeAsyncActions = { setRootDirectory };
+// export const FileTreeAsyncActions = { setRootDirectory };
 
 export const FileTreeReducer = FileTreeSlice.reducer;

@@ -2,11 +2,13 @@ import {configureStore} from '@reduxjs/toolkit';
 import {FileTreeReducer} from './FileTreeSlice';
 import {TypedUseSelectorHook, useDispatch, useSelector} from 'react-redux';
 import {EditorReducer} from './EditorSlice';
+import {ProjectReducer} from './ProjectSlice';
 
 export const store = configureStore({
 	reducer: {
 		filetree: FileTreeReducer,
-		editor: EditorReducer
+		editor: EditorReducer,
+		project: ProjectReducer
 	}
 });
 

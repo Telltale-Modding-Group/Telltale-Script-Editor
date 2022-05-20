@@ -4,10 +4,8 @@ import {FileTreeActions} from './slices/FileTreeSlice';
 import {ProjectActions} from './slices/ProjectSlice';
 
 export const handleOpenProject = async (dispatch: AppDispatch) => {
-	console.log('opening project...');
 	const project = await MainProcess.openProject();
 
-	console.log('open project response', project);
 	if (!project) return;
 
 	resetAllSlices(dispatch);

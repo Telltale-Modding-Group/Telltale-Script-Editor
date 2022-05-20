@@ -32,6 +32,8 @@ import {App} from './components/App';
 import {NotificationsProvider} from '@mantine/notifications';
 import {Provider} from 'react-redux';
 import {store} from './slices/store';
+import {ModalsProvider} from '@mantine/modals';
+import {NewProjectModal} from './components/NewProjectModal';
 
 const container = document.querySelector('#app');
 
@@ -39,10 +41,12 @@ if (!container) throw new Error('Element with ID "app" not found! Unable to star
 
 createRoot(container).render(
 	<React.StrictMode>
-		<NotificationsProvider>
-			<Provider store={store}>
-				<App />
-			</Provider>
-		</NotificationsProvider>
+		<Provider store={store}>
+			<NotificationsProvider>
+				<ModalsProvider modals={{ newproject: NewProjectModal }}>
+					<App />
+				</ModalsProvider>
+			</NotificationsProvider>
+		</Provider>
 	</React.StrictMode>
 );

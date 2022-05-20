@@ -2,13 +2,21 @@ import {BrowserWindow, dialog, ipcMain, Menu} from 'electron';
 import * as fs from 'fs/promises';
 import {getFiles, getIPCMainChannelSource} from './utils';
 import {EditorFile} from '../shared/types';
-import {GetDirectoryChannel, GetFileContentsChannel, OpenProjectChannel, SaveFileChannel} from '../shared/Channels';
+import {
+	CreateProjectDirectoryChannel,
+	GetDirectoryChannel,
+	GetFileContentsChannel,
+	GetNewProjectLocationChannel,
+	OpenProjectChannel,
+	SaveFileChannel
+} from '../shared/Channels';
 import * as path from 'path';
+import {formatProjectName} from '../shared/utils';
 
 export const registerIPCHandlers = (window: BrowserWindow) => {
-	const IPCMainSource = getIPCMainChannelSource(window);
+	const source = getIPCMainChannelSource(window);
 
-	OpenProjectChannel(IPCMainSource).handle(() => {
+	OpenProjectChannel(source).handle(() => {
 		const getProjectPath = async (): Promise<{ root: EditorFile, tseproj: string } | undefined> => {
 			const selection = await dialog.showOpenDialog({
 				title: 'Open project directory',
@@ -66,20 +74,40 @@ export const registerIPCHandlers = (window: BrowserWindow) => {
 		return getProjectPath();
 	});
 
-	GetDirectoryChannel(IPCMainSource).handle(async path => {
+	GetNewProjectLocationChannel(source).handle(() =>
+		dialog.showOpenDialog({ title: 'Select New Project', properties: ['openDirectory'] })
+			.then(selection => selection.canceled ? undefined : selection.filePaths[0])
+	);
+
+	CreateProjectDirectoryChannel(source).handle(async ({ projectPath, project }) => {
+		const formattedProjectName = formatProjectName(project.mod.name);
+
+		const newProjectPath = path.join(projectPath, formattedProjectName);
+		await fs.mkdir(newProjectPath);
+
+		const tseprojName = `${formattedProjectName}.tseproj`;
+
+		await fs.writeFile(path.join(newProjectPath, tseprojName), JSON.stringify(project, null, 2));
+
+		const root = await fs.opendir(newProjectPath);
+
+		return { root: await getFiles(root) };
+	});
+
+	GetDirectoryChannel(source).handle(async path => {
 		const root = await fs.opendir(path);
 
 		return getFiles(root);
 	});
 
-	GetFileContentsChannel(IPCMainSource).handle(async path =>
+	GetFileContentsChannel(source).handle(async path =>
 		// TODO: We should probably handle errors here, e.g. user loads up project, deletes file in explorer.exe,
 		//       then attempts to click on file in filetree
 		// The .trim() ensures any weird empty space characters are removed, which makes life easier
 		(await fs.readFile(path, { encoding: 'utf8' })).trim()
 	);
 
-	SaveFileChannel(IPCMainSource).handle(({ path, contents }) => {
+	SaveFileChannel(source).handle(({ path, contents }) => {
 		// TODO: Handle errors
 		return fs.writeFile(path, contents)
 	})

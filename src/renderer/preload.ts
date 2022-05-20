@@ -1,8 +1,13 @@
 import {MainProcessUtils} from './MainProcessUtils';
 import { contextBridge, ipcRenderer } from 'electron';
 import {
-	ChannelSource, GetDirectoryChannel,
-	GetFileContentsChannel, MenuOpenProjectChannel, MenuProjectSettingsChannel,
+	ChannelSource, CreateProjectDirectoryChannel,
+	GetDirectoryChannel,
+	GetFileContentsChannel,
+	GetNewProjectLocationChannel,
+	MenuNewProjectChannel,
+	MenuOpenProjectChannel,
+	MenuProjectSettingsChannel,
 	OpenProjectChannel,
 	SaveFileChannel
 } from '../shared/Channels';
@@ -20,10 +25,13 @@ const source: ChannelSource = {
 
 const ipc: MainProcessUtils = {
 	openProject: OpenProjectChannel(source).invoke,
+	getNewProjectLocation: GetNewProjectLocationChannel(source).invoke,
 	getDirectory: GetDirectoryChannel(source).invoke,
 	getFileContents: GetFileContentsChannel(source).invoke,
+	createProjectDirectory: CreateProjectDirectoryChannel(source).invoke,
 	saveFile: SaveFileChannel(source).invoke,
 
+	handleMenuNewProject: MenuNewProjectChannel(source).listen,
 	handleMenuOpenProject: MenuOpenProjectChannel(source).listen,
 	handleMenuProjectSettings: MenuProjectSettingsChannel(source).listen
 };

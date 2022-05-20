@@ -21,3 +21,16 @@ export type Project = {
 		priority: number
 	}
 };
+
+export const createProject = (name: string, version: string, author: string, priority: number): Project => ({
+	formatVersion: '1',
+	tool: {
+		game: 'TTDS'
+	},
+	mod: {
+		name,
+		version,
+		author,
+		priority
+	}
+});

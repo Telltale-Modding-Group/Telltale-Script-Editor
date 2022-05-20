@@ -10,6 +10,7 @@ import {MainProcess} from '../MainProcessUtils';
 import {handleOpenProject} from '../utils';
 import {EditorAsyncActions} from '../slices/EditorSlice';
 import {EditorFile} from '../../shared/types';
+import {useModals} from '@mantine/modals';
 
 const useMenuOpenProjectListener = (dispatch: AppDispatch) => useEffect(() =>
 	MainProcess.handleMenuOpenProject(() => handleOpenProject(dispatch)),
@@ -21,8 +22,14 @@ const useMenuProjectSettingsListener = (dispatch: AppDispatch, tsprojFile: Edito
 	[tsprojFile]
 );
 
+const useMenuNewProjectListener = (dispatch: AppDispatch, modals: ReturnType<typeof useModals>) => useEffect(() =>
+	MainProcess.handleMenuNewProject(() => modals.openContextModal('newproject', { innerProps: {} })),
+	[]
+);
+
 export const App = () => {
 	const dispatch = useAppDispatch();
+	const modals = useModals();
 
 	const root = useAppSelector(state => state.filetree.root);
 	
@@ -35,6 +42,7 @@ export const App = () => {
 
 	useMenuOpenProjectListener(dispatch);
 	useMenuProjectSettingsListener(dispatch, root?.children.find(file => file.name.includes('.tseproj')));
+	useMenuNewProjectListener(dispatch, modals);
 
 	return root ? <Project /> : <NoProjectOpen />;
 };

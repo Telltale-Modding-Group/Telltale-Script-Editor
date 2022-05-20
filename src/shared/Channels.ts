@@ -1,4 +1,4 @@
-import {EditorFile} from './types';
+import {EditorFile, Project} from './types';
 
 type RemoveListener = () => void;
 
@@ -30,9 +30,12 @@ export const createInvokableChannel = <T,R>(channel: string) => (source: Channel
 });
 
 export const OpenProjectChannel = createInvokableChannel<void, { root: EditorFile, tseproj: string } | undefined>('openproject');
+export const GetNewProjectLocationChannel = createInvokableChannel<void, string | undefined>('getnewprojectlocation');
+export const CreateProjectDirectoryChannel = createInvokableChannel<{ projectPath: string, project: Project }, { root: EditorFile }>('createprojectdirectory');
 export const GetDirectoryChannel = createInvokableChannel<string, EditorFile | undefined>('getdirectory');
 export const GetFileContentsChannel = createInvokableChannel<string, string>('getfilecontents');
 export const SaveFileChannel = createInvokableChannel<{ path: string, contents: string }, void>('savefile');
 
+export const MenuNewProjectChannel = createChannel<void>('menu:newproject');
 export const MenuOpenProjectChannel = createChannel<void>('menu:openproject');
 export const MenuProjectSettingsChannel = createChannel<void>('menu:projectsettings');

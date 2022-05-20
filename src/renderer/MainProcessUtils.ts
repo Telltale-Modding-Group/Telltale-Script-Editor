@@ -1,6 +1,11 @@
 import {
+	CreateProjectDirectoryChannel,
 	GetDirectoryChannel,
-	GetFileContentsChannel, MenuOpenProjectChannel, MenuProjectSettingsChannel,
+	GetFileContentsChannel,
+	GetNewProjectLocationChannel,
+	MenuNewProjectChannel,
+	MenuOpenProjectChannel,
+	MenuProjectSettingsChannel,
 	OpenProjectChannel,
 	SaveFileChannel
 } from '../shared/Channels';
@@ -12,10 +17,13 @@ export interface MainProcessUtils {
 	//       openProject: ChannelResponse<typeof OpenProjectChannel>
 	//       Error: Type '(data: void) => Promise<EditorFile>' is not assignable to type '(data: unknown) => Promise<unknown>'.
 	openProject: ReturnType<typeof OpenProjectChannel>["invoke"];
+	getNewProjectLocation: ReturnType<typeof GetNewProjectLocationChannel>["invoke"];
 	getDirectory: ReturnType<typeof GetDirectoryChannel>["invoke"];
 	getFileContents: ReturnType<typeof GetFileContentsChannel>["invoke"];
+	createProjectDirectory: ReturnType<typeof CreateProjectDirectoryChannel>["invoke"];
 	saveFile: ReturnType<typeof SaveFileChannel>["invoke"];
 
+	handleMenuNewProject: ReturnType<typeof MenuNewProjectChannel>["listen"];
 	handleMenuOpenProject: ReturnType<typeof MenuOpenProjectChannel>["listen"];
 	handleMenuProjectSettings: ReturnType<typeof MenuProjectSettingsChannel>["listen"];
 }

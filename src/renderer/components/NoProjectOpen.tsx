@@ -3,24 +3,13 @@ import {showNotification} from '@mantine/notifications';
 import {AiFillFolderOpen, AiOutlinePlus} from 'react-icons/ai';
 import {Text} from '@mantine/core';
 import * as React from 'react';
-import { useAppDispatch } from '../slices/store';
-import { MainProcess } from '../MainProcessUtils';
-import {FileTreeActions} from '../slices/FileTreeSlice';
-import {ProjectActions} from '../slices/ProjectSlice';
+import {handleOpenProject} from '../utils';
+import {useAppDispatch} from '../slices/store';
 
 export const NoProjectOpen = () => {
 	const dispatch = useAppDispatch();
 
-	const handleOpenProjectClicked = async () => {
-		const project = await MainProcess.openProject();
-
-		if (!project) return;
-
-		dispatch(FileTreeActions.setRootDirectory(project.root));
-
-		// TODO: Handle invalid .tseproj files
-		dispatch(ProjectActions.setProject(JSON.parse(project.tseproj)));
-	};
+	const handleOpenProjectClicked = () => handleOpenProject(dispatch);
 
 	return <div className={styles.noProjectOpenContainer}>
 		<div style={{ display: 'flex' }}>

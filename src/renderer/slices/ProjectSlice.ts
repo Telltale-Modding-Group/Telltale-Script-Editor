@@ -13,7 +13,8 @@ export const ProjectSlice = createSlice({
 	reducers: {
 		setProject: (state, { payload }: PayloadAction<Project>) => {
 			state.currentProject = payload;
-		}
+		},
+		clear: () => initialState
 	}
 });
 

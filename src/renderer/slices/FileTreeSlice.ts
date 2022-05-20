@@ -22,7 +22,8 @@ export const FileTreeSlice = createSlice({
 		},
 		setRootDirectory: (state, { payload }: PayloadAction<EditorFile | undefined>) => {
 			state.root = payload;
-		}
+		},
+		clear: () => initialState
 	},
 	// extraReducers: builder => {
 	// 	builder

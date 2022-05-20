@@ -65,7 +65,8 @@ export const EditorSlice = createSlice({
 
 			openFile.contents = payload;
 			openFile.hasUnsavedChanges = true;
-		}
+		},
+		clear: () => initialState
 	},
 	extraReducers: builder => {
 		builder

@@ -41,7 +41,7 @@ export const FileTreeDirectory = ({directory, indentation}: FileTreeDirectoryPro
 			onClick={handleClick}
 			onDoubleClick={toggle}
 		>
-			<BiChevronUp className={styles.icon} onClick={handleToggleIconClick} style={{ transform: `rotate(${expanded ? '180deg' : '0'})` }}/>
+			<BiChevronUp className={styles.icon} onClick={handleToggleIconClick} style={{ transform: `rotate(${expanded ? '0' : '180deg' })` }}/>
 			<AiOutlineFolder className={styles.icon} />
 			<Text className={fileStyles.text}>{directory.name}</Text>
 		</div>

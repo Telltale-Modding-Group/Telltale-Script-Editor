@@ -1,23 +1,9 @@
-import {dialog, ipcMain, BrowserWindow, Menu} from 'electron';
+import {BrowserWindow, dialog, ipcMain, Menu} from 'electron';
 import * as fs from 'fs/promises';
-import { constants } from 'fs';
-import {getFiles} from './utils';
+import {getFiles, getIPCMainChannelSource} from './utils';
 import {EditorFile} from '../shared/types';
-import {
-	ChannelSource,
-	GetDirectoryChannel,
-	GetFileContentsChannel,
-	OpenProjectChannel,
-	SaveFileChannel
-} from '../shared/Channels';
+import {GetDirectoryChannel, GetFileContentsChannel, OpenProjectChannel, SaveFileChannel} from '../shared/Channels';
 import * as path from 'path';
-
-const getIPCMainChannelSource = (window: BrowserWindow): ChannelSource => ({
-	send: window.webContents.send,
-	invoke: channel => { throw new Error(`Attempted to invoke invokable channel "${channel}", but IPCMain is unable to invoke invokable channels!`) },
-	handle: ipcMain.handle,
-	listen: ipcMain.on
-});
 
 export const registerIPCHandlers = (window: BrowserWindow) => {
 	const IPCMainSource = getIPCMainChannelSource(window);

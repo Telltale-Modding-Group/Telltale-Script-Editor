@@ -1,19 +1,15 @@
 import styles from './App.module.css';
 import {EditorContainer} from './EditorContainer';
 import * as React from 'react';
-import {EditorFile} from '../../shared/types';
-import {useEffect, useRef, useState} from 'react';
+import {MutableRefObject, useEffect, useRef, useState} from 'react';
 import { FileTree } from './filetree/FileTree';
-
-type ProjectProps = {
-	root: EditorFile
-};
+import {useAppSelector} from '../slices/store';
+import {EditorFile} from '../../shared/types';
 
 const INITIAL_FILETREE_WIDTH = 250;
 
-export const Project = ({ root }: ProjectProps) => {
-	const [filetreeWidth, setFiletreeWidth] = useState(INITIAL_FILETREE_WIDTH);
-
+const useFileTreeResizer = (): [number, MutableRefObject<HTMLDivElement | null>] => {
+	const [fileTreeWidth, setFileTreeWidth] = useState(INITIAL_FILETREE_WIDTH);
 	const ref = useRef<HTMLDivElement | null>(null);
 
 	useEffect(() => {
@@ -32,7 +28,7 @@ export const Project = ({ root }: ProjectProps) => {
 		const moveListener = (event: DocumentEventMap['mousemove']) => {
 			if (!mouseDown) return;
 
-			setFiletreeWidth(Math.max(INITIAL_FILETREE_WIDTH, Math.round(event.clientX)));
+			setFileTreeWidth(Math.max(INITIAL_FILETREE_WIDTH, Math.round(event.clientX)));
 		};
 
 		ref.current.addEventListener('mousedown', mouseDownListener);
@@ -46,12 +42,20 @@ export const Project = ({ root }: ProjectProps) => {
 		};
 	}, [ref]);
 
+	return [fileTreeWidth, ref];
+};
+
+export const Project = () => {
+	const root = useAppSelector(state => state.filetree.root);
+
+	const [fileTreeWidth, ref] = useFileTreeResizer();
+
 	return <div className={styles.container}>
-		<FileTree root={root} width={filetreeWidth} />
+		<FileTree root={root as EditorFile} width={fileTreeWidth} />
 
 		{/* This effectively hovers over the right border of the file tree to give the user more space to select the
 		    border, without requiring a gap between the file tree and the editor container. */}
-		<div className={styles.resizeContainer} style={{ left: `${filetreeWidth}px` }} ref={ref}></div>
+		<div className={styles.resizeContainer} style={{ left: `${fileTreeWidth}px` }} ref={ref}></div>
 
 		<EditorContainer />
 	</div>;

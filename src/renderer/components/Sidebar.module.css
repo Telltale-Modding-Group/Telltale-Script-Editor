@@ -1,0 +1,32 @@
+.logs {
+    display: flex;
+    flex-direction: column-reverse;
+    height: 100%;
+    overflow: auto;
+    margin: 10px;
+}
+
+.stack {
+    width: 100%;
+}
+
+.stackContainer {
+    display: flex;
+    flex-grow: 1;
+    min-height: 0;
+    width: 100%;
+}
+
+.tabRoot {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    border-right: 1px solid black;
+}
+
+.tabBody {
+    display: flex;
+    flex-grow: 1;
+    min-height: 0;
+    padding: 0;
+}

@@ -2,16 +2,20 @@ import styles from './Project.module.css';
 import {EditorContainer} from './editor/EditorContainer';
 import * as React from 'react';
 import {MutableRefObject, useEffect, useRef, useState} from 'react';
-import { FileTree } from './filetree/FileTree';
-import {useAppSelector} from '../slices/store';
+import {useAppDispatch, useAppSelector} from '../slices/store';
 import {ActionIcon, Button, Code, Group, Header, Modal, ScrollArea, Space, Stack, Text, Title} from '@mantine/core';
 import {BsHammer} from 'react-icons/bs';
 import {AiOutlineCaretRight} from 'react-icons/ai';
 import {MainProcess} from '../MainProcessUtils';
+import {ProjectActions} from '../slices/ProjectSlice';
+import {Sidebar} from './Sidebar';
+import {LogActions} from '../slices/LogSlice';
+import {showNotification} from '@mantine/notifications';
+import {SidebarActions} from '../slices/SidebarSlice';
 
 const INITIAL_FILETREE_WIDTH = 250;
 
-const useFileTreeResizer = (): [number, MutableRefObject<HTMLDivElement | null>] => {
+const useSidebarResizer = (): [number, MutableRefObject<HTMLDivElement | null>] => {
 	const [fileTreeWidth, setFileTreeWidth] = useState(INITIAL_FILETREE_WIDTH);
 	const ref = useRef<HTMLDivElement | null>(null);
 
@@ -51,12 +55,15 @@ const useFileTreeResizer = (): [number, MutableRefObject<HTMLDivElement | null>]
 };
 
 export const Project = () => {
+	const dispatch = useAppDispatch();
+
 	const root = useAppSelector(state => state.filetree.root);
-	const project = useAppSelector(state => state.project.currentProject)!;
+	const project = useAppSelector(state => state.project.currentProject);
+	const gameExePath = useAppSelector(state => state.project.gameExePath);
 
-	if (!root) return null;
+	if (!root || !project) return null;
 
-	const [fileTreeWidth, ref] = useFileTreeResizer();
+	const [sidebarWidth, ref] = useSidebarResizer();
 
 	const projectContainerRef = useRef<HTMLDivElement | null>(null);
 
@@ -74,20 +81,15 @@ export const Project = () => {
 		return () => document.body.removeEventListener('resize', listener);
 	}, [ref.current, projectContainerRef.current]);
 
-	const [showBuildModal, setShowBuildModal] = useState(false);
-	const [building, setBuilding] = useState(false);
-	const [output, setOutput] = useState('');
-
 	useEffect(() =>
-		MainProcess.handleBuildProjectLog(log => setOutput(output => output + '\n' + log)),
-		[setOutput]
+		MainProcess.handleBuildProjectLog(log => dispatch(LogActions.addLog(log))),
+		[]
 	);
 
 	const handleBuildProject = async () => {
-		setShowBuildModal(true);
-		setBuilding(true);
+		dispatch(SidebarActions.setActiveTab('logs'));
 		await MainProcess.buildProject({ projectPath: root.path, project });
-		setBuilding(false);
+		showNotification({ title: 'Build Successful', message: 'The project was built successfully!', color: 'green' });
 	};
 
 	useEffect(() =>
@@ -95,23 +97,19 @@ export const Project = () => {
 		[root.path, project]
 	);
 
+	const handleBuildThenRun = async () => {
+		if (!gameExePath) {
+			const selection = await MainProcess.getGamePathChannel();
+
+			if (!selection) return;
+
+			dispatch(ProjectActions.setGameExePath(selection));
+		}
+
+
+	};
+
 	return <div className={styles.container}>
-		<Modal opened={showBuildModal} withCloseButton={false} onClose={() => setShowBuildModal(false)} size="lg" styles={{ modal: { height: '90%' }, body: { height: '100%' }}}>
-			<Stack style={{ height: '100%' }}>
-				<Title order={3}>{building ? 'Building project...' : 'Project built!'}</Title>
-
-				<Text>Log:</Text>
-				<Code block style={{ height: '100%', display: 'flex', overflow: 'auto', flexDirection: 'column-reverse' }}>
-					{output}
-				</Code>
-
-				<Space h="xl" />
-
-				<Group position="right">
-					<Button disabled={building} color='gray' onClick={() => setShowBuildModal(false)}>Close</Button>
-				</Group>
-			</Stack>
-		</Modal>
 		<div className={styles.navbarContainer}>
 			<div className={styles.navbarButtonsContainer}>
 				<ActionIcon color='green' onClick={handleBuildProject}>
@@ -122,12 +120,12 @@ export const Project = () => {
 				</ActionIcon>
 			</div>
 		</div>
-		<div className={styles.filetreeEditorContainer} ref={projectContainerRef}>
-			<FileTree root={root} width={fileTreeWidth} />
+		<div className={styles.filetreeEditorContainer} ref={projectContainerRef} style={{ minHeight: 0 }} >
+			<Sidebar width={sidebarWidth} />
 
 			{/* This effectively hovers over the right border of the file tree to give the user more space to select the
 		    border, without requiring a gap between the file tree and the editor container. */}
-			<div className={styles.resizeContainer} style={{ left: `${fileTreeWidth}px` }} ref={ref}></div>
+			<div className={styles.resizeContainer} style={{ left: `${sidebarWidth}px` }} ref={ref}></div>
 
 			<EditorContainer />
 		</div>

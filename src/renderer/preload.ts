@@ -4,7 +4,7 @@ import {
 	BuildProjectChannel, BuildProjectLogChannel,
 	ChannelSource, CreateDirectoryChannel, CreateFileChannel, CreateProjectDirectoryChannel, DeleteFileChannel,
 	GetDirectoryChannel,
-	GetFileContentsChannel,
+	GetFileContentsChannel, GetGamePathChannel,
 	GetNewProjectLocationChannel, MenuBuildProjectChannel,
 	MenuNewProjectChannel, MenuNotImplementedChannel,
 	MenuOpenProjectChannel,
@@ -37,6 +37,7 @@ const ipc: MainProcessUtils = {
 	createFile: CreateFileChannel(source).invoke,
 	openInExplorer: OpenInExplorerChannel(source).send,
 	buildProject: BuildProjectChannel(source).invoke,
+	getGamePathChannel: GetGamePathChannel(source).invoke,
 
 	handleMenuNewProject: MenuNewProjectChannel(source).listen,
 	handleMenuOpenProject: MenuOpenProjectChannel(source).listen,

@@ -2,14 +2,14 @@ import {EditorFile} from '../../../shared/types';
 import * as React from 'react';
 import {FileTreeDirectory} from './FileTreeDirectory';
 import styles from './FileTree.module.css';
+import {useAppSelector} from '../../slices/store';
 
-type FileTreeProps = {
-	root: EditorFile,
-	width: number,
-};
+export const FileTree = () => {
+	const root = useAppSelector(state => state.filetree.root);
 
-export const FileTree = ({ root, width }: FileTreeProps) => {
-	return <div className={styles.container} style={{ width: `${width}px` }}>
+	if (!root) return null;
+
+	return <div className={styles.container}>
 		<FileTreeDirectory
 			directory={root}
 			indentation={0}

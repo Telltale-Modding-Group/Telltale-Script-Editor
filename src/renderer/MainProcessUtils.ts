@@ -3,7 +3,7 @@ import {
 	CreateDirectoryChannel, CreateFileChannel,
 	CreateProjectDirectoryChannel, DeleteFileChannel,
 	GetDirectoryChannel,
-	GetFileContentsChannel,
+	GetFileContentsChannel, GetGamePathChannel,
 	GetNewProjectLocationChannel, MenuBuildProjectChannel,
 	MenuNewProjectChannel, MenuNotImplementedChannel,
 	MenuOpenProjectChannel,
@@ -30,6 +30,7 @@ export interface MainProcessUtils {
 	createFile: ReturnType<typeof CreateFileChannel>["invoke"];
 	openInExplorer: ReturnType<typeof OpenInExplorerChannel>["send"];
 	buildProject: ReturnType<typeof BuildProjectChannel>["invoke"];
+	getGamePathChannel: ReturnType<typeof GetGamePathChannel>["invoke"];
 
 	handleMenuNewProject: ReturnType<typeof MenuNewProjectChannel>["listen"];
 	handleMenuOpenProject: ReturnType<typeof MenuOpenProjectChannel>["listen"];

@@ -9,7 +9,7 @@ import {
 	CreateProjectDirectoryChannel,
 	DeleteFileChannel,
 	GetDirectoryChannel,
-	GetFileContentsChannel,
+	GetFileContentsChannel, GetGamePathChannel,
 	GetNewProjectLocationChannel,
 	OpenInExplorerChannel,
 	OpenProjectChannel,
@@ -173,6 +173,23 @@ export const registerIPCHandlers = (window: BrowserWindow) => {
 
 	DeleteFileChannel(source).handle(file => {
 		return fs.rm(file.path, { recursive: true });
+	});
+
+	GetGamePathChannel(source).handle(async () => {
+		await dialog.showMessageBox({
+			title: 'Select executable',
+			message: 'Please select the executable file for Telltale\'s The Walking Dead: Definitive Edition',
+			type: 'warning'
+		});
+
+		const selection = await dialog.showOpenDialog({
+			title: 'Select executable',
+			filters: [{ name: 'exe', extensions: ['exe', '*'] }]
+		});
+
+		if (selection.canceled) return;
+
+		return selection.filePaths[0];
 	});
 
 	const buildProjectLogChannel = BuildProjectLogChannel(source);

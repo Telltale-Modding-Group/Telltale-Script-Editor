@@ -1,5 +1,5 @@
 .container {
     height: 100%;
-    border-right: 1px solid black;
+    width: 100%;
     overflow: auto;
 }

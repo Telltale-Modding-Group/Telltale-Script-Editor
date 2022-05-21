@@ -40,6 +40,7 @@ export const DeleteFileChannel = createInvokableChannel<EditorFile, void>('delet
 export const CreateFileChannel = createInvokableChannel<{ directoryPath: string, extension: string }, string>('createfile');
 export const CreateDirectoryChannel = createInvokableChannel<string, string>('createdirectory');
 export const BuildProjectChannel = createInvokableChannel<{ projectPath: string, project: Project }, void>('buildproject');
+export const GetGamePathChannel = createInvokableChannel<void, string | undefined>('getgamepath');
 
 export const OpenInExplorerChannel = createChannel<string>('openinexplorer');
 export const MenuNewProjectChannel = createChannel<void>('menu:newproject');

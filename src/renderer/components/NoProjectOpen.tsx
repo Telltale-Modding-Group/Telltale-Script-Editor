@@ -1,5 +1,4 @@
 import styles from './NoProjectOpen.module.css';
-import {showNotification} from '@mantine/notifications';
 import {AiFillFolderOpen, AiOutlinePlus} from 'react-icons/ai';
 import {Text} from '@mantine/core';
 import * as React from 'react';

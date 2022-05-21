@@ -1,4 +1,5 @@
 import {
+	BuildProjectChannel, BuildProjectLogChannel,
 	CreateDirectoryChannel, CreateFileChannel,
 	CreateProjectDirectoryChannel, DeleteFileChannel,
 	GetDirectoryChannel,
@@ -28,10 +29,12 @@ export interface MainProcessUtils {
 	createDirectory: ReturnType<typeof CreateDirectoryChannel>["invoke"];
 	createFile: ReturnType<typeof CreateFileChannel>["invoke"];
 	openInExplorer: ReturnType<typeof OpenInExplorerChannel>["send"];
+	buildProject: ReturnType<typeof BuildProjectChannel>["invoke"];
 
 	handleMenuNewProject: ReturnType<typeof MenuNewProjectChannel>["listen"];
 	handleMenuOpenProject: ReturnType<typeof MenuOpenProjectChannel>["listen"];
 	handleMenuProjectSettings: ReturnType<typeof MenuProjectSettingsChannel>["listen"];
+	handleBuildProjectLog: ReturnType<typeof BuildProjectLogChannel>["listen"];
 
 	// TODO: Remove once everything is good to go
 	handleMenuNotImplemented: ReturnType<typeof MenuNotImplementedChannel>["listen"];

@@ -5,6 +5,33 @@ import {opendir} from 'fs/promises';
 import {BrowserWindow, ipcMain} from 'electron';
 import {ChannelSource} from '../shared/Channels';
 
+export type FileData = { directory: boolean, name: string, path: string };
+export const getFilesInDirectory = async (root: Dir): Promise<Array<FileData>> => {
+	const dirents: Array<FileData> = [];
+
+	for await (const dirent of root) {
+		const direntPath = path.join(root.path, dirent.name);
+
+		if (dirent.isFile()) {
+			dirents.push({
+				directory: false,
+				name: dirent.name,
+				path: direntPath
+			});
+		} else {
+			dirents.push({
+				directory: true,
+				name: dirent.name,
+				path: direntPath
+			});
+
+			dirents.push(...await getFilesInDirectory(await opendir(direntPath)));
+		}
+	}
+
+	return dirents;
+};
+
 export const getFiles = async (root: Dir): Promise<EditorFile> => {
 	const children: Array<EditorFile> = [];
 

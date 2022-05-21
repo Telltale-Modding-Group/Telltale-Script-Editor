@@ -34,3 +34,19 @@ export const createProject = (name: string, version: string, author: string, pri
 		priority
 	}
 });
+
+type ModInfo = {
+	ModDisplayName: string,
+	ModVersion: string,
+	ModAuthor: string,
+	ModCompatibility: 'The_Walking_Dead_Definitive_Edition',
+	ModFiles: string[]
+};
+
+export const createModInfo = (name: string, version: string, author: string, files: string[]): ModInfo => ({
+	ModDisplayName: name,
+	ModVersion: version,
+	ModAuthor: author,
+	ModCompatibility: 'The_Walking_Dead_Definitive_Edition',
+	ModFiles: files
+});

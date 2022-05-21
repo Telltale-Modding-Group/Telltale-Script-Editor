@@ -1,6 +1,7 @@
 import {MainProcessUtils} from './MainProcessUtils';
 import { contextBridge, ipcRenderer } from 'electron';
 import {
+	BuildProjectChannel, BuildProjectLogChannel,
 	ChannelSource, CreateDirectoryChannel, CreateFileChannel, CreateProjectDirectoryChannel, DeleteFileChannel,
 	GetDirectoryChannel,
 	GetFileContentsChannel,
@@ -35,10 +36,12 @@ const ipc: MainProcessUtils = {
 	createDirectory: CreateDirectoryChannel(source).invoke,
 	createFile: CreateFileChannel(source).invoke,
 	openInExplorer: OpenInExplorerChannel(source).send,
+	buildProject: BuildProjectChannel(source).invoke,
 
 	handleMenuNewProject: MenuNewProjectChannel(source).listen,
 	handleMenuOpenProject: MenuOpenProjectChannel(source).listen,
 	handleMenuProjectSettings: MenuProjectSettingsChannel(source).listen,
+	handleBuildProjectLog: BuildProjectLogChannel(source).listen,
 
 	// TODO: Remove once everything is good to go
 	handleMenuNotImplemented: MenuNotImplementedChannel(source).listen

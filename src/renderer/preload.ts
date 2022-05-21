@@ -1,19 +1,19 @@
 import {MainProcessUtils} from './MainProcessUtils';
 import { contextBridge, ipcRenderer } from 'electron';
 import {
-	ChannelSource, CreateProjectDirectoryChannel,
+	ChannelSource, CreateProjectDirectoryChannel, DeleteFileChannel,
 	GetDirectoryChannel,
 	GetFileContentsChannel,
 	GetNewProjectLocationChannel,
 	MenuNewProjectChannel, MenuNotImplementedChannel,
 	MenuOpenProjectChannel,
-	MenuProjectSettingsChannel,
+	MenuProjectSettingsChannel, OpenInExplorerChannel,
 	OpenProjectChannel, RenameFileChannel,
 	SaveFileChannel
 } from '../shared/Channels';
 
 const source: ChannelSource = {
-	send: (channel, data) => ipcRenderer.sendToHost(channel, data),
+	send: ipcRenderer.send,
 	invoke: ipcRenderer.invoke,
 	handle: channel => { throw new Error(`Attempted to listen to invokable channel "${channel}", but IPCRenderer is unable to listen to invokable channels!`) },
 	listen: (channel, handler) => {
@@ -31,6 +31,8 @@ const ipc: MainProcessUtils = {
 	createProjectDirectory: CreateProjectDirectoryChannel(source).invoke,
 	saveFile: SaveFileChannel(source).invoke,
 	renameFile: RenameFileChannel(source).invoke,
+	deleteFile: DeleteFileChannel(source).invoke,
+	openInExplorer: OpenInExplorerChannel(source).send,
 
 	handleMenuNewProject: MenuNewProjectChannel(source).listen,
 	handleMenuOpenProject: MenuOpenProjectChannel(source).listen,

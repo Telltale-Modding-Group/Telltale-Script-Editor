@@ -3,7 +3,7 @@ import * as React from 'react';
 import {MouseEventHandler, useState} from 'react';
 import {BiChevronUp} from 'react-icons/bi';
 import {AiOutlineFolder} from 'react-icons/ai';
-import {Collapse, Portal, Text, TextInput} from '@mantine/core';
+import {Button, Collapse, Group, Modal, Portal, Space, Stack, Text, TextInput, Title} from '@mantine/core';
 import {FileTreeFile} from './FileTreeFile';
 import styles from './FileTreeDirectory.module.css';
 import fileStyles from './FileTreeFile.module.css';
@@ -49,20 +49,20 @@ export const FileTreeDirectory = ({directory, indentation}: FileTreeDirectoryPro
 	};
 
 	const handleRenameSubmit = async () => {
-		if (newDirectoryName !== directory.name) {
-			const newPath = await MainProcess.renameFile({ file: directory, newName: newDirectoryName });
+		setRenaming(false);
 
-			// If we're renaming the root directory, a normal refresh will no longer find the root.
-			if (indentation === 0) {
-				dispatch(FileTreeAsyncActions.setRootDirectoryFromPath(newPath));
-			} else {
-				dispatch(FileTreeAsyncActions.refreshRootDirectory())
-			}
+		if (newDirectoryName === directory.name) return;
 
-			dispatch(EditorActions.handleRename({ oldPath: directory.path, newPath }));
+		const newPath = await MainProcess.renameFile({ file: directory, newName: newDirectoryName });
+
+		// If we're renaming the root directory, a normal refresh will no longer find the root.
+		if (indentation === 0) {
+			dispatch(FileTreeAsyncActions.setRootDirectoryFromPath(newPath));
+		} else {
+			dispatch(FileTreeAsyncActions.refreshRootDirectory())
 		}
 
-		setRenaming(false);
+		dispatch(EditorActions.handleRename({ oldPath: directory.path, newPath }));
 	};
 
 	const handleRightClick: MouseEventHandler<HTMLDivElement> = e => {
@@ -71,7 +71,43 @@ export const FileTreeDirectory = ({directory, indentation}: FileTreeDirectoryPro
 		toggleMenu(true);
 	};
 
+	const [showDeleteModal, setShowDeleteModal] = useState(false);
+	const hideDeleteModal = () => setShowDeleteModal(false);
+
+	const handleOpenInExplorer = () => {
+		MainProcess.openInExplorer(directory.path);
+	};
+
+	const handleDeleteDirectory = async () => {
+		hideDeleteModal();
+
+		await MainProcess.deleteFile(directory);
+
+		dispatch(FileTreeAsyncActions.refreshRootDirectory());
+		dispatch(EditorActions.handleFileDeleted(directory));
+	};
+
 	return <>
+		<Modal
+			centered
+			withCloseButton={false}
+			opened={showDeleteModal}
+			onClose={hideDeleteModal}
+			size="sm"
+		>
+			<Stack>
+				<Title order={2}>Delete Directory</Title>
+				<Text>Are you sure you want to delete <em>{directory.name}</em>?</Text>
+				<Space h="md" />
+				<Group position="right" spacing="xs">
+					<Button color="gray" onClick={hideDeleteModal}>Cancel</Button>
+					<Button color="red" onClick={handleDeleteDirectory}>
+						Delete
+					</Button>
+				</Group>
+			</Stack>
+		</Modal>
+
 		<Portal>
 			<ControlledMenu
 				direction="right"
@@ -80,11 +116,14 @@ export const FileTreeDirectory = ({directory, indentation}: FileTreeDirectoryPro
 				{...menuProps}
 			>
 				<SubMenu label={() => <Text size="xs">New</Text>}>
+					<ContextMenuItem>Directory</ContextMenuItem>
 					<ContextMenuItem>Script</ContextMenuItem>
 					<ContextMenuItem>File</ContextMenuItem>
 				</SubMenu>
+				<ContextMenuItem onClick={toggle}>{ expanded ? 'Collapse' : 'Expand' }</ContextMenuItem>
 				<ContextMenuItem onClick={handleRename}>Rename</ContextMenuItem>
-				<ContextMenuItem>Delete</ContextMenuItem>
+				<ContextMenuItem onClick={handleOpenInExplorer}>Open in explorer</ContextMenuItem>
+				<ContextMenuItem onClick={() => setShowDeleteModal(true)}>Delete</ContextMenuItem>
 			</ControlledMenu>
 		</Portal>
 

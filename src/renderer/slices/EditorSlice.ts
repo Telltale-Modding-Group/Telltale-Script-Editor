@@ -73,6 +73,13 @@ export const EditorSlice = createSlice({
 				openFile.file.path = openFile.file.path.replace(oldPath, newPath)
 			});
 		},
+		handleFileDeleted: (state, { payload }: PayloadAction<EditorFile>) => {
+			state.openFiles.forEach((openFile, index) => {
+				if (!openFile.file.path.includes(payload.path)) return;
+
+				closeFileReducer(state, { payload: index, type: '' });
+			});
+		},
 		clear: () => initialState
 	},
 	extraReducers: builder => {

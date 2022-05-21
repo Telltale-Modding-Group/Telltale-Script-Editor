@@ -1,12 +1,12 @@
-import {BrowserWindow, dialog, ipcMain, Menu} from 'electron';
+import {BrowserWindow, dialog, ipcMain, Menu, shell} from 'electron';
 import * as fs from 'fs/promises';
 import {getFiles, getIPCMainChannelSource} from './utils';
 import {EditorFile} from '../shared/types';
 import {
-	CreateProjectDirectoryChannel,
+	CreateProjectDirectoryChannel, DeleteFileChannel,
 	GetDirectoryChannel,
 	GetFileContentsChannel,
-	GetNewProjectLocationChannel,
+	GetNewProjectLocationChannel, OpenInExplorerChannel,
 	OpenProjectChannel, RenameFileChannel,
 	SaveFileChannel
 } from '../shared/Channels';
@@ -115,10 +115,18 @@ export const registerIPCHandlers = (window: BrowserWindow) => {
 		return newPath;
 	});
 
+	OpenInExplorerChannel(source).listen(path => {
+		shell.showItemInFolder(path);
+	});
+
 	SaveFileChannel(source).handle(({ path, contents }) => {
 		// TODO: Handle errors
 		return fs.writeFile(path, contents)
 	})
+
+	DeleteFileChannel(source).handle(file => {
+		return fs.rm(file.path, { recursive: true });
+	});
 
 	ipcMain.handle('openmenu:directory', (ev, file: EditorFile) => {
 		const directoryContextMenu = Menu.buildFromTemplate([

@@ -1,4 +1,4 @@
-import {Portal, Text, TextInput} from '@mantine/core';
+import {Button, Group, Modal, Portal, Space, Stack, Text, TextInput, Title} from '@mantine/core';
 import * as React from 'react';
 import {EditorFile} from '../../../shared/types';
 import styles from './FileTreeFile.module.css';
@@ -71,7 +71,43 @@ export const FileTreeFile = ({file, indentation}: FileTreeFileProps) => {
 		toggleMenu(true);
 	};
 
+	const handleOpenInExplorer = () => {
+		MainProcess.openInExplorer(file.path);
+	};
+
+	const [showDeleteModal, setShowDeleteModal] = useState(false);
+	const hideDeleteModal = () => setShowDeleteModal(false);
+
+	const handleDeleteDirectory = async () => {
+		hideDeleteModal();
+
+		await MainProcess.deleteFile(file);
+
+		dispatch(FileTreeAsyncActions.refreshRootDirectory());
+		dispatch(EditorActions.handleFileDeleted(file));
+	};
+
 	return <>
+		<Modal
+			centered
+			withCloseButton={false}
+			opened={showDeleteModal}
+			onClose={hideDeleteModal}
+			size="sm"
+		>
+			<Stack>
+				<Title order={2}>Delete File</Title>
+				<Text>Are you sure you want to delete <em>{file.name}</em>?</Text>
+				<Space h="md" />
+				<Group position="right" spacing="xs">
+					<Button color="gray" onClick={hideDeleteModal}>Cancel</Button>
+					<Button color="red" onClick={handleDeleteDirectory}>
+						Delete
+					</Button>
+				</Group>
+			</Stack>
+		</Modal>
+
 		<Portal>
 			<ControlledMenu
 				direction="right"
@@ -79,12 +115,10 @@ export const FileTreeFile = ({file, indentation}: FileTreeFileProps) => {
 				onClose={() => toggleMenu(false)}
 				{...menuProps}
 			>
-				<SubMenu label={() => <Text size="xs">New</Text>}>
-					<ContextMenuItem>Script</ContextMenuItem>
-					<ContextMenuItem>File</ContextMenuItem>
-				</SubMenu>
+				<ContextMenuItem onClick={handleDoubleClick}>Open</ContextMenuItem>
 				<ContextMenuItem onClick={handleRename}>Rename</ContextMenuItem>
-				<ContextMenuItem>Delete</ContextMenuItem>
+				<ContextMenuItem onClick={handleOpenInExplorer}>Open in explorer</ContextMenuItem>
+				<ContextMenuItem onClick={() => setShowDeleteModal(true)}>Delete</ContextMenuItem>
 			</ControlledMenu>
 		</Portal>
 		<div

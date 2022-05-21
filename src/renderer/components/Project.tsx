@@ -18,10 +18,12 @@ const useFileTreeResizer = (): [number, MutableRefObject<HTMLDivElement | null>]
 		let mouseDown = false;
 
 		const mouseDownListener = () => {
+			document.body.style.userSelect = 'none';
 			mouseDown = true;
 		};
 
 		const mouseUpListener = () => {
+			document.body.style.userSelect = 'initial';
 			mouseDown = false;
 		};
 

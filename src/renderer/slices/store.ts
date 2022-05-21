@@ -19,7 +19,6 @@ export const useAppDispatch = () => useDispatch<AppDispatch>();
 export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
 
 export const resetAllSlices = (dispatch: AppDispatch) => {
-	console.log('clearing slices...');
 	dispatch(FileTreeActions.clear());
 	dispatch(EditorActions.clear());
 	dispatch(ProjectActions.clear());

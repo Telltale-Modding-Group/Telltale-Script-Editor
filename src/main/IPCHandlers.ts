@@ -7,7 +7,7 @@ import {
 	GetDirectoryChannel,
 	GetFileContentsChannel,
 	GetNewProjectLocationChannel,
-	OpenProjectChannel,
+	OpenProjectChannel, RenameFileChannel,
 	SaveFileChannel
 } from '../shared/Channels';
 import * as path from 'path';
@@ -106,6 +106,14 @@ export const registerIPCHandlers = (window: BrowserWindow) => {
 		// The .trim() ensures any weird empty space characters are removed, which makes life easier
 		(await fs.readFile(path, { encoding: 'utf8' })).trim()
 	);
+
+	RenameFileChannel(source).handle(async ({ file, newName }) => {
+		const newPath = path.join(path.dirname(file.path), newName);
+
+		await fs.rename(file.path, newPath);
+
+		return newPath;
+	});
 
 	SaveFileChannel(source).handle(({ path, contents }) => {
 		// TODO: Handle errors

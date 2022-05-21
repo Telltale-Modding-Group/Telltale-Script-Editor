@@ -6,7 +6,7 @@ import {
 	MenuNewProjectChannel, MenuNotImplementedChannel,
 	MenuOpenProjectChannel,
 	MenuProjectSettingsChannel,
-	OpenProjectChannel,
+	OpenProjectChannel, RenameFileChannel,
 	SaveFileChannel
 } from '../shared/Channels';
 
@@ -22,6 +22,7 @@ export interface MainProcessUtils {
 	getFileContents: ReturnType<typeof GetFileContentsChannel>["invoke"];
 	createProjectDirectory: ReturnType<typeof CreateProjectDirectoryChannel>["invoke"];
 	saveFile: ReturnType<typeof SaveFileChannel>["invoke"];
+	renameFile: ReturnType<typeof RenameFileChannel>["invoke"];
 
 	handleMenuNewProject: ReturnType<typeof MenuNewProjectChannel>["listen"];
 	handleMenuOpenProject: ReturnType<typeof MenuOpenProjectChannel>["listen"];

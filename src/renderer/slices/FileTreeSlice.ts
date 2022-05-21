@@ -1,6 +1,7 @@
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import {createAsyncThunk, createSlice, PayloadAction} from '@reduxjs/toolkit';
 import { EditorFile } from '../../shared/types';
-import { MainProcess } from '../MainProcessUtils';
+import {MainProcess} from '../MainProcessUtils';
+import {RootState} from './store';
 
 interface FileTreeState {
 	selectedPath?: string,
@@ -9,9 +10,13 @@ interface FileTreeState {
 
 const initialState: FileTreeState = {};
 
-// const setRootDirectory = createAsyncThunk('filetree/setrootdirectory', (path: string) => {
-// 	return MainProcess.getDirectory(path);
-// });
+const setRootDirectoryFromPath = createAsyncThunk('filetree/setrootdirectoryfrompath', (path: string) =>
+	MainProcess.getDirectory(path)
+);
+
+const refreshRootDirectory = createAsyncThunk('filetree/refreshrootdirectory', (_, api) =>
+	MainProcess.getDirectory((api.getState() as RootState).filetree.root!.path)
+);
 
 export const FileTreeSlice = createSlice({
 	name: 'filetree',
@@ -25,15 +30,18 @@ export const FileTreeSlice = createSlice({
 		},
 		clear: () => initialState
 	},
-	// extraReducers: builder => {
-	// 	builder
-	// 		.addCase(setRootDirectory.fulfilled, (state, { payload }) => {
-	// 			state.root = payload;
-	// 		});
-	// }
+	extraReducers: builder => {
+		builder
+			.addCase(setRootDirectoryFromPath.fulfilled, (state, { payload }) => {
+				state.root = payload;
+			})
+			.addCase(refreshRootDirectory.fulfilled, (state, { payload }) => {
+				state.root = payload;
+			});
+	}
 })
 
 export const FileTreeActions = FileTreeSlice.actions;
-// export const FileTreeAsyncActions = { setRootDirectory };
+export const FileTreeAsyncActions = { setRootDirectoryFromPath, refreshRootDirectory };
 
 export const FileTreeReducer = FileTreeSlice.reducer;

@@ -8,7 +8,7 @@ import {
 	MenuNewProjectChannel, MenuNotImplementedChannel,
 	MenuOpenProjectChannel,
 	MenuProjectSettingsChannel,
-	OpenProjectChannel,
+	OpenProjectChannel, RenameFileChannel,
 	SaveFileChannel
 } from '../shared/Channels';
 
@@ -30,6 +30,7 @@ const ipc: MainProcessUtils = {
 	getFileContents: GetFileContentsChannel(source).invoke,
 	createProjectDirectory: CreateProjectDirectoryChannel(source).invoke,
 	saveFile: SaveFileChannel(source).invoke,
+	renameFile: RenameFileChannel(source).invoke,
 
 	handleMenuNewProject: MenuNewProjectChannel(source).listen,
 	handleMenuOpenProject: MenuOpenProjectChannel(source).listen,

@@ -1,7 +1,8 @@
 import * as React from 'react';
 import {useEffect} from 'react';
-import 'react-resizable/css/styles.css';
 import 'normalize.css/normalize.css';
+import '@szhsin/react-menu/dist/index.css';
+import '@szhsin/react-menu/dist/transitions/slide.css';
 import {NoProjectOpen} from './NoProjectOpen';
 import {Project} from './Project';
 import {AppDispatch, useAppDispatch, useAppSelector} from '../slices/store';

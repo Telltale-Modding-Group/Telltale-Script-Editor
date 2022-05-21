@@ -68,6 +68,11 @@ export const EditorSlice = createSlice({
 			openFile.contents = newContents;
 			openFile.hasUnsavedChanges = true;
 		},
+		handleRename: (state, { payload: { oldPath, newPath } }: PayloadAction<{ oldPath: string, newPath: string }>) => {
+			state.openFiles.forEach(openFile => {
+				openFile.file.path = openFile.file.path.replace(oldPath, newPath)
+			});
+		},
 		clear: () => initialState
 	},
 	extraReducers: builder => {

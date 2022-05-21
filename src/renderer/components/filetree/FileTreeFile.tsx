@@ -6,7 +6,7 @@ import classNames from 'classnames';
 import {isSupported} from '../../FileUtils';
 import {useAppDispatch, useAppSelector} from '../../slices/store';
 import {FileTreeActions, FileTreeAsyncActions} from '../../slices/FileTreeSlice';
-import {EditorAsyncActions} from '../../slices/EditorSlice';
+import {EditorActions, EditorAsyncActions} from '../../slices/EditorSlice';
 import {showNotification} from '@mantine/notifications';
 import {ControlledMenu, SubMenu, useMenuState} from '@szhsin/react-menu';
 import {MouseEventHandler, useState} from 'react';
@@ -58,6 +58,8 @@ export const FileTreeFile = ({file, indentation}: FileTreeFileProps) => {
 			} else {
 				dispatch(FileTreeAsyncActions.refreshRootDirectory())
 			}
+
+			dispatch(EditorActions.handleRename({ oldPath: file.path, newPath }));
 		}
 
 		setRenaming(false);

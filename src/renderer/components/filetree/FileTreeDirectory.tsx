@@ -13,6 +13,7 @@ import {FileTreeActions, FileTreeAsyncActions} from '../../slices/FileTreeSlice'
 import {ControlledMenu, SubMenu, useMenuState} from '@szhsin/react-menu';
 import {MainProcess} from '../../MainProcessUtils';
 import {ContextMenuItem} from './ContextMenuItem';
+import {EditorActions} from '../../slices/EditorSlice';
 
 type FileTreeDirectoryProps = {
 	directory: EditorFile,
@@ -57,6 +58,8 @@ export const FileTreeDirectory = ({directory, indentation}: FileTreeDirectoryPro
 			} else {
 				dispatch(FileTreeAsyncActions.refreshRootDirectory())
 			}
+
+			dispatch(EditorActions.handleRename({ oldPath: directory.path, newPath }));
 		}
 
 		setRenaming(false);

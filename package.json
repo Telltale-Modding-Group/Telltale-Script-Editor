@@ -17,7 +17,11 @@
   "config": {
     "forge": {
       "packagerConfig": {
-        "icon": "./src/public/coloredhatsketch.ico"
+        "icon": "./src/public/coloredhatsketch.ico",
+        "extraResource": [
+          "./resources/ttarchext.exe",
+          "./resources/luac.exe"
+        ]
       },
       "makers": [
         {

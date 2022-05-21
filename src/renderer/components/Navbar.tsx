@@ -10,6 +10,7 @@ import {SidebarActions} from '../slices/SidebarSlice';
 import {showNotification} from '@mantine/notifications';
 import {ProjectActions} from '../slices/ProjectSlice';
 import {useAppDispatch, useAppSelector} from '../slices/store';
+import {FileTreeAsyncActions} from '../slices/FileTreeSlice';
 
 export const Navbar = () => {
 	const dispatch = useAppDispatch();
@@ -28,6 +29,7 @@ export const Navbar = () => {
 		dispatch(LogActions.clear());
 		dispatch(SidebarActions.setActiveTab('logs'));
 		const buildZipPath = await MainProcess.buildProject({ projectPath: root.path, project });
+		dispatch(FileTreeAsyncActions.refreshRootDirectory());
 		showNotification({ title: 'Build Successful', message: 'The project was built successfully!', color: 'green' });
 
 		return buildZipPath;

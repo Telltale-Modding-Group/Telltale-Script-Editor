@@ -91,7 +91,7 @@ RegisterSetDescription(set)`;
 			log(`============== Generating ${path.join(tempPath, resdescName)}...`);
 
 			await fs.writeFile(resdescOutputPath, resdescFileContents);
-			const process = exec(`ttarchext.exe -V 7 -e 0 67 "${resdescOutputPath}" "${tempPath}"`, (e, out, err) => {
+			const process = exec(`resources\\ttarchext.exe -V 7 -e 0 67 "${resdescOutputPath}" "${tempPath}"`, (e, out, err) => {
 				log(out);
 				log(err);
 			});
@@ -108,7 +108,7 @@ RegisterSetDescription(set)`;
 
 			log(`============== Compiling ${file.path} into ${compiledLuaPath}...`);
 
-			const process = exec(`luac.exe -o "${compiledLuaPath}" "${file.path}"`, (e, out, err) => {
+			const process = exec(`resources\\luac.exe -o "${compiledLuaPath}" "${file.path}"`, (e, out, err) => {
 				log(out);
 				log(err);
 			});
@@ -127,7 +127,7 @@ RegisterSetDescription(set)`;
 
 		log(`============== Generating ${ttarchFilePath} from ${directory.path}...`);
 
-		const process = exec(`ttarchext.exe -b 67 "${ttarchFilePath}" "${path.join(tempPath, directory.name)}"`, (error, stdout, stderr) => {
+		const process = exec(`resources\\ttarchext.exe -b 67 "${ttarchFilePath}" "${path.join(tempPath, directory.name)}"`, (error, stdout, stderr) => {
 			log(stdout);
 			log(stderr);
 		});

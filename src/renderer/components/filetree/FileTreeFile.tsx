@@ -24,6 +24,7 @@ export const FileTreeFile = ({file, indentation}: FileTreeFileProps) => {
 	const selectedPath = useAppSelector(state => state.filetree.selectedPath);
 	const selected = selectedPath === file.path;
 	const supported = isSupported(file);
+	const newFilePath = useAppSelector(state => state.filetree.newFilePath);
 
 	const handleClick = () => dispatch(FileTreeActions.setSelectedPath(file.path));
 	const handleDoubleClick = () => {
@@ -41,7 +42,7 @@ export const FileTreeFile = ({file, indentation}: FileTreeFileProps) => {
 	const [menuProps, toggleMenu] = useMenuState();
 	const [anchorPoint, setAnchorPoint] = useState({ x: 0, y: 0});
 
-	const [renaming, setRenaming] = useState(false);
+	const [renaming, setRenaming] = useState(newFilePath === file.path);
 	const [newFileName, setNewFileName] = useState(file.name);
 
 	const handleRename = () => {

@@ -5,7 +5,9 @@ import {RootState} from './store';
 
 interface FileTreeState {
 	selectedPath?: string,
-	root?: EditorFile
+	root?: EditorFile,
+	// Represents the path of a newly created file. After the file is renamed, this should be set to undefined
+	newFilePath?: string
 }
 
 const initialState: FileTreeState = {};
@@ -27,6 +29,9 @@ export const FileTreeSlice = createSlice({
 		},
 		setRootDirectory: (state, { payload }: PayloadAction<EditorFile | undefined>) => {
 			state.root = payload;
+		},
+		setNewFilePath: (state, { payload }: PayloadAction<string | undefined>) => {
+			state.newFilePath = payload;
 		},
 		clear: () => initialState
 	},

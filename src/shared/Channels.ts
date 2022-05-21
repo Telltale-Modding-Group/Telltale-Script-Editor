@@ -37,6 +37,8 @@ export const GetFileContentsChannel = createInvokableChannel<string, string>('ge
 export const SaveFileChannel = createInvokableChannel<{ path: string, contents: string }, void>('savefile');
 export const RenameFileChannel = createInvokableChannel<{ file: EditorFile, newName: string }, string>('renamefile');
 export const DeleteFileChannel = createInvokableChannel<EditorFile, void>('deletefile');
+export const CreateFileChannel = createInvokableChannel<{ directoryPath: string, extension: string }, string>('createfile');
+export const CreateDirectoryChannel = createInvokableChannel<string, string>('createdirectory');
 
 export const OpenInExplorerChannel = createChannel<string>('openinexplorer');
 export const MenuNewProjectChannel = createChannel<void>('menu:newproject');

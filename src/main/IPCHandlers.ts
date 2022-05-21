@@ -3,6 +3,8 @@ import * as fs from 'fs/promises';
 import {getFiles, getIPCMainChannelSource} from './utils';
 import {EditorFile} from '../shared/types';
 import {
+	CreateDirectoryChannel,
+	CreateFileChannel,
 	CreateProjectDirectoryChannel, DeleteFileChannel,
 	GetDirectoryChannel,
 	GetFileContentsChannel,
@@ -123,6 +125,42 @@ export const registerIPCHandlers = (window: BrowserWindow) => {
 		// TODO: Handle errors
 		return fs.writeFile(path, contents)
 	})
+
+	CreateFileChannel(source).handle(async ({ directoryPath, extension }) => {
+		let index = 0;
+		let filename = '';
+
+		while (true) {
+			filename = `NewFile${index > 0 ? `${index}` : ''}.${extension}`;
+
+			try {
+				await fs.writeFile(path.join(directoryPath, filename), '');
+				break;
+			} catch  {
+				index++;
+			}
+		}
+
+		return path.join(directoryPath, filename);
+	});
+
+	CreateDirectoryChannel(source).handle(async directoryPath => {
+		let index = 0;
+		let folderName = '';
+
+		while (true) {
+			folderName = `NewFolder${index > 0 ? `${index}` : ''}`;
+
+			try {
+				await fs.mkdir(path.join(directoryPath, folderName));
+				break;
+			} catch  {
+				index++;
+			}
+		}
+
+		return path.join(directoryPath, folderName);
+	});
 
 	DeleteFileChannel(source).handle(file => {
 		return fs.rm(file.path, { recursive: true });

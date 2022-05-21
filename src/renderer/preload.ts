@@ -1,7 +1,7 @@
 import {MainProcessUtils} from './MainProcessUtils';
 import { contextBridge, ipcRenderer } from 'electron';
 import {
-	ChannelSource, CreateProjectDirectoryChannel, DeleteFileChannel,
+	ChannelSource, CreateDirectoryChannel, CreateFileChannel, CreateProjectDirectoryChannel, DeleteFileChannel,
 	GetDirectoryChannel,
 	GetFileContentsChannel,
 	GetNewProjectLocationChannel,
@@ -32,6 +32,8 @@ const ipc: MainProcessUtils = {
 	saveFile: SaveFileChannel(source).invoke,
 	renameFile: RenameFileChannel(source).invoke,
 	deleteFile: DeleteFileChannel(source).invoke,
+	createDirectory: CreateDirectoryChannel(source).invoke,
+	createFile: CreateFileChannel(source).invoke,
 	openInExplorer: OpenInExplorerChannel(source).send,
 
 	handleMenuNewProject: MenuNewProjectChannel(source).listen,

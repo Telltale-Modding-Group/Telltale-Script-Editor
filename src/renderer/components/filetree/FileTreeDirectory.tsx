@@ -27,6 +27,7 @@ export const FileTreeDirectory = ({directory, indentation}: FileTreeDirectoryPro
 
 	const selectedPath = useAppSelector(state => state.filetree.selectedPath);
 	const selected = directory.path === selectedPath;
+	const newFilePath = useAppSelector(state => state.filetree.newFilePath);
 
 	const [expanded, setExpanded] = useState(false);
 	const toggle = () => setExpanded(!expanded);
@@ -41,7 +42,7 @@ export const FileTreeDirectory = ({directory, indentation}: FileTreeDirectoryPro
 	const [menuProps, toggleMenu] = useMenuState();
 	const [anchorPoint, setAnchorPoint] = useState({ x: 0, y: 0});
 
-	const [renaming, setRenaming] = useState(false);
+	const [renaming, setRenaming] = useState(newFilePath === directory.path);
 	const [newDirectoryName, setNewDirectoryName] = useState(directory.name);
 
 	const handleRename = () => {
@@ -50,6 +51,7 @@ export const FileTreeDirectory = ({directory, indentation}: FileTreeDirectoryPro
 
 	const handleRenameSubmit = async () => {
 		setRenaming(false);
+		dispatch(FileTreeActions.setNewFilePath());
 
 		if (newDirectoryName === directory.name) return;
 
@@ -87,6 +89,32 @@ export const FileTreeDirectory = ({directory, indentation}: FileTreeDirectoryPro
 		dispatch(EditorActions.handleFileDeleted(directory));
 	};
 
+	const handleCreateDirectory = async () => {
+		const path = await MainProcess.createDirectory(directory.path);
+
+		setExpanded(true);
+		dispatch(FileTreeActions.setNewFilePath(path));
+		dispatch(FileTreeAsyncActions.refreshRootDirectory());
+	};
+
+	const hasChildren = directory.children.length > 0;
+
+	const handleCreateFile = async () => {
+		const path = await MainProcess.createFile({ directoryPath: directory.path, extension: 'txt' });
+
+		setExpanded(true);
+		dispatch(FileTreeActions.setNewFilePath(path));
+		dispatch(FileTreeAsyncActions.refreshRootDirectory());
+	};
+
+	const handleCreateScript = async () => {
+		const path = await MainProcess.createFile({ directoryPath: directory.path, extension: 'lua' });
+
+		setExpanded(true);
+		dispatch(FileTreeActions.setNewFilePath(path));
+		dispatch(FileTreeAsyncActions.refreshRootDirectory());
+	};
+
 	return <>
 		<Modal
 			centered
@@ -110,17 +138,16 @@ export const FileTreeDirectory = ({directory, indentation}: FileTreeDirectoryPro
 
 		<Portal>
 			<ControlledMenu
-				direction="right"
 				anchorPoint={anchorPoint}
 				onClose={() => toggleMenu(false)}
 				{...menuProps}
 			>
 				<SubMenu label={() => <Text size="xs">New</Text>}>
-					<ContextMenuItem>Directory</ContextMenuItem>
-					<ContextMenuItem>Script</ContextMenuItem>
-					<ContextMenuItem>File</ContextMenuItem>
+					<ContextMenuItem onClick={handleCreateDirectory}>Directory</ContextMenuItem>
+					<ContextMenuItem onClick={handleCreateFile}>Script</ContextMenuItem>
+					<ContextMenuItem onClick={handleCreateScript}>File</ContextMenuItem>
 				</SubMenu>
-				<ContextMenuItem onClick={toggle}>{ expanded ? 'Collapse' : 'Expand' }</ContextMenuItem>
+				{ hasChildren && <ContextMenuItem onClick={toggle}>{ expanded ? 'Collapse' : 'Expand' }</ContextMenuItem> }
 				<ContextMenuItem onClick={handleRename}>Rename</ContextMenuItem>
 				<ContextMenuItem onClick={handleOpenInExplorer}>Open in explorer</ContextMenuItem>
 				<ContextMenuItem onClick={() => setShowDeleteModal(true)}>Delete</ContextMenuItem>
@@ -134,7 +161,11 @@ export const FileTreeDirectory = ({directory, indentation}: FileTreeDirectoryPro
 			onDoubleClick={toggle}
 			onContextMenu={handleRightClick}
 		>
-			<BiChevronUp className={styles.icon} onClick={handleToggleIconClick} style={{ transform: `rotate(${expanded ? '0' : '180deg' })` }}/>
+			<BiChevronUp
+				className={styles.icon}
+				onClick={handleToggleIconClick}
+				style={{ transform: `rotate(${expanded ? '0' : '180deg' })`, visibility: hasChildren ? 'visible' : 'hidden' }}
+			/>
 			<AiOutlineFolder className={styles.icon} />
 			{ renaming
 				// Using a form here SOLELY to make it easier to listen for enter pressed

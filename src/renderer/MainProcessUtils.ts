@@ -1,4 +1,5 @@
 import {
+	CreateDirectoryChannel, CreateFileChannel,
 	CreateProjectDirectoryChannel, DeleteFileChannel,
 	GetDirectoryChannel,
 	GetFileContentsChannel,
@@ -24,6 +25,8 @@ export interface MainProcessUtils {
 	saveFile: ReturnType<typeof SaveFileChannel>["invoke"];
 	renameFile: ReturnType<typeof RenameFileChannel>["invoke"];
 	deleteFile: ReturnType<typeof DeleteFileChannel>["invoke"];
+	createDirectory: ReturnType<typeof CreateDirectoryChannel>["invoke"];
+	createFile: ReturnType<typeof CreateFileChannel>["invoke"];
 	openInExplorer: ReturnType<typeof OpenInExplorerChannel>["send"];
 
 	handleMenuNewProject: ReturnType<typeof MenuNewProjectChannel>["listen"];

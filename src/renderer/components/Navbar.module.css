@@ -1,0 +1,11 @@
+.navbarContainer {
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+    border-bottom: 1px solid black;
+}
+
+.navbarButtonsContainer {
+    display: flex;
+    padding: 0.25rem;
+}

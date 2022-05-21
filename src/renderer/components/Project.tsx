@@ -12,6 +12,7 @@ import {Sidebar} from './Sidebar';
 import {LogActions} from '../slices/LogSlice';
 import {showNotification} from '@mantine/notifications';
 import {SidebarActions} from '../slices/SidebarSlice';
+import {Navbar} from './Navbar';
 
 const INITIAL_FILETREE_WIDTH = 250;
 
@@ -55,11 +56,8 @@ const useSidebarResizer = (): [number, MutableRefObject<HTMLDivElement | null>] 
 };
 
 export const Project = () => {
-	const dispatch = useAppDispatch();
-
 	const root = useAppSelector(state => state.filetree.root);
 	const project = useAppSelector(state => state.project.currentProject);
-	const gameExePath = useAppSelector(state => state.project.gameExePath);
 
 	if (!root || !project) return null;
 
@@ -81,46 +79,9 @@ export const Project = () => {
 		return () => document.body.removeEventListener('resize', listener);
 	}, [ref.current, projectContainerRef.current]);
 
-	useEffect(() =>
-		MainProcess.handleBuildProjectLog(log => dispatch(LogActions.addLog(log))),
-		[]
-	);
-
-	const handleBuildProject = async () => {
-		dispatch(SidebarActions.setActiveTab('logs'));
-		await MainProcess.buildProject({ projectPath: root.path, project });
-		showNotification({ title: 'Build Successful', message: 'The project was built successfully!', color: 'green' });
-	};
-
-	useEffect(() =>
-		MainProcess.handleMenuBuildProject(handleBuildProject),
-		[root.path, project]
-	);
-
-	const handleBuildThenRun = async () => {
-		if (!gameExePath) {
-			const selection = await MainProcess.getGamePathChannel();
-
-			if (!selection) return;
-
-			dispatch(ProjectActions.setGameExePath(selection));
-		}
-
-
-	};
-
 	return <div className={styles.container}>
-		<div className={styles.navbarContainer}>
-			<div className={styles.navbarButtonsContainer}>
-				<ActionIcon color='green' onClick={handleBuildProject}>
-					<BsHammer />
-				</ActionIcon>
-				<ActionIcon color='green'>
-					<AiOutlineCaretRight />
-				</ActionIcon>
-			</div>
-		</div>
-		<div className={styles.filetreeEditorContainer} ref={projectContainerRef} style={{ minHeight: 0 }} >
+		<Navbar />
+		<div className={styles.filetreeEditorContainer} ref={projectContainerRef}>
 			<Sidebar width={sidebarWidth} />
 
 			{/* This effectively hovers over the right border of the file tree to give the user more space to select the

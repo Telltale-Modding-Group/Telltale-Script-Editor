@@ -4,22 +4,11 @@
     flex-direction: column;
 }
 
-.navbarContainer {
-    display: flex;
-    justify-content: flex-end;
-    width: 100%;
-    border-bottom: 1px solid black;
-}
-
-.navbarButtonsContainer {
-    display: flex;
-    padding: 0.25rem;
-}
-
 .filetreeEditorContainer {
     display: flex;
     align-items: stretch;
     flex-grow: 1;
+    min-height: 0;
 }
 
 .resizeContainer {

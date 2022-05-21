@@ -5,7 +5,7 @@ import {
 	ChannelSource, CreateDirectoryChannel, CreateFileChannel, CreateProjectDirectoryChannel, DeleteFileChannel,
 	GetDirectoryChannel,
 	GetFileContentsChannel,
-	GetNewProjectLocationChannel,
+	GetNewProjectLocationChannel, MenuBuildProjectChannel,
 	MenuNewProjectChannel, MenuNotImplementedChannel,
 	MenuOpenProjectChannel,
 	MenuProjectSettingsChannel, OpenInExplorerChannel,
@@ -41,6 +41,7 @@ const ipc: MainProcessUtils = {
 	handleMenuNewProject: MenuNewProjectChannel(source).listen,
 	handleMenuOpenProject: MenuOpenProjectChannel(source).listen,
 	handleMenuProjectSettings: MenuProjectSettingsChannel(source).listen,
+	handleMenuBuildProject: MenuBuildProjectChannel(source).listen,
 	handleBuildProjectLog: BuildProjectLogChannel(source).listen,
 
 	// TODO: Remove once everything is good to go

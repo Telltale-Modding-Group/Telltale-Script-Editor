@@ -90,6 +90,11 @@ export const Project = () => {
 		setBuilding(false);
 	};
 
+	useEffect(() =>
+		MainProcess.handleMenuBuildProject(handleBuildProject),
+		[root.path, project]
+	);
+
 	return <div className={styles.container}>
 		<Modal opened={showBuildModal} withCloseButton={false} onClose={() => setShowBuildModal(false)} size="lg" styles={{ modal: { height: '90%' }, body: { height: '100%' }}}>
 			<Stack style={{ height: '100%' }}>

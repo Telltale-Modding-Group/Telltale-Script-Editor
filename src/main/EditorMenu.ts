@@ -1,6 +1,7 @@
 import {BrowserWindow, Menu, shell} from 'electron';
 import {getIPCMainChannelSource} from './utils';
 import {
+	MenuBuildProjectChannel,
 	MenuNewProjectChannel,
 	MenuNotImplementedChannel,
 	MenuOpenProjectChannel,
@@ -69,7 +70,7 @@ export const getEditorMenu = (window: BrowserWindow) => {
 			submenu: [
 				{
 					label: 'Build',
-					click: notImplemented
+					click: () => MenuBuildProjectChannel(source).send()
 				},
 				{
 					label: 'Build and Run',

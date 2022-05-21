@@ -4,7 +4,7 @@ import {
 	CreateProjectDirectoryChannel, DeleteFileChannel,
 	GetDirectoryChannel,
 	GetFileContentsChannel,
-	GetNewProjectLocationChannel,
+	GetNewProjectLocationChannel, MenuBuildProjectChannel,
 	MenuNewProjectChannel, MenuNotImplementedChannel,
 	MenuOpenProjectChannel,
 	MenuProjectSettingsChannel, OpenInExplorerChannel,
@@ -34,6 +34,7 @@ export interface MainProcessUtils {
 	handleMenuNewProject: ReturnType<typeof MenuNewProjectChannel>["listen"];
 	handleMenuOpenProject: ReturnType<typeof MenuOpenProjectChannel>["listen"];
 	handleMenuProjectSettings: ReturnType<typeof MenuProjectSettingsChannel>["listen"];
+	handleMenuBuildProject: ReturnType<typeof MenuBuildProjectChannel>["listen"];
 	handleBuildProjectLog: ReturnType<typeof BuildProjectLogChannel>["listen"];
 
 	// TODO: Remove once everything is good to go

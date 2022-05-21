@@ -45,5 +45,6 @@ export const OpenInExplorerChannel = createChannel<string>('openinexplorer');
 export const MenuNewProjectChannel = createChannel<void>('menu:newproject');
 export const MenuOpenProjectChannel = createChannel<void>('menu:openproject');
 export const MenuProjectSettingsChannel = createChannel<void>('menu:projectsettings');
+export const MenuBuildProjectChannel = createChannel<void>('menu:buildproject');
 export const MenuNotImplementedChannel = createChannel<void>('menu:notimplemented');
 export const BuildProjectLogChannel = createChannel<string>('buildproject:log');

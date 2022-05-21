@@ -27,8 +27,10 @@ export const Navbar = () => {
 	const handleBuildProject = async () => {
 		dispatch(LogActions.clear());
 		dispatch(SidebarActions.setActiveTab('logs'));
-		await MainProcess.buildProject({ projectPath: root.path, project });
+		const buildZipPath = await MainProcess.buildProject({ projectPath: root.path, project });
 		showNotification({ title: 'Build Successful', message: 'The project was built successfully!', color: 'green' });
+
+		return buildZipPath;
 	};
 
 	useEffect(() =>
@@ -36,14 +38,20 @@ export const Navbar = () => {
 	[root.path, project]
 	);
 
-	const handleBuildThenRun = async () => {
-		if (!gameExePath) {
-			const selection = await MainProcess.getGamePathChannel();
+	const handleBuildAndRun = async () => {
+		let gamePath = gameExePath;
 
-			if (!selection) return;
+		if (!gamePath) {
+			gamePath = await MainProcess.getGamePathChannel();
 
-			dispatch(ProjectActions.setGameExePath(selection));
+			if (!gamePath) return;
+
+			dispatch(ProjectActions.setGameExePath(gamePath));
 		}
+
+		const buildZipPath = await handleBuildProject();
+
+		await MainProcess.runProject({ buildZipPath, gamePath });
 	};
 
 	return <div className={styles.navbarContainer}>
@@ -51,7 +59,7 @@ export const Navbar = () => {
 			<ActionIcon color='green' onClick={handleBuildProject}>
 				<BsHammer />
 			</ActionIcon>
-			<ActionIcon color='green'>
+			<ActionIcon color='green' onClick={handleBuildAndRun}>
 				<AiOutlineCaretRight />
 			</ActionIcon>
 		</div>

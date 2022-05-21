@@ -1,4 +1,5 @@
 import {
+	RunProjectChannel,
 	BuildProjectChannel, BuildProjectLogChannel,
 	CreateDirectoryChannel, CreateFileChannel,
 	CreateProjectDirectoryChannel, DeleteFileChannel,
@@ -30,6 +31,7 @@ export interface MainProcessUtils {
 	createFile: ReturnType<typeof CreateFileChannel>["invoke"];
 	openInExplorer: ReturnType<typeof OpenInExplorerChannel>["send"];
 	buildProject: ReturnType<typeof BuildProjectChannel>["invoke"];
+	runProject: ReturnType<typeof RunProjectChannel>["invoke"];
 	getGamePathChannel: ReturnType<typeof GetGamePathChannel>["invoke"];
 
 	handleMenuNewProject: ReturnType<typeof MenuNewProjectChannel>["listen"];

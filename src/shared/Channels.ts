@@ -41,7 +41,7 @@ export const CreateFileChannel = createInvokableChannel<{ directoryPath: string,
 export const CreateDirectoryChannel = createInvokableChannel<string, string>('createdirectory');
 export const BuildProjectChannel = createInvokableChannel<{ projectPath: string, project: Project }, string>('buildproject');
 export const GetGamePathChannel = createInvokableChannel<void, string | undefined>('getgamepath');
-export const BuildProjectAndRunChannel = createInvokableChannel<{ projectPath: string, project: Project, gamePath: string }, void>('buildprojectandrun');
+export const RunProjectChannel = createInvokableChannel<{ buildZipPath: string, gamePath: string }, void>('runproject');
 
 export const OpenInExplorerChannel = createChannel<string>('openinexplorer');
 export const MenuNewProjectChannel = createChannel<void>('menu:newproject');

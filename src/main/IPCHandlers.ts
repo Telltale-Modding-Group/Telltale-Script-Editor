@@ -3,7 +3,7 @@ import * as fs from 'fs/promises';
 import {FileData, getFiles, getFilesInDirectory, getIPCMainChannelSource} from './utils';
 import {createModInfo, EditorFile, Project} from '../shared/types';
 import {
-	BuildProjectAndRunChannel,
+	RunProjectChannel,
 	BuildProjectChannel, BuildProjectLogChannel,
 	CreateDirectoryChannel,
 	CreateFileChannel,
@@ -19,11 +19,12 @@ import {
 } from '../shared/Channels';
 import * as path from 'path';
 import {formatProjectName} from '../shared/utils';
-import {exec} from 'child_process';
+import {exec, execFile} from 'child_process';
 import {opendir} from 'fs/promises';
 import {createWriteStream} from 'fs';
-import {format, formatISO} from 'date-fns';
+import {format} from 'date-fns';
 import archiver from 'archiver';
+import AdmZip from 'adm-zip';
 
 const buildProject = (log: (message: string) => void) => async ({ projectPath, project }: { projectPath: string, project: Project }) => {
 	log('============== Starting...');
@@ -362,7 +363,24 @@ export const registerIPCHandlers = (window: BrowserWindow) => {
 	 */
 	BuildProjectChannel(source).handle(buildProject(log));
 
-	BuildProjectAndRunChannel(source).handle(async ({ projectPath, project, gamePath }) => {
+	RunProjectChannel(source).handle(async ({ buildZipPath, gamePath }) => {
+		const archivesPath = path.join(path.dirname(gamePath), 'Archives');
+		log(`============== Installing mod into ${archivesPath}...`);
 
+		const zip = new AdmZip(buildZipPath);
+		zip.extractAllTo(archivesPath, true);
+
+		log('============== Mod installed! Launching game...');
+
+		const game = execFile(gamePath, (error, stdout, stderr) => {
+			log(stdout);
+			log(stderr);
+		});
+
+		await new Promise(resolve => game.on('close', resolve));
+
+		log('============== Game closed!');
+
+		return;
 	});
 };

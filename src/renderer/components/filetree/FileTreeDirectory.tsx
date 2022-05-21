@@ -23,16 +23,21 @@ type FileTreeDirectoryProps = {
 export const FileTreeDirectory = ({directory, indentation}: FileTreeDirectoryProps) => {
 	if (!directory.directory) return null;
 
+	const path = directory.path;
+
 	const dispatch = useAppDispatch();
-
 	const selectedPath = useAppSelector(state => state.filetree.selectedPath);
-	const selected = directory.path === selectedPath;
 	const newFilePath = useAppSelector(state => state.filetree.newFilePath);
+	const expandedDirectories = useAppSelector(state => state.filetree.expandedDirectories);
 
-	const [expanded, setExpanded] = useState(false);
-	const toggle = () => setExpanded(!expanded);
+	const expanded = expandedDirectories[path];
 
-	const handleClick = () => dispatch(FileTreeActions.setSelectedPath(directory.path));
+	const selected = path === selectedPath;
+
+	const toggle = () => dispatch(FileTreeActions.toggleDirectory(path));
+	const expand = () => dispatch(FileTreeActions.expandDirectory(path));
+
+	const handleClick = () => dispatch(FileTreeActions.setSelectedPath(path));
 
 	const handleToggleIconClick: MouseEventHandler = (e) => {
 		e.stopPropagation();
@@ -42,7 +47,7 @@ export const FileTreeDirectory = ({directory, indentation}: FileTreeDirectoryPro
 	const [menuProps, toggleMenu] = useMenuState();
 	const [anchorPoint, setAnchorPoint] = useState({ x: 0, y: 0});
 
-	const [renaming, setRenaming] = useState(newFilePath === directory.path);
+	const [renaming, setRenaming] = useState(newFilePath === path);
 	const [newDirectoryName, setNewDirectoryName] = useState(directory.name);
 
 	const handleRename = () => {
@@ -64,7 +69,7 @@ export const FileTreeDirectory = ({directory, indentation}: FileTreeDirectoryPro
 			dispatch(FileTreeAsyncActions.refreshRootDirectory())
 		}
 
-		dispatch(EditorActions.handleRename({ oldPath: directory.path, newPath }));
+		dispatch(EditorActions.handleRename({ oldPath: path, newPath }));
 	};
 
 	const handleRightClick: MouseEventHandler<HTMLDivElement> = e => {
@@ -77,7 +82,7 @@ export const FileTreeDirectory = ({directory, indentation}: FileTreeDirectoryPro
 	const hideDeleteModal = () => setShowDeleteModal(false);
 
 	const handleOpenInExplorer = () => {
-		MainProcess.openInExplorer(directory.path);
+		MainProcess.openInExplorer(path);
 	};
 
 	const handleDeleteDirectory = async () => {
@@ -90,28 +95,28 @@ export const FileTreeDirectory = ({directory, indentation}: FileTreeDirectoryPro
 	};
 
 	const handleCreateDirectory = async () => {
-		const path = await MainProcess.createDirectory(directory.path);
+		const directoryPath = await MainProcess.createDirectory(path);
 
-		setExpanded(true);
-		dispatch(FileTreeActions.setNewFilePath(path));
+		expand();
+		dispatch(FileTreeActions.setNewFilePath(directoryPath));
 		dispatch(FileTreeAsyncActions.refreshRootDirectory());
 	};
 
 	const hasChildren = directory.children.length > 0;
 
 	const handleCreateFile = async () => {
-		const path = await MainProcess.createFile({ directoryPath: directory.path, extension: 'txt' });
+		const newFilePath = await MainProcess.createFile({ directoryPath: path, extension: 'txt' });
 
-		setExpanded(true);
-		dispatch(FileTreeActions.setNewFilePath(path));
+		expand();
+		dispatch(FileTreeActions.setNewFilePath(newFilePath));
 		dispatch(FileTreeAsyncActions.refreshRootDirectory());
 	};
 
 	const handleCreateScript = async () => {
-		const path = await MainProcess.createFile({ directoryPath: directory.path, extension: 'lua' });
+		const newFilePath = await MainProcess.createFile({ directoryPath: path, extension: 'lua' });
 
-		setExpanded(true);
-		dispatch(FileTreeActions.setNewFilePath(path));
+		expand();
+		dispatch(FileTreeActions.setNewFilePath(newFilePath));
 		dispatch(FileTreeAsyncActions.refreshRootDirectory());
 	};
 
@@ -182,7 +187,7 @@ export const FileTreeDirectory = ({directory, indentation}: FileTreeDirectoryPro
 				: <Text className={fileStyles.text}>{directory.name}</Text>
 			}
 		</div>
-		<Collapse in={expanded}>
+		<Collapse in={expanded} style={{ flexGrow: 1, minHeight: 0 }}>
 			{directory.children.map(child => child.directory
 				? <FileTreeDirectory
 					key={child.path}

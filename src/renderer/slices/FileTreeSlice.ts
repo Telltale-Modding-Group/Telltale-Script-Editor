@@ -7,10 +7,13 @@ interface FileTreeState {
 	selectedPath?: string,
 	root?: EditorFile,
 	// Represents the path of a newly created file. After the file is renamed, this should be set to undefined
-	newFilePath?: string
+	newFilePath?: string,
+	expandedDirectories: Record<string, true>;
 }
 
-const initialState: FileTreeState = {};
+const initialState: FileTreeState = {
+	expandedDirectories: {}
+};
 
 const setRootDirectoryFromPath = createAsyncThunk('filetree/setrootdirectoryfrompath', (path: string) =>
 	MainProcess.getDirectory(path)
@@ -32,6 +35,19 @@ export const FileTreeSlice = createSlice({
 		},
 		setNewFilePath: (state, { payload }: PayloadAction<string | undefined>) => {
 			state.newFilePath = payload;
+		},
+		expandDirectory: (state, { payload }: PayloadAction<string>) => {
+			state.expandedDirectories[payload] = true;
+		},
+		collapseDirectory: (state, { payload }: PayloadAction<string>) => {
+			delete state.expandedDirectories[payload];
+		},
+		toggleDirectory: (state, { payload }: PayloadAction<string>) => {
+			if (state.expandedDirectories[payload]) {
+				delete state.expandedDirectories[payload];
+			} else {
+				state.expandedDirectories[payload] = true;
+			}
 		},
 		clear: () => initialState
 	},

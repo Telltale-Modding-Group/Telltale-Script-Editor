@@ -71,3 +71,5 @@ export const getIPCMainChannelSource = (window: BrowserWindow): ChannelSource =>
 		return () => ipcMain.removeListener(channel, handler);
 	}
 });
+
+export const conditional = <T>(condition: boolean, value: T): T | undefined => condition ? value : undefined;

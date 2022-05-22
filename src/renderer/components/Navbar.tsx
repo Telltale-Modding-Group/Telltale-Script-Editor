@@ -44,7 +44,7 @@ export const Navbar = () => {
 		let gamePath = gameExePath;
 
 		if (!gamePath) {
-			gamePath = await MainProcess.getGamePathChannel();
+			gamePath = await MainProcess.getGamePath();
 
 			if (!gamePath) return;
 

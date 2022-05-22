@@ -1,87 +1,99 @@
-import {BrowserWindow, Menu, shell} from 'electron';
-import {getIPCMainChannelSource} from './utils';
+import {BrowserWindow, Menu, MenuItem, shell} from 'electron';
+import {conditional, getIPCMainChannelSource} from './utils';
 import {
-	MenuBuildProjectChannel,
+	MenuBuildProjectChannel, MenuCloseProjectChannel,
 	MenuNewProjectChannel,
 	MenuNotImplementedChannel,
 	MenuOpenProjectChannel,
 	MenuProjectSettingsChannel
 } from '../shared/Channels';
 
-export const getEditorMenu = (window: BrowserWindow) => {
+export const updateEditorMenu = (window: BrowserWindow, state: AppState): void =>
+	window.setMenu(getEditorMenu(window, state));
+
+export const getEditorMenu = (window: BrowserWindow, state: AppState) => {
 	const source = getIPCMainChannelSource(window);
 
 	// TODO: Remove once everything is good to go
 	const notImplemented = () => MenuNotImplementedChannel(source).send();
 
-	return Menu.buildFromTemplate([
+	const ProjectMenu = {
+		label: 'Project',
+		submenu: [
+			{
+				label: 'Build',
+				click: () => MenuBuildProjectChannel(source).send()
+			},
+			{
+				label: 'Build and Run',
+				click: notImplemented
+			},
+			{
+				label: 'Project Settings',
+				click: () => MenuProjectSettingsChannel(source).send()
+			}
+		]
+	};
+
+	const FileSubmenu = [
 		{
-			label: 'File',
+			label: 'New',
 			submenu: [
 				{
-					label: 'New',
-					submenu: [
-						{
-							label: 'Project',
-							click: () => MenuNewProjectChannel(source).send()
-						},
-						{
-							label: 'Script',
-							click: notImplemented
-						}
-					]
+					label: 'Project',
+					click: () => MenuNewProjectChannel(source).send()
 				},
+				conditional(state.projectOpen,
 				{
-					label: 'Open',
-					submenu: [
-						{
-							label: 'Project',
-							click: () => MenuOpenProjectChannel(source).send()
-						},
-						{
-							label: 'TTARCH2 Archive',
-							click: notImplemented
-						}
-					]
-				},
-				{
-					label: 'Save',
+					label: 'Script',
 					click: notImplemented
+				})
+			].filter(item => item)
+		},
+		{
+			label: 'Open',
+			submenu: [
+				{
+					label: 'Project',
+					click: () => MenuOpenProjectChannel(source).send()
 				},
 				{
-					label: 'Save As',
+					label: 'TTARCH2 Archive',
 					click: notImplemented
-				},
-				{
-					label: 'Reload',
-					click: () => window.reload()
-				},
-				{
-					label: 'Exit',
-					click: () => window.close()
 				}
 			]
+		},
+		conditional(state.projectOpen,{
+			label: 'Save',
+			click: notImplemented
+		}),
+		conditional(state.projectOpen, {
+			label: 'Save As',
+			click: notImplemented
+		}),
+		conditional(state.projectOpen, {
+			label: 'Close Project',
+			click: () => MenuCloseProjectChannel(source).send()
+		}),
+		{
+			label: 'Reload',
+			click: () => window.reload()
+		},
+		{
+			label: 'Exit',
+			click: () => window.close()
+		}
+	].filter(item => item);
+
+	const template = [
+		{
+			label: 'File',
+			submenu: FileSubmenu
 		},
 		{
 			role: 'editMenu'
 		},
-		{
-			label: 'Project',
-			submenu: [
-				{
-					label: 'Build',
-					click: () => MenuBuildProjectChannel(source).send()
-				},
-				{
-					label: 'Build and Run',
-					click: notImplemented
-				},
-				{
-					label: 'Project Settings',
-					click: () => MenuProjectSettingsChannel(source).send()
-				}
-			]
-		},
+		conditional(state.projectOpen, ProjectMenu),
 		{
 			label: 'Help',
 			submenu: [
@@ -112,5 +124,7 @@ export const getEditorMenu = (window: BrowserWindow) => {
 				}
 			]
 		}
-	]);
+	].filter(item => item) as unknown as MenuItem[];
+
+	return Menu.buildFromTemplate(template);
 }

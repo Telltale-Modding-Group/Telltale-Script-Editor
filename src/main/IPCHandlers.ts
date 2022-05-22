@@ -15,7 +15,7 @@ import {
 	OpenInExplorerChannel,
 	OpenProjectChannel,
 	RenameFileChannel,
-	SaveFileChannel
+	SaveFileChannel, UpdateAppState
 } from '../shared/Channels';
 import * as path from 'path';
 import {formatProjectName} from '../shared/utils';
@@ -25,6 +25,7 @@ import {createWriteStream} from 'fs';
 import {format} from 'date-fns';
 import archiver from 'archiver';
 import AdmZip from 'adm-zip';
+import {updateEditorMenu} from './EditorMenu';
 
 const buildProject = (log: (message: string) => void) => async ({ projectPath, project }: { projectPath: string, project: Project }) => {
 	log('============== Starting...');
@@ -343,6 +344,8 @@ export const registerIPCHandlers = (window: BrowserWindow) => {
 
 		return selection.filePaths[0];
 	});
+
+	UpdateAppState(source).listen(state => updateEditorMenu(window, state));
 
 	const buildProjectLogChannel = BuildProjectLogChannel(source);
 	const log = (message: string) => {

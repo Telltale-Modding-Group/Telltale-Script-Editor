@@ -10,7 +10,7 @@ import {
 	MenuOpenProjectChannel,
 	MenuProjectSettingsChannel, OpenInExplorerChannel,
 	OpenProjectChannel, RenameFileChannel,
-	SaveFileChannel
+	SaveFileChannel, UpdateAppState, MenuCloseProjectChannel
 } from '../shared/Channels';
 
 export interface MainProcessUtils {
@@ -32,12 +32,14 @@ export interface MainProcessUtils {
 	openInExplorer: ReturnType<typeof OpenInExplorerChannel>["send"];
 	buildProject: ReturnType<typeof BuildProjectChannel>["invoke"];
 	runProject: ReturnType<typeof RunProjectChannel>["invoke"];
-	getGamePathChannel: ReturnType<typeof GetGamePathChannel>["invoke"];
+	getGamePath: ReturnType<typeof GetGamePathChannel>["invoke"];
+	updateAppState: ReturnType<typeof UpdateAppState>["send"];
 
 	handleMenuNewProject: ReturnType<typeof MenuNewProjectChannel>["listen"];
 	handleMenuOpenProject: ReturnType<typeof MenuOpenProjectChannel>["listen"];
 	handleMenuProjectSettings: ReturnType<typeof MenuProjectSettingsChannel>["listen"];
 	handleMenuBuildProject: ReturnType<typeof MenuBuildProjectChannel>["listen"];
+	handleMenuCloseProject: ReturnType<typeof MenuCloseProjectChannel>["listen"];
 	handleBuildProjectLog: ReturnType<typeof BuildProjectLogChannel>["listen"];
 
 	// TODO: Remove once everything is good to go

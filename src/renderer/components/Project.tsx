@@ -2,7 +2,7 @@ import styles from './Project.module.css';
 import {EditorContainer} from './editor/EditorContainer';
 import * as React from 'react';
 import {MutableRefObject, useEffect, useRef, useState} from 'react';
-import {useAppDispatch, useAppSelector} from '../slices/store';
+import {resetAllSlices, useAppDispatch, useAppSelector} from '../slices/store';
 import {ActionIcon, Button, Code, Group, Header, Modal, ScrollArea, Space, Stack, Text, Title} from '@mantine/core';
 import {BsHammer} from 'react-icons/bs';
 import {AiOutlineCaretRight} from 'react-icons/ai';
@@ -56,6 +56,8 @@ const useSidebarResizer = (): [number, MutableRefObject<HTMLDivElement | null>] 
 };
 
 export const Project = () => {
+	const dispatch = useAppDispatch();
+
 	const root = useAppSelector(state => state.filetree.root);
 	const project = useAppSelector(state => state.project.currentProject);
 
@@ -78,6 +80,14 @@ export const Project = () => {
 
 		return () => document.body.removeEventListener('resize', listener);
 	}, [ref.current, projectContainerRef.current]);
+
+	useEffect(() =>
+		MainProcess.handleMenuCloseProject(() => {
+			resetAllSlices(dispatch);
+			MainProcess.updateAppState({ projectOpen: false });
+		}),
+		[dispatch]
+	);
 
 	return <div className={styles.container}>
 		<Navbar />

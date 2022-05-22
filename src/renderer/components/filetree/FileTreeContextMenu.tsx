@@ -157,7 +157,7 @@ export const FileTreeContextMenu = () => {
 
 				{isRootDirectory && <ContextMenuItem onClick={handleRefreshRootDirectory}>Refresh</ContextMenuItem>}
 				{hasChildren && <ContextMenuItem onClick={toggleSelectedDirectory}>{expanded ? 'Collapse' : 'Expand'}</ContextMenuItem>}
-				{!isDirectory && <ContextMenuItem onClick={handleDoubleClick}>Open</ContextMenuItem>}
+				{!isDirectory && <ContextMenuItem onClick={handleDoubleClick}>Open in Editor</ContextMenuItem>}
 				<ContextMenuItem onClick={handleRename}>Rename</ContextMenuItem>
 				<ContextMenuItem onClick={handleOpenInExplorer}>Open in explorer</ContextMenuItem>
 				{!selectedTseprojFile && <ContextMenuItem onClick={handleDeleteFile}>Delete</ContextMenuItem>}

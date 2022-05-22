@@ -11,7 +11,7 @@ import {
 	MenuOpenProjectChannel,
 	MenuProjectSettingsChannel, OpenInExplorerChannel,
 	OpenProjectChannel, RenameFileChannel,
-	SaveFileChannel
+	SaveFileChannel, UpdateAppState, MenuCloseProjectChannel
 } from '../shared/Channels';
 
 const source: ChannelSource = {
@@ -39,12 +39,14 @@ const ipc: MainProcessUtils = {
 	openInExplorer: OpenInExplorerChannel(source).send,
 	buildProject: BuildProjectChannel(source).invoke,
 	runProject: RunProjectChannel(source).invoke,
-	getGamePathChannel: GetGamePathChannel(source).invoke,
+	getGamePath: GetGamePathChannel(source).invoke,
+	updateAppState: UpdateAppState(source).send,
 
 	handleMenuNewProject: MenuNewProjectChannel(source).listen,
 	handleMenuOpenProject: MenuOpenProjectChannel(source).listen,
 	handleMenuProjectSettings: MenuProjectSettingsChannel(source).listen,
 	handleMenuBuildProject: MenuBuildProjectChannel(source).listen,
+	handleMenuCloseProject: MenuCloseProjectChannel(source).listen,
 	handleBuildProjectLog: BuildProjectLogChannel(source).listen,
 
 	// TODO: Remove once everything is good to go

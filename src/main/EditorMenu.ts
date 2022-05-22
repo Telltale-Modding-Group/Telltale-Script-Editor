@@ -1,6 +1,7 @@
 import {BrowserWindow, Menu, MenuItem, shell} from 'electron';
 import {conditional, getIPCMainChannelSource} from './utils';
 import {
+	MenuBuildAndRunProjectChannel,
 	MenuBuildProjectChannel, MenuCloseProjectChannel,
 	MenuNewProjectChannel,
 	MenuNotImplementedChannel,
@@ -26,7 +27,7 @@ export const getEditorMenu = (window: BrowserWindow, state: AppState) => {
 			},
 			{
 				label: 'Build and Run',
-				click: notImplemented
+				click: () => MenuBuildAndRunProjectChannel(source).send()
 			},
 			{
 				label: 'Project Settings',

@@ -10,7 +10,7 @@ import {
 	MenuOpenProjectChannel,
 	MenuProjectSettingsChannel, OpenInExplorerChannel,
 	OpenProjectChannel, RenameFileChannel,
-	SaveFileChannel, UpdateAppState, MenuCloseProjectChannel
+	SaveFileChannel, UpdateAppState, MenuCloseProjectChannel, MenuBuildAndRunProjectChannel
 } from '../shared/Channels';
 
 export interface MainProcessUtils {
@@ -40,6 +40,7 @@ export interface MainProcessUtils {
 	handleMenuProjectSettings: ReturnType<typeof MenuProjectSettingsChannel>["listen"];
 	handleMenuBuildProject: ReturnType<typeof MenuBuildProjectChannel>["listen"];
 	handleMenuCloseProject: ReturnType<typeof MenuCloseProjectChannel>["listen"];
+	handleMenuBuildAndRunProject: ReturnType<typeof MenuBuildAndRunProjectChannel>["listen"];
 	handleBuildProjectLog: ReturnType<typeof BuildProjectLogChannel>["listen"];
 
 	// TODO: Remove once everything is good to go

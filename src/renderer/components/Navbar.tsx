@@ -56,6 +56,11 @@ export const Navbar = () => {
 		await MainProcess.runProject({ buildZipPath, gamePath });
 	};
 
+	useEffect(() =>
+		MainProcess.handleMenuBuildAndRunProject(handleBuildAndRun),
+		[gameExePath]
+	);
+
 	return <div className={styles.navbarContainer}>
 		<div className={styles.navbarButtonsContainer}>
 			<ActionIcon color='green' onClick={handleBuildProject}>

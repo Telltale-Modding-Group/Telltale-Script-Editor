@@ -11,7 +11,7 @@ import {
 	MenuOpenProjectChannel,
 	MenuProjectSettingsChannel, OpenInExplorerChannel,
 	OpenProjectChannel, RenameFileChannel,
-	SaveFileChannel, UpdateAppState, MenuCloseProjectChannel
+	SaveFileChannel, UpdateAppState, MenuCloseProjectChannel, MenuBuildAndRunProjectChannel
 } from '../shared/Channels';
 
 const source: ChannelSource = {
@@ -46,6 +46,7 @@ const ipc: MainProcessUtils = {
 	handleMenuOpenProject: MenuOpenProjectChannel(source).listen,
 	handleMenuProjectSettings: MenuProjectSettingsChannel(source).listen,
 	handleMenuBuildProject: MenuBuildProjectChannel(source).listen,
+	handleMenuBuildAndRunProject: MenuBuildAndRunProjectChannel(source).listen,
 	handleMenuCloseProject: MenuCloseProjectChannel(source).listen,
 	handleBuildProjectLog: BuildProjectLogChannel(source).listen,
 

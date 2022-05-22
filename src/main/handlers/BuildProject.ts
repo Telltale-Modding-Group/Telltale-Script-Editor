@@ -7,6 +7,7 @@ import {format} from 'date-fns';
 import {createWriteStream} from 'fs';
 import archiver from 'archiver';
 import {getResdesc} from './ResdescUtils';
+import {dialog} from 'electron';
 
 /**
  * 1. For each lua file recursively in the project, compile into identical directory structure but inside Builds/temp
@@ -20,13 +21,18 @@ import {getResdesc} from './ResdescUtils';
  * 8. Create .zip of Builds/temp
  * 9. Delete Builds/temp
  */
-export const buildProject = (log: (message: string) => void) => async ({ projectPath, project }: { projectPath: string, project: Project }) => {
+export const buildProject = (log: (message: string) => void) => async ({ projectPath, project }: { projectPath: string, project: Project }): Promise<string | undefined> => {
 	log('============== Starting...');
 
 	const projectDir = await fs.opendir(projectPath);
 
 	const formattedProjectName = project.mod.name.replace(/[^/da-zA-Z]+/g, '');
 	const tempPath = path.join(projectPath, 'Builds', 'temp');
+
+	try {
+		await fs.rmdir(tempPath);
+		// eslint-disable-next-line no-empty
+	} catch {}
 
 	const rootLevelDirectories: FileData[] = [];
 	const modFiles: string[] = [];
@@ -70,13 +76,32 @@ export const buildProject = (log: (message: string) => void) => async ({ project
 
 			log(`============== Compiling ${file.path} into ${compiledLuaPath}...`);
 
-			const process = exec(`resources\\luac.exe -o "${compiledLuaPath}" "${file.path}"`, (e, out, err) => {
-				log(out);
-				log(err);
+			let error;
+			const process = exec(`resources\\luac.exe -o "${compiledLuaPath}" "${file.path}"`, async (e, out, err) => {
+				if (err) {
+					log(err);
+
+					error = err;
+				}
 			});
 			await new Promise(resolve => process.addListener('close', resolve));
 
-			log(`============== Finished compiling ${file.path}!`);
+			if (error) {
+				const result = await dialog.showMessageBox({
+					title: 'Compilation Error',
+					message: `There was an error compiling ${file.name}, do you want to continue or abort compilation?`,
+					buttons: ['Abort', 'Continue']
+				});
+
+				if (result.response === 0) {
+					log(`============== Aborting compilation! Cleaning up ${tempPath}...`);
+					await fs.rm(tempPath, { recursive: true });
+					log('============== BUILD FAILURE!');
+					return;
+				}
+			} else {
+				log(`============== Finished compiling ${file.path}!`);
+			}
 		}
 		else if (!file.directory) {
 			await fs.copyFile(file.path, file.path.replace(projectPath, tempPath));
@@ -136,7 +161,7 @@ export const buildProject = (log: (message: string) => void) => async ({ project
 
 	await fs.rm(tempPath, {recursive: true});
 
-	log('============== Done!');
+	log('============== BUILD SUCCESSFUL!');
 
 	return zipFilePath;
 }

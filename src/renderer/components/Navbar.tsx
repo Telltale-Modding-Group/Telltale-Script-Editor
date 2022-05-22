@@ -32,7 +32,16 @@ export const Navbar = () => {
 		dispatch(SidebarActions.setActiveTab('logs'));
 		const buildZipPath = await MainProcess.buildProject({ projectPath: root.path, project });
 		dispatch(FileTreeAsyncActions.refreshRootDirectory());
-		showNotification({ title: 'Build Successful', message: 'The project was built successfully!', color: 'green' });
+
+		if (!buildZipPath) {
+			showNotification({
+				title: 'Build Failed',
+				message: 'An error occurred during build compilation. Check the logs for more details.',
+				color: 'red'
+			});
+		} else {
+			showNotification({ title: 'Build Successful', message: 'The project was built successfully!', color: 'green' });
+		}
 
 		return buildZipPath;
 	};
@@ -54,6 +63,8 @@ export const Navbar = () => {
 		}
 
 		const buildZipPath = await handleBuildProject();
+
+		if (!buildZipPath) return;
 
 		await MainProcess.runProject({ buildZipPath, gamePath });
 	};

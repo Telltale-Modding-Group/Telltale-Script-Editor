@@ -24,6 +24,7 @@ export const FileTreeContextMenu = () => {
 	const hasChildren = contextMenuFile?.directory && contextMenuFile.children.length > 0;
 	const expanded = path ? expandedDirectories[path] : undefined;
 	const selectedTseprojFile = contextMenuFile?.name.includes('.tseproj');
+	const isRootDirectory = contextMenuFile?.path === root.path;
 
 	const [menuProps, toggleMenu] = useMenuState();
 
@@ -38,6 +39,10 @@ export const FileTreeContextMenu = () => {
 	const toggleSelectedDirectory = () => dispatch(FileTreeActions.toggleDirectory(path!));
 	const expandSelectedDirectory = () => dispatch(FileTreeActions.expandDirectory(path!));
 
+	const handleRefreshRootDirectory = () => {
+		dispatch(FileTreeAsyncActions.refreshRootDirectory());
+	};
+
 	const handleCreateFile = async () => {
 		if (!path) return;
 
@@ -45,7 +50,7 @@ export const FileTreeContextMenu = () => {
 
 		expandSelectedDirectory();
 		dispatch(FileTreeActions.setRenamingFilePath(newFilePath));
-		dispatch(FileTreeAsyncActions.refreshRootDirectory());
+		handleRefreshRootDirectory();
 	};
 
 	const handleCreateScript = async () => {
@@ -55,7 +60,7 @@ export const FileTreeContextMenu = () => {
 
 		expandSelectedDirectory();
 		dispatch(FileTreeActions.setRenamingFilePath(newFilePath));
-		dispatch(FileTreeAsyncActions.refreshRootDirectory());
+		handleRefreshRootDirectory()
 	};
 
 	const handleCreateDirectory = async () => {
@@ -65,7 +70,7 @@ export const FileTreeContextMenu = () => {
 
 		expandSelectedDirectory();
 		dispatch(FileTreeActions.setRenamingFilePath(directoryPath));
-		dispatch(FileTreeAsyncActions.refreshRootDirectory());
+		handleRefreshRootDirectory()
 	};
 
 	const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -78,7 +83,7 @@ export const FileTreeContextMenu = () => {
 
 		await MainProcess.deleteFile(contextMenuFile);
 
-		dispatch(FileTreeAsyncActions.refreshRootDirectory());
+		handleRefreshRootDirectory()
 		dispatch(EditorActions.handleFileDeleted(contextMenuFile));
 	};
 
@@ -150,6 +155,7 @@ export const FileTreeContextMenu = () => {
                     </SubMenu>
 				}
 
+				{isRootDirectory && <ContextMenuItem onClick={handleRefreshRootDirectory}>Refresh</ContextMenuItem>}
 				{hasChildren && <ContextMenuItem onClick={toggleSelectedDirectory}>{expanded ? 'Collapse' : 'Expand'}</ContextMenuItem>}
 				{!isDirectory && <ContextMenuItem onClick={handleDoubleClick}>Open</ContextMenuItem>}
 				<ContextMenuItem onClick={handleRename}>Rename</ContextMenuItem>

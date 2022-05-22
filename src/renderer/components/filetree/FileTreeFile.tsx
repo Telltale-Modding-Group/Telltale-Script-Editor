@@ -24,7 +24,9 @@ export const FileTreeFile = ({file, indentation}: FileTreeFileProps) => {
 	const selectedPath = useAppSelector(state => state.filetree.selectedPath);
 	const selected = selectedPath === file.path;
 	const supported = isSupported(file);
-	const newFilePath = useAppSelector(state => state.filetree.newFilePath);
+	const renamingFilePath = useAppSelector(state => state.filetree.renamingFilePath);
+
+	const renaming = renamingFilePath === file.path;
 
 	const handleClick = () => dispatch(FileTreeActions.setSelectedPath(file.path));
 	const handleDoubleClick = () => {
@@ -39,89 +41,32 @@ export const FileTreeFile = ({file, indentation}: FileTreeFileProps) => {
 		dispatch(EditorAsyncActions.openFile(file));
 	}
 
-	const [menuProps, toggleMenu] = useMenuState();
-	const [anchorPoint, setAnchorPoint] = useState({ x: 0, y: 0});
-
-	const [renaming, setRenaming] = useState(newFilePath === file.path);
 	const [newFileName, setNewFileName] = useState(file.name);
 
-	const handleRename = () => {
-		setRenaming(true);
-	};
-
 	const handleRenameSubmit = async () => {
+		if (newFileName.endsWith('.tseproj')) return showNotification({
+			title: 'Unable to rename',
+			message: 'There can only be one .tseproj file in this project!',
+			color: 'red'
+		});
+
+		dispatch(FileTreeActions.setRenamingFilePath());
+
 		if (newFileName !== file.name) {
 			const newPath = await MainProcess.renameFile({ file, newName: newFileName });
 
-			// If we're renaming the root directory, a normal refresh will no longer find the root.
-			if (indentation === 0) {
-				dispatch(FileTreeAsyncActions.setRootDirectoryFromPath(newPath));
-			} else {
-				dispatch(FileTreeAsyncActions.refreshRootDirectory())
-			}
-
+			dispatch(FileTreeAsyncActions.refreshRootDirectory())
 			dispatch(EditorActions.handleRename({ oldPath: file.path, newPath }));
 		}
-
-		setRenaming(false);
 	};
 
 	const handleRightClick: MouseEventHandler<HTMLDivElement> = e => {
 		handleClick();
-		setAnchorPoint({ x: e.clientX, y: e.clientY});
-		toggleMenu(true);
-	};
-
-	const handleOpenInExplorer = () => {
-		MainProcess.openInExplorer(file.path);
-	};
-
-	const [showDeleteModal, setShowDeleteModal] = useState(false);
-	const hideDeleteModal = () => setShowDeleteModal(false);
-
-	const handleDeleteDirectory = async () => {
-		hideDeleteModal();
-
-		await MainProcess.deleteFile(file);
-
-		dispatch(FileTreeAsyncActions.refreshRootDirectory());
-		dispatch(EditorActions.handleFileDeleted(file));
+		dispatch(FileTreeActions.setContextMenuAnchorPoint({ x: e.clientX, y: e.clientY}));
+		dispatch(FileTreeActions.setContextMenuFile(file));
 	};
 
 	return <>
-		<Modal
-			centered
-			withCloseButton={false}
-			opened={showDeleteModal}
-			onClose={hideDeleteModal}
-			size="sm"
-		>
-			<Stack>
-				<Title order={2}>Delete File</Title>
-				<Text>Are you sure you want to delete <em>{file.name}</em>?</Text>
-				<Space h="md" />
-				<Group position="right" spacing="xs">
-					<Button color="gray" onClick={hideDeleteModal}>Cancel</Button>
-					<Button color="red" onClick={handleDeleteDirectory}>
-						Delete
-					</Button>
-				</Group>
-			</Stack>
-		</Modal>
-
-		<Portal>
-			<ControlledMenu
-				direction="right"
-				anchorPoint={anchorPoint}
-				onClose={() => toggleMenu(false)}
-				{...menuProps}
-			>
-				<ContextMenuItem onClick={handleDoubleClick}>Open</ContextMenuItem>
-				<ContextMenuItem onClick={handleRename}>Rename</ContextMenuItem>
-				<ContextMenuItem onClick={handleOpenInExplorer}>Open in explorer</ContextMenuItem>
-				<ContextMenuItem onClick={() => setShowDeleteModal(true)}>Delete</ContextMenuItem>
-			</ControlledMenu>
-		</Portal>
 		<div
 			className={classNames({[styles.selected]: selected})}
 			style={{paddingLeft: `${indentation + 1.4}rem`}}

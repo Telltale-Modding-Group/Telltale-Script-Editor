@@ -54,3 +54,7 @@ export const createModInfo = (name: string, version: string, author: string, fil
 	ModCompatibility: 'The_Walking_Dead_Definitive_Edition',
 	ModFiles: files
 });
+
+export type LocalStore = {
+	gamePath?: string
+};

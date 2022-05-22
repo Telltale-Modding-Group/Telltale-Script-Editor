@@ -7,7 +7,7 @@ import {
 	MenuNewProjectChannel,
 	MenuNotImplementedChannel,
 	MenuOpenProjectChannel,
-	MenuProjectSettingsChannel
+	MenuProjectSettingsChannel, MenuSettingsChannel
 } from '../shared/Channels';
 
 export const updateEditorMenu = (window: BrowserWindow, state: AppState): void =>
@@ -80,6 +80,10 @@ export const getEditorMenu = (window: BrowserWindow, state: AppState) => {
 		{
 			label: 'Reload',
 			click: () => window.reload()
+		},
+		{
+			label: 'Settings',
+			click: () => MenuSettingsChannel(source).send()
 		},
 		{
 			label: 'Exit',

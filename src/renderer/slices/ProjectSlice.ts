@@ -2,8 +2,7 @@ import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 import {Project} from '../../shared/types';
 
 interface ProjectState {
-	currentProject?: Project,
-	gameExePath?: string
+	currentProject?: Project
 }
 
 const initialState: ProjectState = {};
@@ -44,9 +43,6 @@ export const ProjectSlice = createSlice({
 			if (!state.currentProject) return;
 
 			state.currentProject.formatVersion = payload;
-		},
-		setGameExePath: (state, { payload }: PayloadAction<string>) => {
-			state.gameExePath = payload;
 		},
 		clear: () => initialState
 	}

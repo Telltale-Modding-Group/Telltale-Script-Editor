@@ -1,7 +1,7 @@
 import {BrowserWindow, dialog, shell} from 'electron';
 import * as fs from 'fs/promises';
 import {getFiles, getIPCMainChannelSource} from '../utils';
-import {EditorFile} from '../../shared/types';
+import {EditorFile, LocalStore} from '../../shared/types';
 import {
 	BuildProjectChannel,
 	BuildProjectLogChannel,
@@ -11,14 +11,14 @@ import {
 	DeleteFileChannel,
 	GetDirectoryChannel,
 	GetFileContentsChannel,
-	GetGamePathChannel,
+	GetGamePathChannel, GetLocalStoreChannel,
 	GetNewProjectLocationChannel,
 	OpenInExplorerChannel,
 	OpenProjectChannel,
 	RenameFileChannel,
 	RunProjectChannel,
 	SaveFileChannel,
-	UpdateAppState
+	UpdateAppState, UpdateLocalStoreChannel
 } from '../../shared/Channels';
 import * as path from 'path';
 import {formatProjectName} from '../../shared/utils';
@@ -26,6 +26,9 @@ import {execFile} from 'child_process';
 import AdmZip from 'adm-zip';
 import {updateEditorMenu} from '../EditorMenu';
 import {buildProject} from './BuildProject';
+import Store from 'electron-store';
+
+const localstore = new Store();
 
 export const registerIPCHandlers = (window: BrowserWindow) => {
 	const source = getIPCMainChannelSource(window);
@@ -137,6 +140,10 @@ export const registerIPCHandlers = (window: BrowserWindow) => {
 		// TODO: Handle errors
 		return fs.writeFile(path, contents)
 	})
+
+	GetLocalStoreChannel(source).handle(() => localstore.get('store', {}) as LocalStore);
+
+	UpdateLocalStoreChannel(source).listen(data => localstore.set('store', data));
 
 	CreateFileChannel(source).handle(async ({ directoryPath, extension }) => {
 		let index = 0;

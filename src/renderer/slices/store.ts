@@ -5,6 +5,7 @@ import {EditorActions, EditorReducer} from './EditorSlice';
 import {ProjectActions, ProjectReducer} from './ProjectSlice';
 import {LogActions, LogReducer} from './LogSlice';
 import {SidebarActions, SidebarReducer} from './SidebarSlice';
+import {LocalStoreReducer} from './LocalStoreSlice';
 
 export const store = configureStore({
 	reducer: {
@@ -12,7 +13,8 @@ export const store = configureStore({
 		editor: EditorReducer,
 		project: ProjectReducer,
 		log: LogReducer,
-		sidebar: SidebarReducer
+		sidebar: SidebarReducer,
+		localstore: LocalStoreReducer
 	}
 });
 

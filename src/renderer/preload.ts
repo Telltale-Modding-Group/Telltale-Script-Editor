@@ -2,16 +2,31 @@ import {MainProcessUtils} from './MainProcessUtils';
 import { contextBridge, ipcRenderer } from 'electron';
 import {
 	RunProjectChannel,
-	BuildProjectChannel, BuildProjectLogChannel,
-	ChannelSource, CreateDirectoryChannel, CreateFileChannel, CreateProjectDirectoryChannel, DeleteFileChannel,
+	BuildProjectChannel,
+	BuildProjectLogChannel,
+	ChannelSource,
+	CreateDirectoryChannel,
+	CreateFileChannel,
+	CreateProjectDirectoryChannel,
+	DeleteFileChannel,
 	GetDirectoryChannel,
-	GetFileContentsChannel, GetGamePathChannel,
-	GetNewProjectLocationChannel, MenuBuildProjectChannel,
-	MenuNewProjectChannel, MenuNotImplementedChannel,
+	GetFileContentsChannel,
+	GetGamePathChannel,
+	GetNewProjectLocationChannel,
+	MenuBuildProjectChannel,
+	MenuNewProjectChannel,
+	MenuNotImplementedChannel,
 	MenuOpenProjectChannel,
-	MenuProjectSettingsChannel, OpenInExplorerChannel,
-	OpenProjectChannel, RenameFileChannel,
-	SaveFileChannel, UpdateAppState, MenuCloseProjectChannel, MenuBuildAndRunProjectChannel, MenuAboutChannel
+	MenuProjectSettingsChannel,
+	OpenInExplorerChannel,
+	OpenProjectChannel,
+	RenameFileChannel,
+	SaveFileChannel,
+	UpdateAppState,
+	MenuCloseProjectChannel,
+	MenuBuildAndRunProjectChannel,
+	MenuAboutChannel,
+	MenuSettingsChannel, GetLocalStoreChannel, UpdateLocalStoreChannel
 } from '../shared/Channels';
 
 const source: ChannelSource = {
@@ -40,6 +55,8 @@ const ipc: MainProcessUtils = {
 	buildProject: BuildProjectChannel(source).invoke,
 	runProject: RunProjectChannel(source).invoke,
 	getGamePath: GetGamePathChannel(source).invoke,
+	getLocalStore: GetLocalStoreChannel(source).invoke,
+	updateLocalStore: UpdateLocalStoreChannel(source).send,
 	updateAppState: UpdateAppState(source).send,
 
 	handleMenuNewProject: MenuNewProjectChannel(source).listen,
@@ -49,6 +66,7 @@ const ipc: MainProcessUtils = {
 	handleMenuBuildAndRunProject: MenuBuildAndRunProjectChannel(source).listen,
 	handleMenuCloseProject: MenuCloseProjectChannel(source).listen,
 	handleMenuAbout: MenuAboutChannel(source).listen,
+	handleMenuSettings: MenuSettingsChannel(source).listen,
 	handleBuildProjectLog: BuildProjectLogChannel(source).listen,
 
 	// TODO: Remove once everything is good to go

@@ -1,16 +1,29 @@
 import {
 	RunProjectChannel,
-	BuildProjectChannel, BuildProjectLogChannel,
-	CreateDirectoryChannel, CreateFileChannel,
-	CreateProjectDirectoryChannel, DeleteFileChannel,
+	BuildProjectChannel,
+	BuildProjectLogChannel,
+	CreateDirectoryChannel,
+	CreateFileChannel,
+	CreateProjectDirectoryChannel,
+	DeleteFileChannel,
 	GetDirectoryChannel,
-	GetFileContentsChannel, GetGamePathChannel,
-	GetNewProjectLocationChannel, MenuBuildProjectChannel,
-	MenuNewProjectChannel, MenuNotImplementedChannel,
+	GetFileContentsChannel,
+	GetGamePathChannel,
+	GetNewProjectLocationChannel,
+	MenuBuildProjectChannel,
+	MenuNewProjectChannel,
+	MenuNotImplementedChannel,
 	MenuOpenProjectChannel,
-	MenuProjectSettingsChannel, OpenInExplorerChannel,
-	OpenProjectChannel, RenameFileChannel,
-	SaveFileChannel, UpdateAppState, MenuCloseProjectChannel, MenuBuildAndRunProjectChannel, MenuAboutChannel
+	MenuProjectSettingsChannel,
+	OpenInExplorerChannel,
+	OpenProjectChannel,
+	RenameFileChannel,
+	SaveFileChannel,
+	UpdateAppState,
+	MenuCloseProjectChannel,
+	MenuBuildAndRunProjectChannel,
+	MenuAboutChannel,
+	MenuSettingsChannel, GetLocalStoreChannel, UpdateLocalStoreChannel
 } from '../shared/Channels';
 
 export interface MainProcessUtils {
@@ -34,6 +47,8 @@ export interface MainProcessUtils {
 	runProject: ReturnType<typeof RunProjectChannel>["invoke"];
 	getGamePath: ReturnType<typeof GetGamePathChannel>["invoke"];
 	updateAppState: ReturnType<typeof UpdateAppState>["send"];
+	getLocalStore: ReturnType<typeof GetLocalStoreChannel>["invoke"];
+	updateLocalStore: ReturnType<typeof UpdateLocalStoreChannel>["send"];
 
 	handleMenuNewProject: ReturnType<typeof MenuNewProjectChannel>["listen"];
 	handleMenuOpenProject: ReturnType<typeof MenuOpenProjectChannel>["listen"];
@@ -42,6 +57,7 @@ export interface MainProcessUtils {
 	handleMenuCloseProject: ReturnType<typeof MenuCloseProjectChannel>["listen"];
 	handleMenuBuildAndRunProject: ReturnType<typeof MenuBuildAndRunProjectChannel>["listen"];
 	handleMenuAbout: ReturnType<typeof MenuAboutChannel>["listen"];
+	handleMenuSettings: ReturnType<typeof MenuSettingsChannel>["listen"];
 	handleBuildProjectLog: ReturnType<typeof BuildProjectLogChannel>["listen"];
 
 	// TODO: Remove once everything is good to go

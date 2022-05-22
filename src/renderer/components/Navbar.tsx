@@ -1,22 +1,24 @@
 import styles from './Navbar.module.css';
 import {ActionIcon} from '@mantine/core';
 import {BsHammer} from 'react-icons/bs';
-import {AiOutlineCaretRight} from 'react-icons/ai';
+import {AiFillSetting, AiOutlineCaretRight, AiOutlineSetting} from 'react-icons/ai';
 import * as React from 'react';
 import {useEffect} from 'react';
 import {MainProcess} from '../MainProcessUtils';
 import {LogActions} from '../slices/LogSlice';
 import {SidebarActions} from '../slices/SidebarSlice';
 import {showNotification} from '@mantine/notifications';
-import {ProjectActions} from '../slices/ProjectSlice';
 import {useAppDispatch, useAppSelector} from '../slices/store';
 import {FileTreeAsyncActions} from '../slices/FileTreeSlice';
+import {LocalStoreActions} from '../slices/LocalStoreSlice';
+import {useModals} from '@mantine/modals';
 
 export const Navbar = () => {
 	const dispatch = useAppDispatch();
 	const root = useAppSelector(state => state.filetree.root);
 	const project = useAppSelector(state => state.project.currentProject);
-	const gameExePath = useAppSelector(state => state.project.gameExePath);
+	const gameExePath = useAppSelector(state => state.localstore.gamePath);
+	const modals = useModals();
 
 	if (!root || !project) return null;
 
@@ -48,7 +50,7 @@ export const Navbar = () => {
 
 			if (!gamePath) return;
 
-			dispatch(ProjectActions.setGameExePath(gamePath));
+			dispatch(LocalStoreActions.setGamePath(gamePath));
 		}
 
 		const buildZipPath = await handleBuildProject();
@@ -61,8 +63,15 @@ export const Navbar = () => {
 		[gameExePath]
 	);
 
+	const handleOpenSettings = () => {
+		modals.openContextModal('settings', { innerProps: {} });
+	};
+
 	return <div className={styles.navbarContainer}>
 		<div className={styles.navbarButtonsContainer}>
+			<ActionIcon color='gray' onClick={handleOpenSettings}>
+				<AiFillSetting />
+			</ActionIcon>
 			<ActionIcon color='green' onClick={handleBuildProject}>
 				<BsHammer />
 			</ActionIcon>

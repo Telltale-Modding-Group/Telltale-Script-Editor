@@ -47,4 +47,5 @@ export interface MainProcessUtils {
 }
 
 // window.ipc is populated from preload.ts, which is run before any react code is active.
+// eslint-disable-next-line
 export const MainProcess: MainProcessUtils = (window as any).ipc;

@@ -1,4 +1,4 @@
-import {Button, Group, Modal, Portal, Space, Stack, Text, TextInput, Title} from '@mantine/core';
+import {Text, TextInput} from '@mantine/core';
 import * as React from 'react';
 import {EditorFile} from '../../../shared/types';
 import styles from './FileTreeFile.module.css';
@@ -8,10 +8,8 @@ import {useAppDispatch, useAppSelector} from '../../slices/store';
 import {FileTreeActions, FileTreeAsyncActions} from '../../slices/FileTreeSlice';
 import {EditorActions, EditorAsyncActions} from '../../slices/EditorSlice';
 import {showNotification} from '@mantine/notifications';
-import {ControlledMenu, SubMenu, useMenuState} from '@szhsin/react-menu';
 import {MouseEventHandler, useState} from 'react';
 import {MainProcess} from '../../MainProcessUtils';
-import {ContextMenuItem} from './ContextMenuItem';
 
 type FileTreeFileProps = {
 	file: EditorFile,

@@ -1,4 +1,4 @@
-import {ContextModalProps, useModals} from '@mantine/modals';
+import {ContextModalProps} from '@mantine/modals';
 import * as React from 'react';
 import {ActionIcon, Button, Container, Group, NumberInput, Space, Stack, TextInput, Title} from '@mantine/core';
 import {AiOutlineFolder} from 'react-icons/ai';

@@ -36,8 +36,8 @@ export const FileTreeContextMenu = () => {
 		}
 	}, [contextMenuFile]);
 
-	const toggleSelectedDirectory = () => dispatch(FileTreeActions.toggleDirectory(path!));
-	const expandSelectedDirectory = () => dispatch(FileTreeActions.expandDirectory(path!));
+	const toggleSelectedDirectory = () => path && dispatch(FileTreeActions.toggleDirectory(path));
+	const expandSelectedDirectory = () => path && dispatch(FileTreeActions.expandDirectory(path));
 
 	const handleRefreshRootDirectory = () => {
 		dispatch(FileTreeAsyncActions.refreshRootDirectory());

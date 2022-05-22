@@ -58,7 +58,7 @@ export const EditorContainer = () => {
 									<ProjectSettings />
 								</Tab>
 								<Tab label="JSON Editor">
-									<Editor onChange={handleProjectSettingsJSONChange} />
+									<Editor mode="json" onChange={handleProjectSettingsJSONChange} />
 								</Tab>
 							</Tabs>
 							: <Editor />

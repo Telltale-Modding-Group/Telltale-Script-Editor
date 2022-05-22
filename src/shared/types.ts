@@ -10,9 +10,10 @@ export type EditorFile = {
 };
 
 export type Project = {
-	formatVersion: '1',
+	formatVersion: string,
 	tool: {
-		game: 'TTDS'
+		game: 'TTDS',
+		legacyBuild: boolean
 	},
 	mod: {
 		name: string,
@@ -25,7 +26,8 @@ export type Project = {
 export const createProject = (name: string, version: string, author: string, priority: number): Project => ({
 	formatVersion: '1',
 	tool: {
-		game: 'TTDS'
+		game: 'TTDS',
+		legacyBuild: true
 	},
 	mod: {
 		name,
@@ -34,6 +36,8 @@ export const createProject = (name: string, version: string, author: string, pri
 		priority
 	}
 });
+
+export const getDefaultProject = () => createProject('ProjectName', '0.0.1', 'ProjectAuthor', 950);
 
 type ModInfo = {
 	ModDisplayName: string,

@@ -292,6 +292,7 @@ export const registerIPCHandlers = (window: BrowserWindow) => {
 		let index = 0;
 		let filename = '';
 
+		// eslint-disable-next-line no-constant-condition
 		while (true) {
 			filename = `NewFile${index > 0 ? `${index}` : ''}.${extension}`;
 
@@ -310,6 +311,7 @@ export const registerIPCHandlers = (window: BrowserWindow) => {
 		let index = 0;
 		let folderName = '';
 
+		// eslint-disable-next-line no-constant-condition
 		while (true) {
 			folderName = `NewFolder${index > 0 ? `${index}` : ''}`;
 

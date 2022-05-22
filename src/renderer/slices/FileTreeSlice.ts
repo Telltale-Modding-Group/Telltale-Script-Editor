@@ -26,6 +26,7 @@ const setRootDirectoryFromPath = createAsyncThunk('filetree/setrootdirectoryfrom
 );
 
 const refreshRootDirectory = createAsyncThunk('filetree/refreshrootdirectory', (_, api) =>
+	// eslint-disable-next-line
 	MainProcess.getDirectory((api.getState() as RootState).filetree.root!.path)
 );
 

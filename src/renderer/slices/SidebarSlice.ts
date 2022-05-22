@@ -17,7 +17,7 @@ export const SidebarSlice = createSlice({
 		setActiveTab: (state, { payload }: PayloadAction<SidebarTabs>) => {
 			state.activeTab = payload;
 		},
-		clear: state => initialState
+		clear: () => initialState
 	}
 });
 

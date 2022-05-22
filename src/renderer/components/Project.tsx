@@ -3,15 +3,8 @@ import {EditorContainer} from './editor/EditorContainer';
 import * as React from 'react';
 import {MutableRefObject, useEffect, useRef, useState} from 'react';
 import {resetAllSlices, useAppDispatch, useAppSelector} from '../slices/store';
-import {ActionIcon, Button, Code, Group, Header, Modal, ScrollArea, Space, Stack, Text, Title} from '@mantine/core';
-import {BsHammer} from 'react-icons/bs';
-import {AiOutlineCaretRight} from 'react-icons/ai';
 import {MainProcess} from '../MainProcessUtils';
-import {ProjectActions} from '../slices/ProjectSlice';
 import {Sidebar} from './Sidebar';
-import {LogActions} from '../slices/LogSlice';
-import {showNotification} from '@mantine/notifications';
-import {SidebarActions} from '../slices/SidebarSlice';
 import {Navbar} from './Navbar';
 
 const INITIAL_FILETREE_WIDTH = 250;

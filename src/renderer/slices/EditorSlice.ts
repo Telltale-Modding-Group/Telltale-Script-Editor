@@ -36,12 +36,14 @@ const saveFileAndClose = createAsyncThunk('editor/savefileandclose', async (inde
 });
 
 const closeFileReducer = (state: Draft<EditorState>, { payload: indexToClose }: PayloadAction<number>) => {
+	if (state.activeFileIndex === undefined) return;
+
 	// Returns a new array without the element at position 'index'.
 	// Might be a better way of doing things, but this works well enough...
 	state.openFiles = state.openFiles.filter((_, i) => i !== indexToClose);
 
-	if (indexToClose < state.activeFileIndex!) {
-		state.activeFileIndex!--;
+	if (indexToClose < state.activeFileIndex) {
+		state.activeFileIndex--;
 	}
 
 	if (state.activeFileIndex === indexToClose) {
@@ -61,7 +63,9 @@ export const EditorSlice = createSlice({
 			state.activeFileIndex = payload;
 		},
 		setActiveFileContents: (state, { payload: newContents }: PayloadAction<string>) => {
-			const openFile = state.openFiles[state.activeFileIndex!];
+			if (state.activeFileIndex === undefined) return;
+
+			const openFile = state.openFiles[state.activeFileIndex];
 
 			if (openFile.contents === newContents) return;
 

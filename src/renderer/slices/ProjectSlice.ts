@@ -35,6 +35,16 @@ export const ProjectSlice = createSlice({
 
 			state.currentProject.mod.priority = priority;
 		},
+		setLegacyBuild: (state, { payload }: PayloadAction<boolean>) => {
+			if (!state.currentProject) return;
+
+			state.currentProject.tool.legacyBuild = payload;
+		},
+		setFormatVersion: (state, { payload }: PayloadAction<string>) => {
+			if (!state.currentProject) return;
+
+			state.currentProject.formatVersion = payload;
+		},
 		setGameExePath: (state, { payload }: PayloadAction<string>) => {
 			state.gameExePath = payload;
 		},

@@ -29,6 +29,13 @@ const useMenuNewProjectListener = (dispatch: AppDispatch, modals: ReturnType<typ
 	[]
 );
 
+const useMenuAboutListener = (modals: ReturnType<typeof useModals>) =>
+	useEffect(() => MainProcess.handleMenuAbout(() =>
+		modals.openContextModal('about', { innerProps: {}, styles: { modal: { alignSelf: 'center' } } })
+	),
+	[]
+);
+
 // TODO: Remove once everything is good to go
 const useMenuNotImplementedListener = () => useEffect(() =>
 	MainProcess.handleMenuNotImplemented(() => showNotification({
@@ -54,6 +61,7 @@ export const App = () => {
 	useMenuOpenProjectListener(dispatch);
 	useMenuProjectSettingsListener(dispatch, root?.children.find(file => file.name.includes('.tseproj')));
 	useMenuNewProjectListener(dispatch, modals);
+	useMenuAboutListener(modals);
 	// TODO: Remove once everything is good to go
 	useMenuNotImplementedListener();
 

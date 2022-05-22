@@ -19,7 +19,7 @@ export type ChannelSource = {
 	handle: (channel: string, handler: (event: unknown, data: unknown) => unknown) => RemoveListener
 }
 
-export const createChannel = <T>(channel: string) => (source: ChannelSource): Channel<T> => ({
+export const createChannel = <T = void>(channel: string) => (source: ChannelSource): Channel<T> => ({
 	send: data => source.send(channel, data),
 	listen: handler => source.listen(channel, (event, data) => handler(data as T))
 });
@@ -44,12 +44,13 @@ export const GetGamePathChannel = createInvokableChannel<void, string | undefine
 export const RunProjectChannel = createInvokableChannel<{ buildZipPath: string, gamePath: string }, void>('runproject');
 
 export const OpenInExplorerChannel = createChannel<string>('openinexplorer');
-export const MenuNewProjectChannel = createChannel<void>('menu:newproject');
-export const MenuOpenProjectChannel = createChannel<void>('menu:openproject');
-export const MenuProjectSettingsChannel = createChannel<void>('menu:projectsettings');
-export const MenuBuildProjectChannel = createChannel<void>('menu:buildproject');
-export const MenuBuildAndRunProjectChannel = createChannel<void>('menu:projectandrunproject');
-export const MenuCloseProjectChannel = createChannel<void>('menu:closeproject');
-export const MenuNotImplementedChannel = createChannel<void>('menu:notimplemented');
+export const MenuNewProjectChannel = createChannel('menu:newproject');
+export const MenuOpenProjectChannel = createChannel('menu:openproject');
+export const MenuProjectSettingsChannel = createChannel('menu:projectsettings');
+export const MenuBuildProjectChannel = createChannel('menu:buildproject');
+export const MenuBuildAndRunProjectChannel = createChannel('menu:projectandrunproject');
+export const MenuCloseProjectChannel = createChannel('menu:closeproject');
+export const MenuAboutChannel = createChannel('menu:about');
+export const MenuNotImplementedChannel = createChannel('menu:notimplemented');
 export const BuildProjectLogChannel = createChannel<string>('buildproject:log');
 export const UpdateAppState = createChannel<AppState>('updateappstate');

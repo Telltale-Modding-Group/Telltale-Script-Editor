@@ -1,7 +1,7 @@
 import {BrowserWindow, dialog, shell} from 'electron';
 import * as fs from 'fs/promises';
-import {getFiles, getIPCMainChannelSource} from './utils';
-import {EditorFile} from '../shared/types';
+import {getFiles, getIPCMainChannelSource} from '../utils';
+import {EditorFile} from '../../shared/types';
 import {
 	BuildProjectChannel,
 	BuildProjectLogChannel,
@@ -19,12 +19,12 @@ import {
 	RunProjectChannel,
 	SaveFileChannel,
 	UpdateAppState
-} from '../shared/Channels';
+} from '../../shared/Channels';
 import * as path from 'path';
-import {formatProjectName} from '../shared/utils';
+import {formatProjectName} from '../../shared/utils';
 import {execFile} from 'child_process';
 import AdmZip from 'adm-zip';
-import {updateEditorMenu} from './EditorMenu';
+import {updateEditorMenu} from '../EditorMenu';
 import {buildProject} from './BuildProject';
 
 export const registerIPCHandlers = (window: BrowserWindow) => {

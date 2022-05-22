@@ -33,7 +33,8 @@ import {NotificationsProvider} from '@mantine/notifications';
 import {Provider} from 'react-redux';
 import {store} from './slices/store';
 import {ModalsProvider} from '@mantine/modals';
-import {NewProjectModal} from './components/NewProjectModal';
+import {NewProjectModal} from './components/modals/NewProjectModal';
+import {AboutModal} from './components/modals/AboutModal';
 
 const container = document.querySelector('#app');
 
@@ -43,7 +44,7 @@ createRoot(container).render(
 	<React.StrictMode>
 		<Provider store={store}>
 			<NotificationsProvider>
-				<ModalsProvider modals={{ newproject: NewProjectModal }}>
+				<ModalsProvider modals={{ newproject: NewProjectModal, about: AboutModal }}>
 					<App />
 				</ModalsProvider>
 			</NotificationsProvider>

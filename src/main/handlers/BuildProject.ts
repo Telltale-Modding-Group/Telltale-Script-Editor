@@ -1,12 +1,12 @@
-import {createModInfo, Project} from '../shared/types';
+import {createModInfo, Project} from '../../shared/types';
 import fs, {opendir} from 'fs/promises';
 import path from 'path';
-import {FileData, getFilesInDirectory} from './utils';
+import {FileData, getFilesInDirectory} from '../utils';
 import {exec} from 'child_process';
 import {format} from 'date-fns';
 import {createWriteStream} from 'fs';
 import archiver from 'archiver';
-import {getResdesc} from './handlers/ResdescUtils';
+import {getResdesc} from './ResdescUtils';
 
 /**
  * 1. For each lua file recursively in the project, compile into identical directory structure but inside Builds/temp

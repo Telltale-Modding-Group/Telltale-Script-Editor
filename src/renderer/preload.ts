@@ -11,7 +11,7 @@ import {
 	MenuOpenProjectChannel,
 	MenuProjectSettingsChannel, OpenInExplorerChannel,
 	OpenProjectChannel, RenameFileChannel,
-	SaveFileChannel, UpdateAppState, MenuCloseProjectChannel, MenuBuildAndRunProjectChannel
+	SaveFileChannel, UpdateAppState, MenuCloseProjectChannel, MenuBuildAndRunProjectChannel, MenuAboutChannel
 } from '../shared/Channels';
 
 const source: ChannelSource = {
@@ -48,6 +48,7 @@ const ipc: MainProcessUtils = {
 	handleMenuBuildProject: MenuBuildProjectChannel(source).listen,
 	handleMenuBuildAndRunProject: MenuBuildAndRunProjectChannel(source).listen,
 	handleMenuCloseProject: MenuCloseProjectChannel(source).listen,
+	handleMenuAbout: MenuAboutChannel(source).listen,
 	handleBuildProjectLog: BuildProjectLogChannel(source).listen,
 
 	// TODO: Remove once everything is good to go

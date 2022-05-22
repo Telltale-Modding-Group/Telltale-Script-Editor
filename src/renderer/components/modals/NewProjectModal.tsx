@@ -3,12 +3,12 @@ import * as React from 'react';
 import {ActionIcon, Button, Container, Group, NumberInput, Space, Stack, TextInput, Title} from '@mantine/core';
 import {AiOutlineFolder} from 'react-icons/ai';
 import {useForm} from '@mantine/form';
-import {MainProcess} from '../MainProcessUtils';
-import {createProject} from '../../shared/types';
-import {resetAllSlices, useAppDispatch} from '../slices/store';
-import {FileTreeActions} from '../slices/FileTreeSlice';
-import {ProjectActions} from '../slices/ProjectSlice';
-import {formatProjectName} from '../../shared/utils';
+import {MainProcess} from '../../MainProcessUtils';
+import {createProject} from '../../../shared/types';
+import {resetAllSlices, useAppDispatch} from '../../slices/store';
+import {FileTreeActions} from '../../slices/FileTreeSlice';
+import {ProjectActions} from '../../slices/ProjectSlice';
+import {formatProjectName} from '../../../shared/utils';
 
 export const NewProjectModal = ({context, id}: ContextModalProps) => {
 	const dispatch = useAppDispatch();

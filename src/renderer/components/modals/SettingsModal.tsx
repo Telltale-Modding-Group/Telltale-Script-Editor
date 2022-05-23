@@ -5,21 +5,20 @@ import {MainProcess} from '../../MainProcessUtils';
 import {useAppDispatch, useAppSelector} from '../../slices/store';
 import {ContextModalProps} from '@mantine/modals';
 import {StorageActions} from '../../slices/StorageSlice';
+import {OverlayActions} from '../../slices/OverlaySlice';
 
 export const SettingsModal = ({context, id}: ContextModalProps) => {
 	const dispatch = useAppDispatch();
 	const gameExePath = useAppSelector(state => state.storage.gamePath);
 
 	const handleFolderClicked = async () => {
-		let gamePath = gameExePath;
+		dispatch(OverlayActions.show());
 
-		if (!gamePath) {
-			gamePath = await MainProcess.getGamePath();
+		const gamePath = await MainProcess.getGamePath();
 
-			if (!gamePath) return;
+		if (gamePath) dispatch(StorageActions.setGamePath(gamePath));
 
-			dispatch(StorageActions.setGamePath(gamePath));
-		}
+		dispatch(OverlayActions.hide());
 	};
 
 	return <Container>

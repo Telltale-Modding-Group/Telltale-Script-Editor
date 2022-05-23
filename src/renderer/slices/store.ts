@@ -7,6 +7,7 @@ import { BuildsActions, BuildsReducer } from './BuildsSlice';
 import { SidebarActions, SidebarReducer } from './SidebarSlice';
 import { StorageReducer } from './StorageSlice';
 import { AppState } from '../../shared/types';
+import {OverlayReducer} from './OverlaySlice';
 
 export const store = configureStore({
 	reducer: {
@@ -15,7 +16,8 @@ export const store = configureStore({
 		project: ProjectReducer,
 		builds: BuildsReducer,
 		sidebar: SidebarReducer,
-		storage: StorageReducer
+		storage: StorageReducer,
+		overlay: OverlayReducer
 	}
 });
 

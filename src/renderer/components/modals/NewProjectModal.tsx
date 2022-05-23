@@ -9,6 +9,7 @@ import {resetAllSlices, useAppDispatch} from '../../slices/store';
 import {FileTreeActions} from '../../slices/FileTreeSlice';
 import {ProjectActions} from '../../slices/ProjectSlice';
 import {formatProjectName} from '../../../shared/utils';
+import {OverlayActions} from '../../slices/OverlaySlice';
 
 export const NewProjectModal = ({context, id}: ContextModalProps) => {
 	const dispatch = useAppDispatch();
@@ -36,11 +37,13 @@ export const NewProjectModal = ({context, id}: ContextModalProps) => {
 	};
 
 	const handleFolderClicked = async () => {
+		dispatch(OverlayActions.show());
+
 		const response = await MainProcess.getNewProjectLocation();
 
-		if (!response) return;
+		if (response) form.setValues(state => ({ ...state, path: response }));
 
-		form.setValues(state => ({ ...state, path: response }));
+		dispatch(OverlayActions.hide());
 	};
 
 	const projectDescription = form.values.projectName ? `Creating directory "${formatProjectName(form.values.projectName)}"` : '';

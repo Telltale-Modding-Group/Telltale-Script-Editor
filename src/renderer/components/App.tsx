@@ -14,6 +14,7 @@ import {useModals} from '@mantine/modals';
 import {showNotification} from '@mantine/notifications';
 import {useStorageStateSync} from '../slices/StorageSlice';
 import {useProjectSideEffects} from '../slices/ProjectSlice';
+import {LoadingOverlay} from '@mantine/core';
 
 export const App = () => {
 	const dispatch = useAppDispatch();
@@ -22,6 +23,7 @@ export const App = () => {
 	const root = useAppSelector(state => state.filetree.root);
 	const tseproj = root?.directory ? root?.children.find(file => file.name.includes('.tseproj')) : undefined;
 	const projectDetails = useAppSelector(state => state.project.currentProject?.mod);
+	const showOverlay = useAppSelector(state => state.overlay.visible);
 
 	const title = `Telltale Script Editor${projectDetails ? ` - ${projectDetails.name} v${projectDetails.version} by ${projectDetails.author}` : ''}`;
 	useDocumentTitle(title);
@@ -50,5 +52,8 @@ export const App = () => {
 	useStorageStateSync();
 	useProjectSideEffects();
 
-	return root ? <Project /> : <NoProjectOpen />;
+	return <>
+		<LoadingOverlay visible={showOverlay} sx={{ 'svg': { height: '125px', width: '125px' } }} />
+		{root ? <Project /> : <NoProjectOpen />}
+	</>
 };

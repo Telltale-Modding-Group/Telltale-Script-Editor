@@ -1,8 +1,7 @@
 .navbarContainer {
-    display: flex;
-    justify-content: flex-end;
     width: 100%;
     border-bottom: 1px solid black;
+    padding: 0.25rem 0;
 }
 
 .navbarButtonsContainer {

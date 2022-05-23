@@ -1,7 +1,6 @@
 import {createAsyncThunk, createSlice, PayloadAction} from '@reduxjs/toolkit';
-import { EditorFile } from '../../shared/types';
+import { AppState, EditorFile } from '../../shared/types';
 import {MainProcess} from '../MainProcessUtils';
-import {RootState} from './store';
 
 interface FileTreeState {
 	selectedFile?: EditorFile,
@@ -28,7 +27,7 @@ const setRootDirectoryFromPath = createAsyncThunk('filetree/setrootdirectoryfrom
 
 const refreshRootDirectory = createAsyncThunk('filetree/refreshrootdirectory', (_, api) =>
 	// eslint-disable-next-line
-	MainProcess.getDirectory((api.getState() as RootState).filetree.root!.path)
+	MainProcess.getDirectory((api.getState() as AppState).filetree.root!.path)
 );
 
 export const FileTreeSlice = createSlice({

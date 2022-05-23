@@ -1,4 +1,4 @@
-import {EditorFile, LocalStore, Project} from './types';
+import {AppState, EditorFile, Project} from './types';
 
 type RemoveListener = () => void;
 
@@ -41,7 +41,7 @@ export const CreateFileChannel = createInvokableChannel<{ directoryPath: string,
 export const CreateDirectoryChannel = createInvokableChannel<string, string>('createdirectory');
 export const BuildProjectChannel = createInvokableChannel<{ projectPath: string, project: Project }, string | undefined>('buildproject');
 export const GetGamePathChannel = createInvokableChannel<void, string | undefined>('getgamepath');
-export const GetLocalStoreChannel = createInvokableChannel<void, LocalStore>('getlocalstore');
+export const GetLocalStoreChannel = createInvokableChannel<void, AppState["storage"]>('getlocalstore');
 export const RunProjectChannel = createInvokableChannel<{ buildZipPath: string, gamePath: string }, void>('runproject');
 
 export const OpenInExplorerChannel = createChannel<string>('openinexplorer');
@@ -56,4 +56,3 @@ export const MenuSettingsChannel = createChannel('menu:settings');
 export const MenuNotImplementedChannel = createChannel('menu:notimplemented');
 export const BuildProjectLogChannel = createChannel<string>('buildproject:log');
 export const UpdateAppState = createChannel<AppState>('updateappstate');
-export const UpdateLocalStoreChannel = createChannel<LocalStore>('updatelocalstore');

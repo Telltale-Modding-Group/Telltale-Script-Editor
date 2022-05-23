@@ -25,8 +25,6 @@ export const handleOpenProject = async (dispatch: AppDispatch) => {
 
 	resetAllSlices(dispatch);
 
-	MainProcess.updateAppState({ projectOpen: true });
-
 	dispatch(FileTreeActions.setRootDirectory(project.root));
 
 	// TODO: Handle tseproj with invalid schema

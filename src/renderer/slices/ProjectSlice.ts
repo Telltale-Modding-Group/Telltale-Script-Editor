@@ -1,5 +1,9 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 import {Project} from '../../shared/types';
+import {useEffect} from 'react';
+import {MainProcess} from '../MainProcessUtils';
+import {resetAllSlices} from './store';
+import {useDispatch} from 'react-redux';
 
 interface ProjectState {
 	currentProject?: Project
@@ -50,3 +54,14 @@ export const ProjectSlice = createSlice({
 
 export const ProjectActions = ProjectSlice.actions;
 export const ProjectReducer = ProjectSlice.reducer;
+
+export const useProjectSideEffects = () => {
+	const dispatch = useDispatch();
+
+	useEffect(() =>
+		MainProcess.handleMenuCloseProject(() => {
+			resetAllSlices(dispatch);
+		}),
+	[dispatch]
+	);
+};

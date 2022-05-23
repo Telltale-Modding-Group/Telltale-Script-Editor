@@ -1,97 +1,54 @@
 import * as React from 'react';
-import {useEffect, useState} from 'react';
+import {useEffect} from 'react';
 import 'normalize.css/normalize.css';
 import '@szhsin/react-menu/dist/index.css';
 import '@szhsin/react-menu/dist/transitions/slide.css';
 import {NoProjectOpen} from './NoProjectOpen';
 import {Project} from './Project';
-import {AppDispatch, useAppDispatch, useAppSelector} from '../slices/store';
+import {useAppDispatch, useAppSelector} from '../slices/store';
 import {useDocumentTitle} from '@mantine/hooks';
 import {MainProcess} from '../MainProcessUtils';
 import {handleOpenProject} from '../utils';
 import {EditorAsyncActions} from '../slices/EditorSlice';
-import {EditorFile} from '../../shared/types';
 import {useModals} from '@mantine/modals';
 import {showNotification} from '@mantine/notifications';
-import {LocalStoreActions} from '../slices/LocalStoreSlice';
-
-const useMenuOpenProjectListener = (dispatch: AppDispatch) => useEffect(() =>
-	MainProcess.handleMenuOpenProject(() => handleOpenProject(dispatch)),
-	[]
-);
-
-const useMenuProjectSettingsListener = (dispatch: AppDispatch, tsprojFile: EditorFile | undefined) => useEffect(() =>
-	MainProcess.handleMenuProjectSettings(() => tsprojFile ? dispatch(EditorAsyncActions.openFile(tsprojFile)) : null),
-	[tsprojFile]
-);
-
-const useMenuNewProjectListener = (dispatch: AppDispatch, modals: ReturnType<typeof useModals>) => useEffect(() =>
-	MainProcess.handleMenuNewProject(() => modals.openContextModal('newproject', { innerProps: {} })),
-	[]
-);
-
-const useMenuAboutListener = (modals: ReturnType<typeof useModals>) => useEffect(() =>
-	MainProcess.handleMenuAbout(() =>
-		modals.openContextModal('about', { innerProps: {}, styles: { modal: { alignSelf: 'center' } } })
-	),
-	[]
-);
-
-const useMenuSettingsListener = (modals: ReturnType<typeof useModals>) => useEffect(() =>
-	MainProcess.handleMenuSettings(() =>
-		modals.openContextModal('settings', { innerProps: {} })
-	),
-	[]
-);
-
-// TODO: Remove once everything is good to go
-const useMenuNotImplementedListener = () => useEffect(() =>
-	MainProcess.handleMenuNotImplemented(() => showNotification({
-		title: 'Not Implemented',
-		message: "Sorry, that feature isn't implemented just yet",
-		color: 'yellow'
-	})),
-	[]);
+import {useStorageStateSync} from '../slices/StorageSlice';
+import {useProjectSideEffects} from '../slices/ProjectSlice';
 
 export const App = () => {
 	const dispatch = useAppDispatch();
 	const modals = useModals();
 
 	const root = useAppSelector(state => state.filetree.root);
-	const localstore = useAppSelector(state => state.localstore);
-	
-	if (root && !root.directory) return null;
-	
+	const tseproj = root?.directory ? root?.children.find(file => file.name.includes('.tseproj')) : undefined;
 	const projectDetails = useAppSelector(state => state.project.currentProject?.mod);
 
 	const title = `Telltale Script Editor${projectDetails ? ` - ${projectDetails.name} v${projectDetails.version} by ${projectDetails.author}` : ''}`;
 	useDocumentTitle(title);
 
-	useMenuOpenProjectListener(dispatch);
-	useMenuProjectSettingsListener(dispatch, root?.children.find(file => file.name.includes('.tseproj')));
-	useMenuNewProjectListener(dispatch, modals);
-	useMenuAboutListener(modals);
-	useMenuSettingsListener(modals);
-	// TODO: Remove once everything is good to go
-	useMenuNotImplementedListener();
-
-	const [localstoreInitialised, setLocalstoreInitialised] = useState(false);
-
 	useEffect(() => {
-		(async () => {
-			const store = await MainProcess.getLocalStore();
+		const handlers = [
+			MainProcess.handleMenuOpenProject(() => handleOpenProject(dispatch)),
+			MainProcess.handleMenuProjectSettings(() => tseproj ? dispatch(EditorAsyncActions.openFile(tseproj)) : null),
+			MainProcess.handleMenuNewProject(() => modals.openContextModal('newproject', { innerProps: {} })),
+			MainProcess.handleMenuAbout(() =>
+				modals.openContextModal('about', { innerProps: {}, styles: { modal: { alignSelf: 'center' } } })
+			),
+			MainProcess.handleMenuSettings(() =>
+				modals.openContextModal('settings', { innerProps: {} })
+			),
+			MainProcess.handleMenuNotImplemented(() => showNotification({
+				title: 'Not Implemented',
+				message: "Sorry, that feature isn't implemented just yet",
+				color: 'yellow'
+			}))
+		];
 
-			dispatch(LocalStoreActions.setGamePath(store.gamePath));
+		return () => handlers.forEach(unsubscribe => unsubscribe());
+	}, [tseproj]);
 
-			setLocalstoreInitialised(true);
-		})();
-	}, []);
-
-	useEffect(() => {
-		if (!localstoreInitialised) return;
-
-		MainProcess.updateLocalStore(localstore);
-	}, [localstoreInitialised, localstore]);
+	useStorageStateSync();
+	useProjectSideEffects();
 
 	return root ? <Project /> : <NoProjectOpen />;
 };

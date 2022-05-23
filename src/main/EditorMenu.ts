@@ -9,15 +9,18 @@ import {
 	MenuOpenProjectChannel,
 	MenuProjectSettingsChannel, MenuSettingsChannel
 } from '../shared/Channels';
+import {AppState} from '../shared/types';
 
-export const updateEditorMenu = (window: BrowserWindow, state: AppState): void =>
+export const updateEditorMenu = (window: BrowserWindow, state: Readonly<AppState>): void =>
 	window.setMenu(getEditorMenu(window, state));
 
-export const getEditorMenu = (window: BrowserWindow, state: AppState) => {
+export const getEditorMenu = (window: BrowserWindow, state: Readonly<AppState>) => {
 	const source = getIPCMainChannelSource(window);
 
 	// TODO: Remove once everything is good to go
 	const notImplemented = () => MenuNotImplementedChannel(source).send();
+
+	const projectOpen = !!state.project.currentProject;
 
 	const ProjectMenu = {
 		label: 'Project',
@@ -45,7 +48,7 @@ export const getEditorMenu = (window: BrowserWindow, state: AppState) => {
 					label: 'Project',
 					click: () => MenuNewProjectChannel(source).send()
 				},
-				conditional(state.projectOpen,
+				conditional(projectOpen,
 				{
 					label: 'Script',
 					click: notImplemented
@@ -65,15 +68,15 @@ export const getEditorMenu = (window: BrowserWindow, state: AppState) => {
 				}
 			]
 		},
-		conditional(state.projectOpen,{
+		conditional(projectOpen,{
 			label: 'Save',
 			click: notImplemented
 		}),
-		conditional(state.projectOpen, {
+		conditional(projectOpen, {
 			label: 'Save As',
 			click: notImplemented
 		}),
-		conditional(state.projectOpen, {
+		conditional(projectOpen, {
 			label: 'Close Project',
 			click: () => MenuCloseProjectChannel(source).send()
 		}),
@@ -99,7 +102,7 @@ export const getEditorMenu = (window: BrowserWindow, state: AppState) => {
 		{
 			role: 'editMenu'
 		},
-		conditional(state.projectOpen, ProjectMenu),
+		conditional(projectOpen, ProjectMenu),
 		{
 			label: 'Help',
 			submenu: [

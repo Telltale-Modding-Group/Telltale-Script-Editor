@@ -2,15 +2,16 @@ import styles from './Project.module.css';
 import {EditorContainer} from './editor/EditorContainer';
 import * as React from 'react';
 import {MutableRefObject, useEffect, useRef, useState} from 'react';
-import {resetAllSlices, useAppDispatch, useAppSelector} from '../slices/store';
-import {MainProcess} from '../MainProcessUtils';
+import {useAppDispatch, useAppSelector} from '../slices/store';
 import {Sidebar} from './Sidebar';
 import {Navbar} from './Navbar';
+import {StorageActions} from '../slices/StorageSlice';
 
 const INITIAL_FILETREE_WIDTH = 250;
 
 const useSidebarResizer = (): [number, MutableRefObject<HTMLDivElement | null>] => {
-	const [fileTreeWidth, setFileTreeWidth] = useState(INITIAL_FILETREE_WIDTH);
+	const dispatch = useAppDispatch();
+	const width = useAppSelector(state => state.storage.sidebarWidth);
 	const ref = useRef<HTMLDivElement | null>(null);
 
 	useEffect(() => {
@@ -31,7 +32,7 @@ const useSidebarResizer = (): [number, MutableRefObject<HTMLDivElement | null>] 
 		const moveListener = (event: DocumentEventMap['mousemove']) => {
 			if (!mouseDown) return;
 
-			setFileTreeWidth(Math.max(INITIAL_FILETREE_WIDTH, Math.round(event.clientX)));
+			dispatch(StorageActions.setSidebarWidth(event.clientX));
 		};
 
 		ref.current.addEventListener('mousedown', mouseDownListener);
@@ -45,12 +46,10 @@ const useSidebarResizer = (): [number, MutableRefObject<HTMLDivElement | null>] 
 		};
 	}, [ref]);
 
-	return [fileTreeWidth, ref];
+	return [width, ref];
 };
 
 export const Project = () => {
-	const dispatch = useAppDispatch();
-
 	const root = useAppSelector(state => state.filetree.root);
 	const project = useAppSelector(state => state.project.currentProject);
 
@@ -73,14 +72,6 @@ export const Project = () => {
 
 		return () => document.body.removeEventListener('resize', listener);
 	}, [ref.current, projectContainerRef.current]);
-
-	useEffect(() =>
-		MainProcess.handleMenuCloseProject(() => {
-			resetAllSlices(dispatch);
-			MainProcess.updateAppState({ projectOpen: false });
-		}),
-		[dispatch]
-	);
 
 	return <div className={styles.container}>
 		<Navbar />

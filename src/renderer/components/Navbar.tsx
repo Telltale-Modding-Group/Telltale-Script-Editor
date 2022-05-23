@@ -10,14 +10,14 @@ import {SidebarActions} from '../slices/SidebarSlice';
 import {showNotification} from '@mantine/notifications';
 import {useAppDispatch, useAppSelector} from '../slices/store';
 import {FileTreeAsyncActions} from '../slices/FileTreeSlice';
-import {LocalStoreActions} from '../slices/LocalStoreSlice';
+import {StorageActions} from '../slices/StorageSlice';
 import {useModals} from '@mantine/modals';
 
 export const Navbar = () => {
 	const dispatch = useAppDispatch();
 	const root = useAppSelector(state => state.filetree.root);
 	const project = useAppSelector(state => state.project.currentProject);
-	const gameExePath = useAppSelector(state => state.localstore.gamePath);
+	const gameExePath = useAppSelector(state => state.storage.gamePath);
 	const modals = useModals();
 
 	if (!root || !project) return null;
@@ -59,7 +59,7 @@ export const Navbar = () => {
 
 			if (!gamePath) return;
 
-			dispatch(LocalStoreActions.setGamePath(gamePath));
+			dispatch(StorageActions.setGamePath(gamePath));
 		}
 
 		const buildZipPath = await handleBuildProject();

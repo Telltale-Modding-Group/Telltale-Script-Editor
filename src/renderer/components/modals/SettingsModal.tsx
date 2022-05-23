@@ -4,12 +4,11 @@ import {AiOutlineFolder} from 'react-icons/ai';
 import {MainProcess} from '../../MainProcessUtils';
 import {useAppDispatch, useAppSelector} from '../../slices/store';
 import {ContextModalProps} from '@mantine/modals';
-import {LocalStoreActions} from '../../slices/LocalStoreSlice';
-import {useState} from 'react';
+import {StorageActions} from '../../slices/StorageSlice';
 
 export const SettingsModal = ({context, id}: ContextModalProps) => {
 	const dispatch = useAppDispatch();
-	const gameExePath = useAppSelector(state => state.localstore.gamePath);
+	const gameExePath = useAppSelector(state => state.storage.gamePath);
 
 	const handleFolderClicked = async () => {
 		let gamePath = gameExePath;
@@ -19,7 +18,7 @@ export const SettingsModal = ({context, id}: ContextModalProps) => {
 
 			if (!gamePath) return;
 
-			dispatch(LocalStoreActions.setGamePath(gamePath));
+			dispatch(StorageActions.setGamePath(gamePath));
 		}
 	};
 
@@ -31,7 +30,7 @@ export const SettingsModal = ({context, id}: ContextModalProps) => {
 				label="Game Executable:"
 				placeholder="C:\path\to\WDC.exe"
 				value={gameExePath}
-				onChange={e => dispatch(LocalStoreActions.setGamePath(e.target.value))}
+				onChange={e => dispatch(StorageActions.setGamePath(e.target.value))}
 				rightSection={<ActionIcon onClick={handleFolderClicked} color="dark"><AiOutlineFolder /></ActionIcon>}
 			/>
 			<Space h="xl" />

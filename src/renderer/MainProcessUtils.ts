@@ -23,7 +23,7 @@ import {
 	MenuCloseProjectChannel,
 	MenuBuildAndRunProjectChannel,
 	MenuAboutChannel,
-	MenuSettingsChannel, GetLocalStoreChannel, UpdateLocalStoreChannel
+	MenuSettingsChannel, GetLocalStoreChannel
 } from '../shared/Channels';
 
 export interface MainProcessUtils {
@@ -48,7 +48,6 @@ export interface MainProcessUtils {
 	getGamePath: ReturnType<typeof GetGamePathChannel>["invoke"];
 	updateAppState: ReturnType<typeof UpdateAppState>["send"];
 	getLocalStore: ReturnType<typeof GetLocalStoreChannel>["invoke"];
-	updateLocalStore: ReturnType<typeof UpdateLocalStoreChannel>["send"];
 
 	handleMenuNewProject: ReturnType<typeof MenuNewProjectChannel>["listen"];
 	handleMenuOpenProject: ReturnType<typeof MenuOpenProjectChannel>["listen"];

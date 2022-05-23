@@ -1,7 +1,7 @@
 import {BrowserWindow, dialog, shell} from 'electron';
 import * as fs from 'fs/promises';
 import {getFiles, getIPCMainChannelSource} from '../utils';
-import {EditorFile, LocalStore} from '../../shared/types';
+import {AppState, EditorFile} from '../../shared/types';
 import {
 	BuildProjectChannel,
 	BuildProjectLogChannel,
@@ -18,7 +18,7 @@ import {
 	RenameFileChannel,
 	RunProjectChannel,
 	SaveFileChannel,
-	UpdateAppState, UpdateLocalStoreChannel
+	UpdateAppState
 } from '../../shared/Channels';
 import * as path from 'path';
 import {formatProjectName} from '../../shared/utils';
@@ -139,11 +139,7 @@ export const registerIPCHandlers = (window: BrowserWindow) => {
 	SaveFileChannel(source).handle(({ path, contents }) => {
 		// TODO: Handle errors
 		return fs.writeFile(path, contents)
-	})
-
-	GetLocalStoreChannel(source).handle(() => localstore.get('store', {}) as LocalStore);
-
-	UpdateLocalStoreChannel(source).listen(data => localstore.set('store', data));
+	});
 
 	CreateFileChannel(source).handle(async ({ directoryPath, extension }) => {
 		let index = 0;
@@ -204,7 +200,12 @@ export const registerIPCHandlers = (window: BrowserWindow) => {
 		return selection.filePaths[0];
 	});
 
-	UpdateAppState(source).listen(state => updateEditorMenu(window, state));
+	UpdateAppState(source).listen(state => {
+		updateEditorMenu(window, state);
+		localstore.set('store', state.storage);
+	});
+
+	GetLocalStoreChannel(source).handle(() => localstore.get('store', {}) as AppState["storage"]);
 
 	const buildProjectLogChannel = BuildProjectLogChannel(source);
 	const log = (message: string) => {

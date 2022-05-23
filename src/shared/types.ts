@@ -1,3 +1,5 @@
+import { store } from '../renderer/slices/store';
+
 export type EditorFile = {
 	directory: false,
 	name: string,
@@ -55,6 +57,4 @@ export const createModInfo = (name: string, version: string, author: string, fil
 	ModFiles: files
 });
 
-export type LocalStore = {
-	gamePath?: string
-};
+export type AppState = ReturnType<typeof store.getState>;

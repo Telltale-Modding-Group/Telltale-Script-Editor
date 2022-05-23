@@ -1,8 +1,7 @@
 import {OpenFile} from '../types';
 import {createAsyncThunk, createSlice, Draft, PayloadAction} from '@reduxjs/toolkit';
-import {EditorFile} from '../../shared/types';
+import { AppState, EditorFile } from '../../shared/types';
 import {MainProcess} from '../MainProcessUtils';
-import {RootState} from './store';
 
 interface EditorState {
 	openFiles: OpenFile[],
@@ -18,7 +17,7 @@ const openFile = createAsyncThunk('editor/openfile', async (file: EditorFile) =>
 });
 
 const saveFile = createAsyncThunk('editor/savefile', async (index: number, api) => {
-	const state = api.getState() as RootState;
+	const state = api.getState() as AppState;
 	const file = state.editor.openFiles[index];
 
 	await MainProcess.saveFile({ path: file.file.path, contents: file.contents });
@@ -27,7 +26,7 @@ const saveFile = createAsyncThunk('editor/savefile', async (index: number, api) 
 });
 
 const saveFileAndClose = createAsyncThunk('editor/savefileandclose', async (index: number, api) => {
-	const state = api.getState() as RootState;
+	const state = api.getState() as AppState;
 	const file = state.editor.openFiles[index];
 
 	await MainProcess.saveFile({ path: file.file.path, contents: file.contents });

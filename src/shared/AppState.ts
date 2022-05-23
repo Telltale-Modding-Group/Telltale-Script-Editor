@@ -1,3 +1,0 @@
-type AppState = {
-	projectOpen: boolean
-};

@@ -1,5 +1,5 @@
 import styles from './Navbar.module.css';
-import {ActionIcon, Group} from '@mantine/core';
+import {ActionIcon, Group, Tooltip} from '@mantine/core';
 import {BsHammer} from 'react-icons/bs';
 import {AiFillSetting, AiOutlineCaretRight, AiOutlineSetting} from 'react-icons/ai';
 import * as React from 'react';
@@ -80,15 +80,21 @@ export const Navbar = () => {
 
 	return <div className={styles.navbarContainer}>
 		<Group position="center" spacing="xs">
-			<ActionIcon color='gray' onClick={handleOpenSettings}>
-				<AiFillSetting size={16} />
-			</ActionIcon>
-			<ActionIcon color='green' onClick={handleBuildAndRun}>
-				<AiOutlineCaretRight size={20} />
-			</ActionIcon>
-			<ActionIcon color='green' onClick={handleBuildProject}>
-				<BsHammer size={16} />
-			</ActionIcon>
+			<Tooltip label="Settings" openDelay={500}>
+				<ActionIcon color='gray' onClick={handleOpenSettings}>
+					<AiFillSetting size={16} />
+				</ActionIcon>
+			</Tooltip>
+			<Tooltip label="Build and Run" openDelay={500}>
+				<ActionIcon color='green' onClick={handleBuildAndRun}>
+					<AiOutlineCaretRight size={20} />
+				</ActionIcon>
+			</Tooltip>
+			<Tooltip label="Build" openDelay={500}>
+				<ActionIcon color='green' onClick={handleBuildProject}>
+					<BsHammer size={16} />
+				</ActionIcon>
+			</Tooltip>
 		</Group>
 	</div>;
 };

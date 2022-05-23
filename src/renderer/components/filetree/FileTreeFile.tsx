@@ -19,14 +19,14 @@ type FileTreeFileProps = {
 export const FileTreeFile = ({file, indentation}: FileTreeFileProps) => {
 	const dispatch = useAppDispatch();
 
-	const selectedPath = useAppSelector(state => state.filetree.selectedPath);
-	const selected = selectedPath === file.path;
+	const selectedFile = useAppSelector(state => state.filetree.selectedFile);
+	const selected = selectedFile?.path === file.path;
 	const supported = isSupported(file);
 	const renamingFilePath = useAppSelector(state => state.filetree.renamingFilePath);
 
 	const renaming = renamingFilePath === file.path;
 
-	const handleClick = () => dispatch(FileTreeActions.setSelectedPath(file.path));
+	const handleClick = () => dispatch(FileTreeActions.setSelectedFile(file));
 	const handleDoubleClick = () => {
 		if (!supported) {
 			return showNotification({
@@ -61,7 +61,7 @@ export const FileTreeFile = ({file, indentation}: FileTreeFileProps) => {
 	const handleRightClick: MouseEventHandler<HTMLDivElement> = e => {
 		handleClick();
 		dispatch(FileTreeActions.setContextMenuAnchorPoint({ x: e.clientX, y: e.clientY}));
-		dispatch(FileTreeActions.setContextMenuFile(file));
+		dispatch(FileTreeActions.setShowContextMenu(true));
 	};
 
 	return <>

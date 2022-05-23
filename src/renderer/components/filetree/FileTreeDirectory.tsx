@@ -24,17 +24,17 @@ export const FileTreeDirectory = ({directory, indentation}: FileTreeDirectoryPro
 	const path = directory.path;
 
 	const dispatch = useAppDispatch();
-	const selectedPath = useAppSelector(state => state.filetree.selectedPath);
+	const selectedFile = useAppSelector(state => state.filetree.selectedFile);
 	const renamingFilePath = useAppSelector(state => state.filetree.renamingFilePath);
 	const expandedDirectories = useAppSelector(state => state.filetree.expandedDirectories);
 
 	const renaming = renamingFilePath === directory.path;
 	const expanded = expandedDirectories[path];
-	const selected = path === selectedPath;
+	const selected = path === selectedFile?.path;
 
 	const toggle = () => dispatch(FileTreeActions.toggleDirectory(path));
 
-	const handleClick = () => dispatch(FileTreeActions.setSelectedPath(path));
+	const handleClick = () => dispatch(FileTreeActions.setSelectedFile(directory));
 
 	const handleToggleIconClick: MouseEventHandler = (e) => {
 		e.stopPropagation();
@@ -63,7 +63,7 @@ export const FileTreeDirectory = ({directory, indentation}: FileTreeDirectoryPro
 	const handleRightClick: MouseEventHandler<HTMLDivElement> = e => {
 		handleClick();
 		dispatch(FileTreeActions.setContextMenuAnchorPoint({ x: e.clientX, y: e.clientY}));
-		dispatch(FileTreeActions.setContextMenuFile(directory));
+		dispatch(FileTreeActions.setShowContextMenu(true));
 	};
 
 	const hasChildren = directory.children.length > 0;

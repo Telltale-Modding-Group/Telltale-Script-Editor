@@ -14,27 +14,28 @@ export const FileTreeContextMenu = () => {
 	const dispatch = useAppDispatch();
 	const root = useAppSelector(state => state.filetree.root);
 	const anchorPoint = useAppSelector(state => state.filetree.contextMenuAnchorPoint);
-	const contextMenuFile = useAppSelector(state => state.filetree.contextMenuFile);
+	const selectedFile = useAppSelector(state => state.filetree.selectedFile);
+	const showContextMenu = useAppSelector(state => state.filetree.showContextMenu);
 	const expandedDirectories = useAppSelector(state => state.filetree.expandedDirectories);
 
 	if (!root) return null;
 
-	const isDirectory = contextMenuFile?.directory;
-	const path = contextMenuFile?.path;
-	const hasChildren = contextMenuFile?.directory && contextMenuFile.children.length > 0;
+	const isDirectory = selectedFile?.directory;
+	const path = selectedFile?.path;
+	const hasChildren = isDirectory && selectedFile.children.length > 0;
 	const expanded = path ? expandedDirectories[path] : undefined;
-	const selectedTseprojFile = contextMenuFile?.name.includes('.tseproj');
-	const isRootDirectory = contextMenuFile?.path === root.path;
+	const selectedTseprojFile = selectedFile?.name.includes('.tseproj');
+	const isRootDirectory = path === root.path;
 
 	const [menuProps, toggleMenu] = useMenuState();
 
 	useEffect(() => {
-		if (contextMenuFile) {
+		if (showContextMenu) {
 			toggleMenu(true);
 		} else {
 			toggleMenu(false);
 		}
-	}, [contextMenuFile]);
+	}, [showContextMenu]);
 
 	const toggleSelectedDirectory = () => path && dispatch(FileTreeActions.toggleDirectory(path));
 	const expandSelectedDirectory = () => path && dispatch(FileTreeActions.expandDirectory(path));
@@ -77,18 +78,18 @@ export const FileTreeContextMenu = () => {
 	const hideDeleteModal = () => setShowDeleteModal(false);
 
 	const handleDeleteDirectory = async () => {
-		if (!contextMenuFile) return;
+		if (!selectedFile) return;
 
 		hideDeleteModal();
 
-		await MainProcess.deleteFile(contextMenuFile);
+		await MainProcess.deleteFile(selectedFile);
 
 		handleRefreshRootDirectory()
-		dispatch(EditorActions.handleFileDeleted(contextMenuFile));
+		dispatch(EditorActions.handleFileDeleted(selectedFile));
 	};
 
 	const handleRename = () => {
-		dispatch(FileTreeActions.setRenamingFilePath(contextMenuFile?.path));
+		dispatch(FileTreeActions.setRenamingFilePath(selectedFile?.path));
 	};
 
 	const handleOpenInExplorer = () => {
@@ -98,17 +99,17 @@ export const FileTreeContextMenu = () => {
 	};
 
 	const handleDoubleClick = () => {
-		if (!contextMenuFile) return;
+		if (!selectedFile) return;
 
-		if (!isSupported(contextMenuFile)) {
+		if (!isSupported(selectedFile)) {
 			return showNotification({
 				title: 'Unable to open file',
-				message: `${contextMenuFile.name} is an unsupported file.`,
+				message: `${selectedFile.name} is an unsupported file.`,
 				color: 'red'
 			});
 		}
 
-		dispatch(EditorAsyncActions.openFile(contextMenuFile));
+		dispatch(EditorAsyncActions.openFile(selectedFile));
 	}
 
 	const handleDeleteFile = () => {
@@ -117,7 +118,7 @@ export const FileTreeContextMenu = () => {
 
 	const handleContextMenuClose = () => {
 		toggleMenu(false);
-		dispatch(FileTreeActions.setContextMenuFile());
+		dispatch(FileTreeActions.setShowContextMenu(false));
 	};
 
 	return <>
@@ -130,7 +131,7 @@ export const FileTreeContextMenu = () => {
 		>
 			<Stack>
 				<Title order={2}>Delete { isDirectory ? 'Directory' : 'File' }</Title>
-				<Text>Are you sure you want to delete <em>{contextMenuFile?.name}</em>?</Text>
+				<Text>Are you sure you want to delete <em>{selectedFile?.name}</em>?</Text>
 				<Space h="md" />
 				<Group position="right" spacing="xs">
 					<Button color="gray" onClick={hideDeleteModal}>Cancel</Button>

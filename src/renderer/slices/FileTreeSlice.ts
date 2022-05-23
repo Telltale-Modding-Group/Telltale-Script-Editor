@@ -4,7 +4,7 @@ import {MainProcess} from '../MainProcessUtils';
 import {RootState} from './store';
 
 interface FileTreeState {
-	selectedPath?: string,
+	selectedFile?: EditorFile,
 	root?: EditorFile,
 	// The file currently being renamed
 	renamingFilePath?: string,
@@ -13,12 +13,13 @@ interface FileTreeState {
 		x: number,
 		y: number
 	},
-	contextMenuFile?: EditorFile
+	showContextMenu: boolean
 }
 
 const initialState: FileTreeState = {
 	expandedDirectories: {},
-	contextMenuAnchorPoint: { x: 0, y: 0}
+	contextMenuAnchorPoint: { x: 0, y: 0 },
+	showContextMenu: false
 };
 
 const setRootDirectoryFromPath = createAsyncThunk('filetree/setrootdirectoryfrompath', (path: string) =>
@@ -34,8 +35,8 @@ export const FileTreeSlice = createSlice({
 	name: 'filetree',
 	initialState,
 	reducers: {
-		setSelectedPath: (state, { payload }: PayloadAction<string | undefined>) => {
-			state.selectedPath = payload;
+		setSelectedFile: (state, { payload }: PayloadAction<EditorFile>) => {
+			state.selectedFile = payload;
 		},
 		setRootDirectory: (state, { payload }: PayloadAction<EditorFile | undefined>) => {
 			state.root = payload;
@@ -59,8 +60,8 @@ export const FileTreeSlice = createSlice({
 		setContextMenuAnchorPoint: (state, { payload }: PayloadAction<{ x: number, y: number }>) => {
 			state.contextMenuAnchorPoint = payload;
 		},
-		setContextMenuFile: (state, { payload }: PayloadAction<EditorFile | undefined>) => {
-			state.contextMenuFile = payload;
+		setShowContextMenu: (state, { payload }: PayloadAction<boolean>) => {
+			state.showContextMenu = payload;
 		},
 		clear: () => initialState
 	},

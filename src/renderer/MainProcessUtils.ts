@@ -23,7 +23,7 @@ import {
 	MenuCloseProjectChannel,
 	MenuBuildAndRunProjectChannel,
 	MenuAboutChannel,
-	MenuSettingsChannel, GetLocalStoreChannel, OpenBuildsDirectoryChannel
+	MenuSettingsChannel, GetLocalStoreChannel, OpenBuildsDirectoryChannel, OpenEditorContextMenuChannel
 } from '../shared/Channels';
 
 export interface MainProcessUtils {
@@ -49,6 +49,7 @@ export interface MainProcessUtils {
 	updateAppState: ReturnType<typeof UpdateAppState>["send"];
 	getLocalStore: ReturnType<typeof GetLocalStoreChannel>["invoke"];
 	openBuildsDirectory: ReturnType<typeof OpenBuildsDirectoryChannel>["send"];
+	openEditorContextMenu: ReturnType<typeof OpenEditorContextMenuChannel>["send"];
 
 	handleMenuNewProject: ReturnType<typeof MenuNewProjectChannel>["listen"];
 	handleMenuOpenProject: ReturnType<typeof MenuOpenProjectChannel>["listen"];

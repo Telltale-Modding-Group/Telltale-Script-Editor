@@ -6,6 +6,7 @@ import 'ace-builds/src-noconflict/ext-language_tools';
 import 'ace-builds/src-noconflict/theme-monokai';
 import 'ace-builds/src-noconflict/mode-lua';
 import 'ace-builds/src-noconflict/mode-json';
+import {MainProcess} from '../../MainProcessUtils';
 
 type EditorProps = {
 	onChange?: (change: string) => void
@@ -27,14 +28,16 @@ export const Editor = ({ onChange, mode }: EditorProps) => {
 		onChange?.(contents);
 	};
 
-	return <AceEditor
-		enableBasicAutocompletion
-		enableLiveAutocompletion
-		mode={mode ?? 'lua'}
-		theme="monokai"
-		height="100%"
-		width="100%"
-		onChange={handleEditorChange}
-		value={activeFile.contents}
-	/>;
+	return <div onContextMenu={() => MainProcess.openEditorContextMenu()} style={{ height: '100%', width: '100%' }}>
+		<AceEditor
+			enableBasicAutocompletion
+			enableLiveAutocompletion
+			mode={mode ?? 'lua'}
+			theme="monokai"
+			height="100%"
+			width="100%"
+			onChange={handleEditorChange}
+			value={activeFile.contents}
+		/>
+	</div>;
 };

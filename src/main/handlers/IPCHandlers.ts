@@ -1,4 +1,4 @@
-import {BrowserWindow, dialog, shell} from 'electron';
+import {BrowserWindow, dialog, shell, Menu} from 'electron';
 import * as fs from 'fs/promises';
 import {getFiles, getIPCMainChannelSource, openBuildsDirectory} from '../utils';
 import {AppState, EditorFile} from '../../shared/types';
@@ -12,7 +12,7 @@ import {
 	GetDirectoryChannel,
 	GetFileContentsChannel,
 	GetGamePathChannel, GetLocalStoreChannel,
-	GetNewProjectLocationChannel, OpenBuildsDirectoryChannel,
+	GetNewProjectLocationChannel, OpenBuildsDirectoryChannel, OpenEditorContextMenuChannel,
 	OpenInExplorerChannel,
 	OpenProjectChannel,
 	RenameFileChannel,
@@ -238,4 +238,26 @@ export const registerIPCHandlers = (window: BrowserWindow) => {
 	});
 
 	OpenBuildsDirectoryChannel(source).listen(() => openBuildsDirectory(state));
+
+	OpenEditorContextMenuChannel(source).listen(() => {
+		const menu = Menu.buildFromTemplate([
+			{
+				role: 'cut'
+			},
+			{
+				role: 'copy'
+			},
+			{
+				role: 'paste'
+			},
+			{
+				role: 'delete'
+			},
+			{
+				role: 'selectAll'
+			}
+		]);
+
+		menu.popup();
+	});
 };

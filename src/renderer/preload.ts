@@ -26,7 +26,7 @@ import {
 	MenuCloseProjectChannel,
 	MenuBuildAndRunProjectChannel,
 	MenuAboutChannel,
-	MenuSettingsChannel, GetLocalStoreChannel, OpenBuildsDirectoryChannel
+	MenuSettingsChannel, GetLocalStoreChannel, OpenBuildsDirectoryChannel, OpenEditorContextMenuChannel
 } from '../shared/Channels';
 
 const source: ChannelSource = {
@@ -58,6 +58,7 @@ const ipc: MainProcessUtils = {
 	getLocalStore: GetLocalStoreChannel(source).invoke,
 	updateAppState: UpdateAppState(source).send,
 	openBuildsDirectory: OpenBuildsDirectoryChannel(source).send,
+	openEditorContextMenu: OpenEditorContextMenuChannel(source).send,
 
 	handleMenuNewProject: MenuNewProjectChannel(source).listen,
 	handleMenuOpenProject: MenuOpenProjectChannel(source).listen,

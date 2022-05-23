@@ -37,15 +37,13 @@ export const registerIPCHandlers = (window: BrowserWindow) => {
 	OpenProjectChannel(source).handle(() => {
 		const getProjectPath = async (): Promise<{ root: EditorFile, tseproj: string } | undefined> => {
 			const selection = await dialog.showOpenDialog({
-				title: 'Open project directory',
-				properties: [
-					'openDirectory'
-				]
+				title: 'Open project',
+				filters: [{ name: 'tseproj', extensions: ['tseproj'] }]
 			});
 
 			if (selection.canceled) return;
 
-			const projectPath = selection.filePaths[0];
+			const projectPath = path.dirname(selection.filePaths[0]);
 
 			let root = await fs.opendir(projectPath);
 

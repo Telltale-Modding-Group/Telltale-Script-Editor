@@ -1,5 +1,5 @@
 import {ControlledMenu, SubMenu, useMenuState} from '@szhsin/react-menu';
-import {Button, Group, Modal, Portal, Space, Stack, Text, Title} from '@mantine/core';
+import {Button, Center, Group, Modal, Portal, Space, Stack, Text, Title} from '@mantine/core';
 import {ContextMenuItem} from './ContextMenuItem';
 import * as React from 'react';
 import {useAppDispatch, useAppSelector} from '../../slices/store';
@@ -9,6 +9,15 @@ import {MainProcess} from '../../MainProcessUtils';
 import {EditorActions, EditorAsyncActions} from '../../slices/EditorSlice';
 import {showNotification} from '@mantine/notifications';
 import {isSupported} from '../../FileUtils';
+import {
+	AiFillDelete,
+	AiFillEdit,
+	AiFillFile,
+	AiOutlineExport,
+	AiOutlineFolder, AiOutlineFontSize,
+	AiOutlinePlus,
+	AiOutlineReload
+} from 'react-icons/ai';
 
 export const FileTreeContextMenu = () => {
 	const dispatch = useAppDispatch();
@@ -149,19 +158,19 @@ export const FileTreeContextMenu = () => {
 				{...menuProps}
 			>
 				{isDirectory &&
-                    <SubMenu label={() => <Text size="xs">New</Text>}>
-                        <ContextMenuItem onClick={handleCreateDirectory}>Directory</ContextMenuItem>
-                        <ContextMenuItem onClick={handleCreateFile}>Script</ContextMenuItem>
-                        <ContextMenuItem onClick={handleCreateScript}>File</ContextMenuItem>
+					<SubMenu label={() => <Text size="xs"><Center inline><AiOutlinePlus /><Space w="xs"/>New</Center></Text>}>
+                        <ContextMenuItem icon={AiOutlineFolder} onClick={handleCreateDirectory}>Directory</ContextMenuItem>
+                        <ContextMenuItem icon={AiFillFile} onClick={handleCreateFile}>Script</ContextMenuItem>
+                        <ContextMenuItem icon={AiFillFile} onClick={handleCreateScript}>File</ContextMenuItem>
                     </SubMenu>
 				}
 
-				{isRootDirectory && <ContextMenuItem onClick={handleRefreshRootDirectory}>Refresh</ContextMenuItem>}
-				{hasChildren && <ContextMenuItem onClick={toggleSelectedDirectory}>{expanded ? 'Collapse' : 'Expand'}</ContextMenuItem>}
-				{!isDirectory && <ContextMenuItem onClick={handleDoubleClick}>Open in Editor</ContextMenuItem>}
-				<ContextMenuItem onClick={handleRename}>Rename</ContextMenuItem>
-				<ContextMenuItem onClick={handleOpenInExplorer}>Open in explorer</ContextMenuItem>
-				{!selectedTseprojFile && <ContextMenuItem onClick={handleDeleteFile}>Delete</ContextMenuItem>}
+				{isRootDirectory && <ContextMenuItem icon={AiOutlineReload} onClick={handleRefreshRootDirectory}>Refresh</ContextMenuItem>}
+				{hasChildren && <ContextMenuItem icon={AiOutlineFolder} onClick={toggleSelectedDirectory}>{expanded ? 'Collapse' : 'Expand'}</ContextMenuItem>}
+				{!isDirectory && <ContextMenuItem icon={AiFillEdit} onClick={handleDoubleClick}>Open in Editor</ContextMenuItem>}
+				<ContextMenuItem icon={AiOutlineFontSize} onClick={handleRename}>Rename</ContextMenuItem>
+				<ContextMenuItem icon={AiOutlineExport} onClick={handleOpenInExplorer}>Open in explorer</ContextMenuItem>
+				{!selectedTseprojFile && <ContextMenuItem icon={AiFillDelete} onClick={handleDeleteFile} color="red">Delete</ContextMenuItem>}
 			</ControlledMenu>
 		</Portal>
 	</>;

@@ -223,11 +223,10 @@ export const registerIPCHandlers = (window: BrowserWindow) => {
 
 		log('============== Mod installed! Launching game...');
 
-		const game = execFile(gamePath, (error, stdout, stderr) => {
+		const game = execFile(gamePath, { cwd: path.dirname(gamePath) }, (error, stdout, stderr) => {
 			log(stdout);
 			log(stderr);
 		});
-
 		await new Promise(resolve => game.on('close', resolve));
 
 		log('============== Game closed!');

@@ -56,3 +56,4 @@ export const MenuSettingsChannel = createChannel('menu:settings');
 export const MenuNotImplementedChannel = createChannel('menu:notimplemented');
 export const BuildProjectLogChannel = createChannel<string>('buildproject:log');
 export const UpdateAppState = createChannel<AppState>('updateappstate');
+export const OpenBuildsDirectoryChannel = createChannel('openbuildsdirectory');

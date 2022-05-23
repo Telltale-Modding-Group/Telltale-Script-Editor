@@ -2,7 +2,7 @@ import {Tab, Tabs} from '@mantine/core';
 import styles from './Sidebar.module.css';
 import * as React from 'react';
 import {FileTree} from './filetree/FileTree';
-import {Logs} from './Logs';
+import {Builds} from './Builds';
 import {useAppDispatch, useAppSelector} from '../slices/store';
 import {SidebarActions} from '../slices/SidebarSlice';
 
@@ -27,8 +27,8 @@ export const Sidebar = ({ width }: SidebarProps) => {
 		<Tab label="File Tree">
 			<FileTree />
 		</Tab>
-		<Tab label="Logs">
-			<Logs />
+		<Tab label="Builds">
+			<Builds />
 		</Tab>
 	</Tabs>;
 };

@@ -1,6 +1,6 @@
 import {BrowserWindow, dialog, shell} from 'electron';
 import * as fs from 'fs/promises';
-import {getFiles, getIPCMainChannelSource} from '../utils';
+import {getFiles, getIPCMainChannelSource, openBuildsDirectory} from '../utils';
 import {AppState, EditorFile} from '../../shared/types';
 import {
 	BuildProjectChannel,
@@ -12,7 +12,7 @@ import {
 	GetDirectoryChannel,
 	GetFileContentsChannel,
 	GetGamePathChannel, GetLocalStoreChannel,
-	GetNewProjectLocationChannel,
+	GetNewProjectLocationChannel, OpenBuildsDirectoryChannel,
 	OpenInExplorerChannel,
 	OpenProjectChannel,
 	RenameFileChannel,
@@ -32,6 +32,7 @@ const localstore = new Store();
 
 export const registerIPCHandlers = (window: BrowserWindow) => {
 	const source = getIPCMainChannelSource(window);
+	let state: AppState;
 
 	OpenProjectChannel(source).handle(() => {
 		const getProjectPath = async (): Promise<{ root: EditorFile, tseproj: string } | undefined> => {
@@ -200,9 +201,11 @@ export const registerIPCHandlers = (window: BrowserWindow) => {
 		return selection.filePaths[0];
 	});
 
-	UpdateAppState(source).listen(state => {
-		updateEditorMenu(window, state);
-		localstore.set('store', state.storage);
+	UpdateAppState(source).listen(appState => {
+		state = appState;
+
+		updateEditorMenu(window, appState);
+		localstore.set('store', appState.storage);
 	});
 
 	GetLocalStoreChannel(source).handle(() => localstore.get('store', {}) as AppState["storage"]);
@@ -233,4 +236,6 @@ export const registerIPCHandlers = (window: BrowserWindow) => {
 
 		return;
 	});
+
+	OpenBuildsDirectoryChannel(source).listen(() => openBuildsDirectory(state));
 };

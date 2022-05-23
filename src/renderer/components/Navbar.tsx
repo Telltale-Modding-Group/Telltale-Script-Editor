@@ -5,7 +5,7 @@ import {AiFillSetting, AiOutlineCaretRight, AiOutlineSetting} from 'react-icons/
 import * as React from 'react';
 import {useEffect} from 'react';
 import {MainProcess} from '../MainProcessUtils';
-import {LogActions} from '../slices/LogSlice';
+import {BuildsActions, useBuildsSideEffects} from '../slices/BuildsSlice';
 import {SidebarActions} from '../slices/SidebarSlice';
 import {showNotification} from '@mantine/notifications';
 import {useAppDispatch, useAppSelector} from '../slices/store';
@@ -22,13 +22,10 @@ export const Navbar = () => {
 
 	if (!root || !project) return null;
 
-	useEffect(() =>
-		MainProcess.handleBuildProjectLog(log => dispatch(LogActions.addLog(log))),
-	[]
-	);
+	useBuildsSideEffects();
 
 	const handleBuildProject = async () => {
-		dispatch(LogActions.clear());
+		dispatch(BuildsActions.clearLogs());
 		dispatch(SidebarActions.setActiveTab('logs'));
 		const buildZipPath = await MainProcess.buildProject({ projectPath: root.path, project });
 		dispatch(FileTreeAsyncActions.refreshRootDirectory());
@@ -40,16 +37,15 @@ export const Navbar = () => {
 				color: 'red'
 			});
 		} else {
-			showNotification({ title: 'Build Successful', message: 'The project was built successfully!', color: 'green' });
+			showNotification({
+				title: 'Build Successful',
+				message: 'The project was built successfully!',
+				color: 'green'
+			});
 		}
 
 		return buildZipPath;
 	};
-
-	useEffect(() =>
-		MainProcess.handleMenuBuildProject(handleBuildProject),
-	[root.path, project]
-	);
 
 	const handleBuildAndRun = async () => {
 		let gamePath = gameExePath;
@@ -69,10 +65,14 @@ export const Navbar = () => {
 		await MainProcess.runProject({ buildZipPath, gamePath });
 	};
 
-	useEffect(() =>
-		MainProcess.handleMenuBuildAndRunProject(handleBuildAndRun),
-		[gameExePath]
-	);
+	useEffect(() => {
+		const handlers = [
+			MainProcess.handleMenuBuildProject(handleBuildProject),
+			MainProcess.handleMenuBuildAndRunProject(handleBuildAndRun)
+		];
+
+		return () => handlers.forEach(unsubscribe => unsubscribe());
+	}, [root.path, project, gameExePath]);
 
 	const handleOpenSettings = () => {
 		modals.openContextModal('settings', { innerProps: {} });

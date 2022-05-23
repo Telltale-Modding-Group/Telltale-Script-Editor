@@ -3,7 +3,7 @@ import { FileTreeActions, FileTreeReducer } from './FileTreeSlice';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 import { EditorActions, EditorReducer } from './EditorSlice';
 import { ProjectActions, ProjectReducer } from './ProjectSlice';
-import { LogActions, LogReducer } from './LogSlice';
+import { BuildsActions, BuildsReducer } from './BuildsSlice';
 import { SidebarActions, SidebarReducer } from './SidebarSlice';
 import { StorageReducer } from './StorageSlice';
 import { AppState } from '../../shared/types';
@@ -13,7 +13,7 @@ export const store = configureStore({
 		filetree: FileTreeReducer,
 		editor: EditorReducer,
 		project: ProjectReducer,
-		log: LogReducer,
+		builds: BuildsReducer,
 		sidebar: SidebarReducer,
 		storage: StorageReducer
 	}
@@ -28,6 +28,6 @@ export const resetAllSlices = (dispatch: AppDispatch) => {
 	dispatch(FileTreeActions.clear());
 	dispatch(EditorActions.clear());
 	dispatch(ProjectActions.clear());
-	dispatch(LogActions.clear());
+	dispatch(BuildsActions.clear());
 	dispatch(SidebarActions.clear());
 }

@@ -1,13 +1,15 @@
-import {BrowserWindow, Menu, MenuItem, shell, dialog} from 'electron';
-import {conditional, getIPCMainChannelSource} from './utils';
+import {BrowserWindow, Menu, MenuItem, shell} from 'electron';
+import {conditional, getIPCMainChannelSource, openBuildsDirectory} from './utils';
 import {
 	MenuAboutChannel,
 	MenuBuildAndRunProjectChannel,
-	MenuBuildProjectChannel, MenuCloseProjectChannel,
+	MenuBuildProjectChannel,
+	MenuCloseProjectChannel,
 	MenuNewProjectChannel,
 	MenuNotImplementedChannel,
 	MenuOpenProjectChannel,
-	MenuProjectSettingsChannel, MenuSettingsChannel
+	MenuProjectSettingsChannel,
+	MenuSettingsChannel
 } from '../shared/Channels';
 import {AppState} from '../shared/types';
 
@@ -39,21 +41,7 @@ export const getEditorMenu = (window: BrowserWindow, state: Readonly<AppState>) 
 			},
 			{
 				label: 'Open Builds Directory',
-				click() {
-					const root = state.filetree.root;
-					if (!root || !root.directory) return;
-
-					const buildDirectoryPath = root.children.find(file => file.directory && file.name === 'Builds')?.path;
-					if (!buildDirectoryPath) {
-						return dialog.showMessageBox({
-							title: 'Unable to open Build directory',
-							message: 'No Builds directory was found in this project! Try compiling the project first.',
-							type: 'warning'
-						});
-					}
-
-					return shell.openPath(buildDirectoryPath);
-				}
+				click: () => openBuildsDirectory(state)
 			}
 		]
 	};

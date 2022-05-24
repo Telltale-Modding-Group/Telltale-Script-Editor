@@ -53,13 +53,19 @@ export const buildProject = (log: (message: string) => void) => async ({ project
 			await fs.mkdir(path.dirname(resdescOutputPath), {recursive: true});
 
 			const setName = logicalName + formattedProjectName;
-			const setVersion = logicalName !== 'DebugMenu' ? 'trunk' : 'dummydata';
+			let enableMode = "constant";
+			let setVersion = "dummydata";
+
+			if(logicalName !== "DebugMenu") {
+				enableMode = "bootable";
+				setVersion = "trunk";
+			}
 
 			const ttarchName = `${directoryName}_${formattedProjectName}.ttarch2`;
 
 			log(`============== Generating ${path.join(tempPath, resdescName)}...`);
 
-			await fs.writeFile(resdescOutputPath, getResdesc(project, setName, setVersion, logicalName, ttarchName));
+			await fs.writeFile(resdescOutputPath, getResdesc(project, setName, setVersion, enableMode, logicalName, ttarchName));
 			const process = exec(`resources\\ttarchext.exe -V 7 -e 0 67 "${resdescOutputPath}" "${tempPath}"`, (e, out, err) => {
 				log(out);
 				log(err);

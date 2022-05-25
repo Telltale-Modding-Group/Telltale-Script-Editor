@@ -4,8 +4,7 @@ import * as React from 'react';
 import MonacoEditor, {loader} from '@monaco-editor/react';
 import * as monaco from 'monaco-editor';
 import {useEffect, useRef} from 'react';
-import {debounce} from '../../utils';
-import {editor} from 'monaco-editor';
+import {createDebouncer} from '../../utils';
 
 type EditorProps = {
 	onChange?: (change: string) => void
@@ -14,6 +13,7 @@ type EditorProps = {
 
 loader.config({ monaco });
 
+const debounce = createDebouncer();
 export const Editor = ({ onChange, mode }: EditorProps) => {
 	const dispatch = useAppDispatch();
 
@@ -42,7 +42,10 @@ export const Editor = ({ onChange, mode }: EditorProps) => {
 	}, [editorRef.current]);
 
 	useEffect(() => {
+		console.log('sidebar width changed');
+
 		debounce(() => {
+			console.log('layout');
 			editorRef.current?.layout({ width: 0, height: 0 });
 			editorRef.current?.layout();
 		}, 250);

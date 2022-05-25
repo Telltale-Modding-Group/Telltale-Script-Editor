@@ -8,7 +8,7 @@ import {Project} from './Project';
 import {useAppDispatch, useAppSelector} from '../slices/store';
 import {useDocumentTitle} from '@mantine/hooks';
 import {MainProcess} from '../MainProcessUtils';
-import {handleOpenProject, iterateFiles} from '../utils';
+import {iterateFiles} from '../utils';
 import {EditorAsyncActions} from '../slices/EditorSlice';
 import {useModals} from '@mantine/modals';
 import {showNotification} from '@mantine/notifications';
@@ -17,6 +17,7 @@ import {useProjectSideEffects} from '../slices/ProjectSlice';
 import {LoadingOverlay} from '@mantine/core';
 import {SpotlightAction, SpotlightProvider} from '@mantine/spotlight';
 import {useBuildProject} from '../hooks';
+import {handleOpenProject} from '../ProjectUtils';
 
 export const App = () => {
 	const dispatch = useAppDispatch();
@@ -67,7 +68,7 @@ export const App = () => {
 		}
 	];
 
-	const FileActions: SpotlightAction[] = !root ? [] : iterateFiles(root).map(file => ({
+	const FileActions: SpotlightAction[] = !root ? [] : iterateFiles(root).filter(file => !file.path.includes('Build')).map(file => ({
 		title: file.name,
 		onTrigger: () => {
 			dispatch(EditorAsyncActions.openFile(file));

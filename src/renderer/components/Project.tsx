@@ -8,7 +8,7 @@ import {Navbar} from './Navbar';
 import {StorageActions} from '../slices/StorageSlice';
 import {useSpotlight} from '@mantine/spotlight';
 import * as monaco from 'monaco-editor';
-import {debounce} from '../utils';
+import {createDebouncer} from '../utils';
 
 const useSidebarResizer = (): [number, MutableRefObject<HTMLDivElement | null>] => {
 	const dispatch = useAppDispatch();
@@ -49,6 +49,8 @@ const useSidebarResizer = (): [number, MutableRefObject<HTMLDivElement | null>] 
 
 	return [width, ref];
 };
+
+const debounce = createDebouncer();
 
 export const Project = () => {
 	const root = useAppSelector(state => state.filetree.root);

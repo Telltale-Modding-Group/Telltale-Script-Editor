@@ -1,8 +1,7 @@
 import styles from './NoProjectOpen.module.css';
 import {AiFillFolderOpen, AiOutlinePlus} from 'react-icons/ai';
-import {Card, Col, Container, Divider, Grid, Header, Paper, Space, Text, Title, UnstyledButton} from '@mantine/core';
+import {Col, Grid, Space, Text, Title, UnstyledButton} from '@mantine/core';
 import * as React from 'react';
-import {handleOpenProject, openProject} from '../utils';
 import {useAppDispatch, useAppSelector} from '../slices/store';
 import {useModals} from '@mantine/modals';
 import {MainProcess} from '../MainProcessUtils';
@@ -10,6 +9,7 @@ import {RecentProject} from '../types';
 import {OverlayActions} from '../slices/OverlaySlice';
 import {showNotification} from '@mantine/notifications';
 import {StorageActions} from '../slices/StorageSlice';
+import {handleOpenProject, openProject} from '../ProjectUtils';
 
 export const NoProjectOpen = () => {
 	const dispatch = useAppDispatch();
@@ -24,7 +24,7 @@ export const NoProjectOpen = () => {
 	const handleOpenRecentProject = async ({ project, tseprojPath }: RecentProject) => {
 		dispatch(OverlayActions.show());
 
-		const root = await MainProcess.getDirectory(tseprojPath.replace(/[^/|\\]+$/g, ''));
+		const root = await MainProcess.getDirectory(tseprojPath.replace(/[/\\][^/|\\]+$/g, ''));
 
 		if (!root) {
 			showNotification({

@@ -6,13 +6,26 @@ import {EditorFile, getDefaultProject, Project} from '../shared/types';
 import {showNotification} from '@mantine/notifications';
 import {OverlayActions} from './slices/OverlaySlice';
 import {isSupported} from './FileUtils';
+import {StorageActions} from './slices/StorageSlice';
+
+export const openProject = (dispatch: AppDispatch, root: EditorFile, project: Project) => {
+	if (!root.directory) return;
+
+	resetAllSlices(dispatch);
+
+	dispatch(FileTreeActions.setRootDirectory(root));
+	dispatch(ProjectActions.setProject(project));
+
+	const tseprojPath = root.children.find(child => child.path.endsWith('.tseproj'))!.path;
+	dispatch(StorageActions.addRecentProject({ project, tseprojPath }));
+};
 
 export const handleOpenProject = async (dispatch: AppDispatch) => {
 	dispatch(OverlayActions.show());
 
 	const project = await MainProcess.openProject();
 
-	if (project) {
+	if (project && project.root.directory) {
 		const tseprojJSON = project.tseproj;
 		let tseproj: Project;
 
@@ -26,10 +39,6 @@ export const handleOpenProject = async (dispatch: AppDispatch) => {
 			});
 		}
 
-		resetAllSlices(dispatch);
-
-		dispatch(FileTreeActions.setRootDirectory(project.root));
-
 		// TODO: Handle tseproj with invalid schema
 		const defaultProject = getDefaultProject();
 
@@ -41,7 +50,7 @@ export const handleOpenProject = async (dispatch: AppDispatch) => {
 			mod: { ...defaultMod, ...(tseproj.mod ?? {}) }
 		};
 
-		dispatch(ProjectActions.setProject(tseprojWithDefaults));
+		openProject(dispatch, project.root, tseprojWithDefaults);
 	}
 
 	dispatch(OverlayActions.hide());

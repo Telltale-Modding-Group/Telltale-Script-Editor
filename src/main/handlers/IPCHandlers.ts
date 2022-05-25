@@ -111,9 +111,13 @@ export const registerIPCHandlers = (window: BrowserWindow) => {
 	});
 
 	GetDirectoryChannel(source).handle(async path => {
-		const root = await fs.opendir(path);
+		try {
+			const root = await fs.opendir(path);
 
-		return getFiles(root);
+			return getFiles(root);
+		} catch {
+			return;
+		}
 	});
 
 	GetFileContentsChannel(source).handle(async path =>

@@ -1,29 +1,38 @@
 .noProjectOpenContainer {
     height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    /*display: flex;*/
+    /*justify-content: center;*/
+    /*align-items: center;*/
 }
 
 .openButton {
-    background-color: #cbccc3;
+    background-color: #f8f8f8;
     border: 1px solid black;
-    border-bottom: 5px solid black;
     border-radius: 0.75rem;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    width: 250px;
-    height: 250px;
+    width: 200px;
+    height: 200px;
     margin: 0 2rem;
     cursor: pointer;
 }
 
 .openButton:hover {
-    background-color: #afb1a3;
+    background-color: #f1f1f1;
 }
 
-.openButton:active {
-    border-bottom: 0;
+.recentProject {
+    width: 100%;
+    border-top: 1px solid black;
+    padding: 1rem
+}
+
+.recentProject:last-of-type {
+    border-bottom: 1px solid black;
+}
+
+.recentProject:hover {
+    background-color: #e0e0e0;
 }

@@ -61,7 +61,7 @@ export const EditorContainer = () => {
 									<Editor mode="json" onChange={handleProjectSettingsJSONChange} />
 								</Tab>
 							</Tabs>
-							: <Editor />
+							: <Editor mode="lua" />
 						}
 
 					</Tab>

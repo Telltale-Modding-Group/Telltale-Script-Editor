@@ -65,3 +65,10 @@ export const iterateFiles = (root: EditorFile): EditorFile[] => {
 
 	return isSupported(root) ? [root] : [];
 };
+
+let timeoutId: number;
+export const debounce = (fn: () => void, timeout: number) => {
+	clearTimeout(timeoutId);
+
+	timeoutId = setTimeout(fn, timeout) as unknown as number;
+};

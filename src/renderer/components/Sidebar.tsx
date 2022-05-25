@@ -21,7 +21,7 @@ export const Sidebar = ({ width }: SidebarProps) => {
 		variant="pills"
 		active={activeTab === 'filetree' ? 0 : 1}
 		onTabChange={handleTabChange}
-		style={{ width: `${width}px` }}
+		style={{ width: `${width}px`, minWidth: `${width}px`, maxWidth: `${width}px` }}
 		classNames={{ body: styles.tabBody, root: styles.tabRoot }}
 	>
 		<Tab label="File Tree">

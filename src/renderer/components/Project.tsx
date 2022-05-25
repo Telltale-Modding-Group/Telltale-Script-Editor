@@ -7,6 +7,8 @@ import {Sidebar} from './Sidebar';
 import {Navbar} from './Navbar';
 import {StorageActions} from '../slices/StorageSlice';
 import {useSpotlight} from '@mantine/spotlight';
+import * as monaco from 'monaco-editor';
+import {debounce} from '../utils';
 
 const useSidebarResizer = (): [number, MutableRefObject<HTMLDivElement | null>] => {
 	const dispatch = useAppDispatch();
@@ -55,23 +57,36 @@ export const Project = () => {
 
 	if (!root || !project) return null;
 
+	const editorRef = useRef<monaco.editor.IStandaloneCodeEditor>();
 	const [sidebarWidth, ref] = useSidebarResizer();
 
 	const projectContainerRef = useRef<HTMLDivElement | null>(null);
 
 	useEffect(() => {
 		const listener = () => {
-			if (!ref.current || !projectContainerRef.current) return;
-
-			ref.current.style.height = `${projectContainerRef.current.clientHeight}px`;
+			if (ref.current && projectContainerRef.current) {
+				ref.current.style.height = `${projectContainerRef.current.clientHeight}px`;
+			}
 		}
 
 		listener();
 
-		document.body.addEventListener('resize', listener);
+		window.addEventListener('resize', listener);
 
-		return () => document.body.removeEventListener('resize', listener);
-	}, [ref.current, projectContainerRef.current]);
+		return () => window.removeEventListener('resize', listener);
+	}, [ref.current, projectContainerRef.current, editorRef.current]);
+
+	useEffect(() => {
+		if (editorRef.current) {
+			// I would have thought this would cause the editor to resize to 0px by 0px, but uh, it just resizes to
+			// its parent, I guess?
+			debounce(() => {
+				editorRef.current?.layout({ width: 0, height: 0 });
+				editorRef.current?.layout();
+			}, 100);
+
+		}
+	}, [sidebarWidth]);
 
 	useEffect(() => {
 		const listener = (event: DocumentEventMap['keydown']) => {

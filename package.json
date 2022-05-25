@@ -96,6 +96,7 @@
     "@mantine/hooks": "^4.2.4",
     "@mantine/modals": "^4.2.5",
     "@mantine/notifications": "^4.2.5",
+    "@mantine/spotlight": "^4.2.6",
     "@reduxjs/toolkit": "^1.8.1",
     "@szhsin/react-menu": "^3.0.1",
     "@types/adm-zip": "^0.5.0",

@@ -2,9 +2,10 @@ import {AppDispatch, resetAllSlices} from './slices/store';
 import {MainProcess} from './MainProcessUtils';
 import {FileTreeActions} from './slices/FileTreeSlice';
 import {ProjectActions} from './slices/ProjectSlice';
-import {getDefaultProject, Project} from '../shared/types';
+import {EditorFile, getDefaultProject, Project} from '../shared/types';
 import {showNotification} from '@mantine/notifications';
 import {OverlayActions} from './slices/OverlaySlice';
+import {isSupported} from './FileUtils';
 
 export const handleOpenProject = async (dispatch: AppDispatch) => {
 	dispatch(OverlayActions.show());
@@ -44,4 +45,14 @@ export const handleOpenProject = async (dispatch: AppDispatch) => {
 	}
 
 	dispatch(OverlayActions.hide());
+};
+
+export const iterateFiles = (root: EditorFile): EditorFile[] => {
+	if (root.directory) {
+		return root.children
+			.map(child => iterateFiles(child))
+			.reduce((acc, descendantGroup) => [...acc, ...descendantGroup], []);
+	}
+
+	return isSupported(root) ? [root] : [];
 };

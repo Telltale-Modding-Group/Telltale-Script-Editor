@@ -1,7 +1,7 @@
 import styles from './Navbar.module.css';
-import {ActionIcon, Group, Tooltip} from '@mantine/core';
+import {ActionIcon, Group, Space, Text, Tooltip, UnstyledButton} from '@mantine/core';
 import {BsHammer} from 'react-icons/bs';
-import {AiFillSetting, AiOutlineCaretRight, AiOutlineSetting} from 'react-icons/ai';
+import {AiFillSetting, AiOutlineCaretRight, AiOutlineSearch} from 'react-icons/ai';
 import * as React from 'react';
 import {useEffect} from 'react';
 import {MainProcess} from '../MainProcessUtils';
@@ -12,63 +12,25 @@ import {useAppDispatch, useAppSelector} from '../slices/store';
 import {FileTreeAsyncActions} from '../slices/FileTreeSlice';
 import {StorageActions} from '../slices/StorageSlice';
 import {useModals} from '@mantine/modals';
+import {useSpotlight} from '@mantine/spotlight';
+import {useBuildProject} from '../hooks';
 
 export const Navbar = () => {
-	const dispatch = useAppDispatch();
 	const root = useAppSelector(state => state.filetree.root);
 	const project = useAppSelector(state => state.project.currentProject);
 	const gameExePath = useAppSelector(state => state.storage.gamePath);
 	const modals = useModals();
+	const spotlight = useSpotlight();
 
 	if (!root || !project) return null;
 
 	useBuildsSideEffects();
-
-	const handleBuildProject = async () => {
-		dispatch(BuildsActions.clearLogs());
-		dispatch(SidebarActions.setActiveTab('logs'));
-		const buildZipPath = await MainProcess.buildProject({ projectPath: root.path, project });
-		dispatch(FileTreeAsyncActions.refreshRootDirectory());
-
-		if (!buildZipPath) {
-			showNotification({
-				title: 'Build Failed',
-				message: 'An error occurred during build compilation. Check the logs for more details.',
-				color: 'red'
-			});
-		} else {
-			showNotification({
-				title: 'Build Successful',
-				message: 'The project was built successfully!',
-				color: 'green'
-			});
-		}
-
-		return buildZipPath;
-	};
-
-	const handleBuildAndRun = async () => {
-		let gamePath = gameExePath;
-
-		if (!gamePath) {
-			gamePath = await MainProcess.getGamePath();
-
-			if (!gamePath) return;
-
-			dispatch(StorageActions.setGamePath(gamePath));
-		}
-
-		const buildZipPath = await handleBuildProject();
-
-		if (!buildZipPath) return;
-
-		await MainProcess.runProject({ buildZipPath, gamePath });
-	};
+	const { buildProject, buildProjectAndRun } = useBuildProject();
 
 	useEffect(() => {
 		const handlers = [
-			MainProcess.handleMenuBuildProject(handleBuildProject),
-			MainProcess.handleMenuBuildAndRunProject(handleBuildAndRun)
+			MainProcess.handleMenuBuildProject(buildProject),
+			MainProcess.handleMenuBuildAndRunProject(buildProjectAndRun)
 		];
 
 		return () => handlers.forEach(unsubscribe => unsubscribe());
@@ -86,15 +48,20 @@ export const Navbar = () => {
 				</ActionIcon>
 			</Tooltip>
 			<Tooltip label="Build and Run" openDelay={500}>
-				<ActionIcon color='green' onClick={handleBuildAndRun}>
+				<ActionIcon color='green' onClick={buildProjectAndRun}>
 					<AiOutlineCaretRight size={20} />
 				</ActionIcon>
 			</Tooltip>
 			<Tooltip label="Build" openDelay={500}>
-				<ActionIcon color='green' onClick={handleBuildProject}>
+				<ActionIcon color='green' onClick={buildProject}>
 					<BsHammer size={16} />
 				</ActionIcon>
 			</Tooltip>
 		</Group>
+		<UnstyledButton className={styles.searchButton} onClick={() => spotlight.openSpotlight()}>
+			<AiOutlineSearch />
+			<Space w="xs" />
+			<Text className={styles.searchButtonText}>Search...</Text>
+		</UnstyledButton>
 	</div>;
 };

@@ -4,7 +4,24 @@
     padding: 0.25rem 0;
 }
 
-.navbarButtonsContainer {
+.searchButton {
+    width: 200px;
     display: flex;
-    padding: 0.25rem;
+    align-items: center;
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    border: 1px solid #bfbfbf;
+    border-radius: 0.5rem;
+    color: #bfbfbf;
+    padding: 0 0.5rem
+}
+
+.searchButton:hover {
+    background-color: #fbfbfb;
+}
+
+.searchButtonText {
+    position: relative;
+    bottom: 1px;
 }

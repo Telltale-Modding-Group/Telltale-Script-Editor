@@ -8,13 +8,15 @@ import {Project} from './Project';
 import {useAppDispatch, useAppSelector} from '../slices/store';
 import {useDocumentTitle} from '@mantine/hooks';
 import {MainProcess} from '../MainProcessUtils';
-import {handleOpenProject} from '../utils';
+import {handleOpenProject, iterateFiles} from '../utils';
 import {EditorAsyncActions} from '../slices/EditorSlice';
 import {useModals} from '@mantine/modals';
 import {showNotification} from '@mantine/notifications';
 import {useStorageStateSync} from '../slices/StorageSlice';
 import {useProjectSideEffects} from '../slices/ProjectSlice';
 import {LoadingOverlay} from '@mantine/core';
+import {SpotlightAction, SpotlightProvider} from '@mantine/spotlight';
+import {useBuildProject} from '../hooks';
 
 export const App = () => {
 	const dispatch = useAppDispatch();
@@ -52,8 +54,32 @@ export const App = () => {
 	useStorageStateSync();
 	useProjectSideEffects();
 
-	return <>
+	const { buildProject, buildProjectAndRun } = useBuildProject();
+
+	const Actions: SpotlightAction[] = [
+		{
+			title: 'Build Project',
+			onTrigger: buildProject
+		},
+		{
+			title: 'Build Project and Run',
+			onTrigger: buildProjectAndRun
+		}
+	];
+
+	const FileActions: SpotlightAction[] = !root ? [] : iterateFiles(root).map(file => ({
+		title: file.name,
+		onTrigger: () => {
+			dispatch(EditorAsyncActions.openFile(file));
+		}
+	}));
+
+	return <SpotlightProvider
+		actions={[...Actions, ...FileActions]}
+		searchPlaceholder="Search files..."
+		nothingFoundMessage="No files found..."
+	>
 		<LoadingOverlay visible={showOverlay} sx={{ 'svg': { height: '125px', width: '125px' } }} />
 		{root ? <Project /> : <NoProjectOpen />}
-	</>
+	</SpotlightProvider>
 };

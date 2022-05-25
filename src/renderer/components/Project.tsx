@@ -1,13 +1,12 @@
 import styles from './Project.module.css';
 import {EditorContainer} from './editor/EditorContainer';
 import * as React from 'react';
-import {MutableRefObject, useEffect, useRef, useState} from 'react';
+import {MutableRefObject, useEffect, useRef} from 'react';
 import {useAppDispatch, useAppSelector} from '../slices/store';
 import {Sidebar} from './Sidebar';
 import {Navbar} from './Navbar';
 import {StorageActions} from '../slices/StorageSlice';
-
-const INITIAL_FILETREE_WIDTH = 250;
+import {useSpotlight} from '@mantine/spotlight';
 
 const useSidebarResizer = (): [number, MutableRefObject<HTMLDivElement | null>] => {
 	const dispatch = useAppDispatch();
@@ -52,6 +51,7 @@ const useSidebarResizer = (): [number, MutableRefObject<HTMLDivElement | null>] 
 export const Project = () => {
 	const root = useAppSelector(state => state.filetree.root);
 	const project = useAppSelector(state => state.project.currentProject);
+	const spotlight = useSpotlight();
 
 	if (!root || !project) return null;
 
@@ -72,6 +72,18 @@ export const Project = () => {
 
 		return () => document.body.removeEventListener('resize', listener);
 	}, [ref.current, projectContainerRef.current]);
+
+	useEffect(() => {
+		const listener = (event: DocumentEventMap['keydown']) => {
+			if (event.ctrlKey && event.key === 'A') {
+				spotlight.openSpotlight();
+			}
+		};
+
+		document.addEventListener('keydown', listener);
+
+		return () => document.removeEventListener('keydown', listener)
+	}, [spotlight]);
 
 	return <div className={styles.container}>
 		<Navbar />

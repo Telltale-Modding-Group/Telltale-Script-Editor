@@ -46,7 +46,9 @@ export const buildProject = (log: (message: string) => void) => async ({ project
 
 			rootLevelDirectories.push(file);
 
-			const logicalName = directoryName.replace(/WDC_pc_|_data/g, '');
+			var logicalName = directoryName.replace(/WDC_pc_|_data/g, '');
+			logicalName = logicalName.replaceAll("_", ''); /* Logical names cannot contain underscores. ~Violet */
+			
 			const resdescName = `_resdesc_50_${logicalName}_${formattedProjectName}.lua`;
 
 			const resdescOutputPath = path.join(tempPath, 'lua', resdescName);

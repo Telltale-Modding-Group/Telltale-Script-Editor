@@ -19,7 +19,8 @@ const createWindow = (): void => {
 		width: 1280,
 		webPreferences: {
 			preload: path.join(__dirname, 'preload.js')
-		}
+		},
+		icon: "src/public/ttse2logo.ico"
 	});
 
 	registerIPCHandlers(mainWindow);

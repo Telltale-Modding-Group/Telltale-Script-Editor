@@ -21,4 +21,5 @@ If you're looking for scripting documentation, check out the [Script Editor Wiki
 # Special Thanks
 
 Thanks to [Lightning](https://twitter.com/nekoblitz_) for designing the program icon.
+
 Thanks to [Ben O](https://github.com/bigbeno37) for taking the lead on the Electron rewrite!

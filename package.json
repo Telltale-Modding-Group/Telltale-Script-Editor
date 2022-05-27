@@ -2,7 +2,7 @@
   "name": "telltale-script-editor",
   "productName": "telltale-script-editor",
   "version": "2.0.0-beta3",
-  "description": "My Electron application description",
+  "description": "An unofficial, open-source editor to allow for easy modification of scripts from Telltale games.",
   "main": ".webpack/main",
   "author": "Telltale Modding Group",
   "scripts": {

@@ -89,3 +89,6 @@ typings/
 out/
 
 .idea/
+
+#TTSE
+/marketing

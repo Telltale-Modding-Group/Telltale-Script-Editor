@@ -30,7 +30,7 @@ export const buildProject = (log: (message: string) => void) => async ({ project
 	const tempPath = path.join(projectPath, 'Builds', 'temp');
 
 	try {
-		await fs.rmdir(tempPath);
+		await fs.rm(tempPath, { recursive: true });
 		// eslint-disable-next-line no-empty
 	} catch {}
 

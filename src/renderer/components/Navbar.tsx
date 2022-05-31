@@ -5,12 +5,8 @@ import {AiFillSetting, AiOutlineCaretRight, AiOutlineSearch} from 'react-icons/a
 import * as React from 'react';
 import {useEffect} from 'react';
 import {MainProcess} from '../MainProcessUtils';
-import {BuildsActions, useBuildsSideEffects} from '../slices/BuildsSlice';
-import {SidebarActions} from '../slices/SidebarSlice';
-import {showNotification} from '@mantine/notifications';
-import {useAppDispatch, useAppSelector} from '../slices/store';
-import {FileTreeAsyncActions} from '../slices/FileTreeSlice';
-import {StorageActions} from '../slices/StorageSlice';
+import {useBuildsSideEffects} from '../slices/BuildsSlice';
+import {useAppSelector} from '../slices/store';
 import {useModals} from '@mantine/modals';
 import {useSpotlight} from '@mantine/spotlight';
 import {useBuildProject} from '../hooks';

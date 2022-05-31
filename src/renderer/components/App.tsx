@@ -18,6 +18,8 @@ import {LoadingOverlay} from '@mantine/core';
 import {SpotlightAction, SpotlightProvider} from '@mantine/spotlight';
 import {useBuildProject} from '../hooks';
 import {handleOpenProject} from '../ProjectUtils';
+import {AiFillFile, AiOutlineCaretRight} from 'react-icons/ai';
+import {BsHammer} from 'react-icons/bs';
 
 export const App = () => {
 	const dispatch = useAppDispatch();
@@ -61,16 +63,20 @@ export const App = () => {
 	const Actions: SpotlightAction[] = [
 		{
 			title: 'Build Project',
+			icon: <BsHammer />,
 			onTrigger: buildProject
 		},
 		{
 			title: 'Build Project and Run',
+			icon: <AiOutlineCaretRight />,
 			onTrigger: buildProjectAndRun
 		}
 	];
 
 	const FileActions: SpotlightAction[] = !root ? [] : iterateFiles(root).filter(file => !file.path.includes('Build')).map(file => ({
 		title: file.name,
+		description: file.path.replace(root.path, '.'),
+		icon: <AiFillFile />,
 		onTrigger: () => {
 			dispatch(EditorAsyncActions.openFile(file));
 		}

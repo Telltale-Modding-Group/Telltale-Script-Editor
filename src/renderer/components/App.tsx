@@ -27,6 +27,7 @@ export const App = () => {
 	const tseproj = root?.directory ? root?.children.find(file => file.name.includes('.tseproj')) : undefined;
 	const projectDetails = useAppSelector(state => state.project.currentProject?.mod);
 	const showOverlay = useAppSelector(state => state.overlay.visible);
+	const storageInitialised = useAppSelector(state => state.storage.initialised);
 
 	const title = `Telltale Script Editor${projectDetails ? ` - ${projectDetails.name} v${projectDetails.version} by ${projectDetails.author}` : ''}`;
 	useDocumentTitle(title);
@@ -80,7 +81,7 @@ export const App = () => {
 		searchPlaceholder="Search files..."
 		nothingFoundMessage="No files found..."
 	>
-		<LoadingOverlay visible={showOverlay} sx={{ 'svg': { height: '125px', width: '125px' } }} />
+		<LoadingOverlay visible={showOverlay || !storageInitialised} sx={{ 'svg': { height: '125px', width: '125px' } }} />
 		{root ? <Project /> : <NoProjectOpen />}
 	</SpotlightProvider>
 };

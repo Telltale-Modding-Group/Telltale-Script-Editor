@@ -18,9 +18,9 @@ export const createDebouncer = () => {
 		clearTimeout(timeoutId);
 
 		timeoutId = setTimeout(() => {
-			console.log('debounced!');
 			fn();
 		}, timeout) as unknown as number;
-		console.log('setting timeout', timeoutId);
 	};
 };
+
+export const dirname = (filePath: string): string => filePath.replace(/[/\\][^/|\\]+$/g, '');

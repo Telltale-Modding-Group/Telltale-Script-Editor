@@ -6,12 +6,14 @@ import {RecentProject} from '../types';
 import {createDebouncer} from '../utils';
 
 interface StorageState {
+	initialised: boolean,
 	gamePath?: string,
 	sidebarWidth: number,
 	recentProjects: RecentProject[]
 }
 
 const initialState: StorageState = {
+	initialised: false,
 	sidebarWidth: 250,
 	recentProjects: []
 };
@@ -41,6 +43,7 @@ export const StorageActions = StorageSlice.actions;
 export const StorageReducer = StorageSlice.reducer;
 
 const debounce = createDebouncer();
+// TODO: This can probably live next to the root store rather than needing hooks
 export const useStorageStateSync = () => {
 	const dispatch = useAppDispatch();
 	const state = useAppSelector(state => state);
@@ -51,7 +54,7 @@ export const useStorageStateSync = () => {
 			if (!initialised) {
 				const storage = await MainProcess.getLocalStore();
 
-				dispatch(StorageActions.setStorageState({ ...initialState, ...storage }));
+				dispatch(StorageActions.setStorageState({ ...initialState, ...storage, initialised: true }));
 
 				setInitialised(true);
 			} else {

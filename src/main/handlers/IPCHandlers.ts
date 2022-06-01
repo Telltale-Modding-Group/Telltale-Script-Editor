@@ -153,7 +153,8 @@ export const registerIPCHandlers = (window: BrowserWindow) => {
 			filename = `NewFile${index > 0 ? `${index}` : ''}.${extension}`;
 
 			try {
-				await fs.writeFile(path.join(directoryPath, filename), '');
+				// flag "wx" will write to a new file, and error out if the file already exists
+				await fs.writeFile(path.join(directoryPath, filename), '', { flag: 'wx' });
 				break;
 			} catch  {
 				index++;

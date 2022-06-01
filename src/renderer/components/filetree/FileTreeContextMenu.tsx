@@ -18,6 +18,8 @@ import {
 	AiOutlinePlus,
 	AiOutlineReload
 } from 'react-icons/ai';
+import {SiLua} from 'react-icons/si';
+import {dirname} from '../../utils';
 
 export const FileTreeContextMenu = () => {
 	const dispatch = useAppDispatch();
@@ -57,7 +59,7 @@ export const FileTreeContextMenu = () => {
 	const handleCreateFile = async () => {
 		if (!path) return;
 
-		const newFilePath = await MainProcess.createFile({ directoryPath: path, extension: 'txt' });
+		const newFilePath = await MainProcess.createFile({ directoryPath: isDirectory ? path : dirname(path), extension: 'txt' });
 
 		expandSelectedDirectory();
 		dispatch(FileTreeActions.setRenamingFilePath(newFilePath));
@@ -67,7 +69,7 @@ export const FileTreeContextMenu = () => {
 	const handleCreateScript = async () => {
 		if (!path) return;
 
-		const newFilePath = await MainProcess.createFile({ directoryPath: path, extension: 'lua' });
+		const newFilePath = await MainProcess.createFile({ directoryPath: isDirectory ? path : dirname(path), extension: 'lua' });
 
 		expandSelectedDirectory();
 		dispatch(FileTreeActions.setRenamingFilePath(newFilePath));
@@ -81,7 +83,7 @@ export const FileTreeContextMenu = () => {
 				title: 'Unable to create directory',
 				message: 'Subdirectories will cause the build to break, and are not currently supported.',
 				color: 'red'
-			})
+			});
 			return;
 		}
 
@@ -166,13 +168,11 @@ export const FileTreeContextMenu = () => {
 				onClose={handleContextMenuClose}
 				{...menuProps}
 			>
-				{isDirectory &&
-					<SubMenu label={() => <Text size="xs"><Center inline><AiOutlinePlus /><Space w="xs"/>New</Center></Text>}>
-                        <ContextMenuItem icon={AiOutlineFolder} onClick={handleCreateDirectory} color={selectedRootDirectory ? 'black' : 'dimmed'}>Directory</ContextMenuItem>
-                        <ContextMenuItem icon={AiFillFile} onClick={handleCreateFile}>Script</ContextMenuItem>
-                        <ContextMenuItem icon={AiFillFile} onClick={handleCreateScript}>File</ContextMenuItem>
-                    </SubMenu>
-				}
+				<SubMenu label={() => <Text size="xs"><Center inline><AiOutlinePlus /><Space w="xs"/>New</Center></Text>}>
+                    <ContextMenuItem icon={AiOutlineFolder} onClick={handleCreateDirectory} color={selectedRootDirectory ? 'black' : 'dimmed'}>Directory</ContextMenuItem>
+					<ContextMenuItem icon={SiLua} onClick={handleCreateScript}>Script</ContextMenuItem>
+					<ContextMenuItem icon={AiFillFile} onClick={handleCreateFile}>File</ContextMenuItem>
+                </SubMenu>
 
 				{isRootDirectory && <ContextMenuItem icon={AiOutlineReload} onClick={handleRefreshRootDirectory}>Refresh</ContextMenuItem>}
 				{hasChildren && <ContextMenuItem icon={AiOutlineFolder} onClick={toggleSelectedDirectory}>{expanded ? 'Collapse' : 'Expand'}</ContextMenuItem>}

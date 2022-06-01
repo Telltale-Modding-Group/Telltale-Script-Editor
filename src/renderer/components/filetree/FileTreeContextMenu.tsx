@@ -35,6 +35,7 @@ export const FileTreeContextMenu = () => {
 	const expanded = path ? expandedDirectories[path] : undefined;
 	const selectedTseprojFile = selectedFile?.name.includes('.tseproj');
 	const isRootDirectory = path === root.path;
+	const selectedRootDirectory = root.path === selectedFile?.path;
 
 	const [menuProps, toggleMenu] = useMenuState();
 
@@ -75,6 +76,14 @@ export const FileTreeContextMenu = () => {
 
 	const handleCreateDirectory = async () => {
 		if (!path) return;
+		if (!selectedRootDirectory) {
+			showNotification({
+				title: 'Unable to create directory',
+				message: 'Subdirectories will cause the build to break, and are not currently supported.',
+				color: 'red'
+			})
+			return;
+		}
 
 		const directoryPath = await MainProcess.createDirectory(path);
 
@@ -159,7 +168,7 @@ export const FileTreeContextMenu = () => {
 			>
 				{isDirectory &&
 					<SubMenu label={() => <Text size="xs"><Center inline><AiOutlinePlus /><Space w="xs"/>New</Center></Text>}>
-                        <ContextMenuItem icon={AiOutlineFolder} onClick={handleCreateDirectory}>Directory</ContextMenuItem>
+                        <ContextMenuItem icon={AiOutlineFolder} onClick={handleCreateDirectory} color={selectedRootDirectory ? 'black' : 'dimmed'}>Directory</ContextMenuItem>
                         <ContextMenuItem icon={AiFillFile} onClick={handleCreateFile}>Script</ContextMenuItem>
                         <ContextMenuItem icon={AiFillFile} onClick={handleCreateScript}>File</ContextMenuItem>
                     </SubMenu>

@@ -6,8 +6,8 @@ import {IconType} from 'react-icons/lib/cjs/iconBase';
 type ContextMenuItemProps = {
 	onClick?: () => void,
 	icon: IconType,
-	children: string,
-	color?: string
+	color?: string,
+	children: string
 };
 
 export const ContextMenuItem = ({onClick, icon, color, children}: ContextMenuItemProps) => <MenuItem onClick={onClick}>

@@ -217,7 +217,7 @@ export const registerIPCHandlers = (window: BrowserWindow) => {
 		buildProjectLogChannel.send(message);
 	}
 
-	BuildProjectChannel(source).handle(buildProject(log));
+	BuildProjectChannel(source).handle(data => buildProject(log, state, data));
 
 	RunProjectChannel(source).handle(async ({ buildZipPath, gamePath }) => {
 		const archivesPath = path.join(path.dirname(gamePath), 'Archives');

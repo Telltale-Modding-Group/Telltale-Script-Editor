@@ -1,4 +1,4 @@
-import {createModInfo, Project} from '../../shared/types';
+import {AppState, createModInfo, Project} from '../../shared/types';
 import fs, {opendir} from 'fs/promises';
 import path from 'path';
 import {FileData, getFilesInDirectory} from '../utils';
@@ -21,13 +21,14 @@ import {dialog} from 'electron';
  * 8. Create .zip of Builds/temp
  * 9. Delete Builds/temp
  */
-export const buildProject = (log: (message: string) => void) => async ({ projectPath, project }: { projectPath: string, project: Project }): Promise<string | undefined> => {
+export const buildProject = async (log: (message: string) => void, state: AppState, { projectPath, project }: { projectPath: string, project: Project }): Promise<string | undefined> => {
 	log('============== Starting...');
 
 	const projectDir = await fs.opendir(projectPath);
 
 	const formattedProjectName = project.mod.name.replace(/[^/da-zA-Z]+/g, '');
-	const tempPath = path.join(projectPath, 'Builds', 'temp');
+	const buildsPath = path.join(projectPath, 'Builds');
+	const tempPath = path.join(buildsPath, 'temp');
 
 	try {
 		await fs.rm(tempPath, { recursive: true });
@@ -46,9 +47,11 @@ export const buildProject = (log: (message: string) => void) => async ({ project
 
 			rootLevelDirectories.push(file);
 
-			var logicalName = directoryName.replace(/WDC_pc_|_data/g, '');
-			logicalName = logicalName.replaceAll("_", ''); /* Logical names cannot contain underscores. ~Violet */
-			
+			const logicalName = directoryName
+				.replaceAll('WDC_pc_', '')
+				.replaceAll('_data', '')
+				.replaceAll('_', ''); /* Logical names cannot contain underscores. ~Violet */
+
 			const resdescName = `_resdesc_50_${logicalName}_${formattedProjectName}.lua`;
 
 			const resdescOutputPath = path.join(tempPath, 'lua', resdescName);
@@ -168,6 +171,25 @@ export const buildProject = (log: (message: string) => void) => async ({ project
 	log('============== Cleaning up...');
 
 	await fs.rm(tempPath, {recursive: true});
+
+	const maximumBuildsToKeep = state.storage.maximumBuildsToKeep;
+	if (maximumBuildsToKeep > 0) {
+		const buildsDirectory = await fs.opendir(buildsPath);
+		const buildsDirectoryFiles = await getFilesInDirectory(buildsDirectory);
+
+		// There may be other files present in the Builds directory, no need to touch those
+		const builds = buildsDirectoryFiles.filter(file => file.name.match(/build-.+?\.zip/g));
+		if (builds.length > maximumBuildsToKeep) {
+			const totalBuildsToRemove = builds.length - maximumBuildsToKeep;
+			log(`============== Removing ${totalBuildsToRemove} old build${totalBuildsToRemove !== 1 ? 's' : ''}...`);
+
+			const oldBuilds = builds.slice(0, totalBuildsToRemove);
+			for (const oldBuild of oldBuilds) {
+				log(`============== Removing ${oldBuild.path}...`);
+				await fs.rm(oldBuild.path, { recursive: true });
+			}
+		}
+	}
 
 	log('============== BUILD SUCCESSFUL!');
 

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {ActionIcon, Button, Container, Group, Space, Stack, TextInput, Title} from '@mantine/core';
+import {ActionIcon, Button, Container, Group, NumberInput, Space, Stack, TextInput, Title} from '@mantine/core';
 import {AiOutlineFolder} from 'react-icons/ai';
 import {MainProcess} from '../../MainProcessUtils';
 import {useAppDispatch, useAppSelector} from '../../slices/store';
@@ -10,6 +10,7 @@ import {OverlayActions} from '../../slices/OverlaySlice';
 export const SettingsModal = ({context, id}: ContextModalProps) => {
 	const dispatch = useAppDispatch();
 	const gameExePath = useAppSelector(state => state.storage.gamePath);
+	const maximumBuildsToKeep = useAppSelector(state => state.storage.maximumBuildsToKeep);
 
 	const handleFolderClicked = async () => {
 		dispatch(OverlayActions.show());
@@ -31,6 +32,14 @@ export const SettingsModal = ({context, id}: ContextModalProps) => {
 				value={gameExePath}
 				onChange={e => dispatch(StorageActions.setGamePath(e.target.value))}
 				rightSection={<ActionIcon onClick={handleFolderClicked} color="dark"><AiOutlineFolder /></ActionIcon>}
+			/>
+			<NumberInput
+				required
+				label="Maximum builds to keep"
+				description="(Enter 0 to keep all builds)"
+				min={0}
+				value={maximumBuildsToKeep}
+				onChange={e => dispatch(StorageActions.setMaximumBuildsToKeep(e ?? 0))}
 			/>
 			<Space h="xl" />
 			<Group position="right">

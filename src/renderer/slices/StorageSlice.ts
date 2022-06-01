@@ -9,13 +9,15 @@ interface StorageState {
 	initialised: boolean,
 	gamePath?: string,
 	sidebarWidth: number,
-	recentProjects: RecentProject[]
+	recentProjects: RecentProject[],
+	maximumBuildsToKeep: number
 }
 
 const initialState: StorageState = {
 	initialised: false,
 	sidebarWidth: 250,
-	recentProjects: []
+	recentProjects: [],
+	maximumBuildsToKeep: 5
 };
 
 // NOTE: This is automatically synchronised with a config file on disk to persist data between application restarts.
@@ -34,6 +36,9 @@ export const StorageSlice = createSlice({
 		},
 		removeRecentProject: (state, {payload}: PayloadAction<RecentProject>) => {
 			state.recentProjects = state.recentProjects.filter(({ tseprojPath }) => tseprojPath !== payload.tseprojPath);
+		},
+		setMaximumBuildsToKeep: (state, {payload}: PayloadAction<number>) => {
+			state.maximumBuildsToKeep = payload >= 0 ? payload : 0
 		},
 		setStorageState: (state, {payload}: PayloadAction<StorageState>) => payload
 	}

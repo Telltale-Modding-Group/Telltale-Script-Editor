@@ -9,6 +9,10 @@
     background-color: #f0f0f0;
 }
 
+.icon {
+    margin-right: 3px;
+}
+
 .unsupported {
     color: #c2c2c2;
 }

@@ -10,6 +10,9 @@ import {EditorActions, EditorAsyncActions} from '../../slices/EditorSlice';
 import {showNotification} from '@mantine/notifications';
 import {MouseEventHandler, useState} from 'react';
 import {MainProcess} from '../../MainProcessUtils';
+import {AiFillSetting, AiOutlineFileZip} from 'react-icons/ai';
+import {BsFillFileEarmarkMusicFill} from 'react-icons/bs';
+import {SiLua} from 'react-icons/si';
 
 type FileTreeFileProps = {
 	file: EditorFile,
@@ -64,14 +67,30 @@ export const FileTreeFile = ({file, indentation}: FileTreeFileProps) => {
 		dispatch(FileTreeActions.setShowContextMenu(true));
 	};
 
+	let icon;
+	const iconProps = {
+		className: classNames(styles.icon, {[styles.unsupported]: !supported})
+	};
+
+	if (file.name.endsWith('.zip')) {
+		icon = <AiOutlineFileZip {...iconProps} />;
+	} else if (file.name.endsWith('.lua')) {
+		icon = <SiLua {...iconProps} />;
+	} else if (['.mp3', '.wav'].some(extension => file.name.endsWith(extension))) {
+		icon = <BsFillFileEarmarkMusicFill {...iconProps} />;
+	} else if (file.name.endsWith('.tseproj')) {
+		icon = <AiFillSetting {...iconProps} />
+	}
+
 	return <>
 		<div
 			className={classNames({[styles.selected]: selected})}
-			style={{paddingLeft: `${indentation + 1.4}rem`}}
+			style={{paddingLeft: `${indentation + 1.4}rem`, display: 'flex', alignItems: 'center'}}
 			onClick={handleClick}
 			onDoubleClick={handleDoubleClick}
 			onContextMenu={handleRightClick}
 		>
+			{ icon }
 			{ renaming
 				// Using a form here SOLELY to make it easier to listen for enter pressed
 				? <form onSubmit={e => { e.preventDefault(); handleRenameSubmit(); } } style={{ width: '100%' }}>

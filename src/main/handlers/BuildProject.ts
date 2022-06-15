@@ -115,11 +115,11 @@ export const buildProject = async (log: (message: string) => void, state: AppSta
 			}
 		}
 		else if (!file.directory) {
-			await fs.copyFile(file.path, file.path.replace(projectPath, tempPath));
+			await fs.cp(file.path, file.path.replace(projectPath, tempPath), { recursive: true });
 		}
 	}
 
-	log('============== Finished generating _resdesc_ files!');
+	log('============== Finished generating resource descriptions!');
 	log('============== Generating ttarch2 archives...');
 
 	for (const directory of rootLevelDirectories) {

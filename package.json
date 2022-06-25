@@ -1,7 +1,7 @@
 {
   "name": "telltale-script-editor",
   "productName": "telltale-script-editor",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "description": "An unofficial, open-source editor to allow for easy modification of scripts from Telltale games.",
   "main": ".webpack/main",
   "author": "Telltale Modding Group",

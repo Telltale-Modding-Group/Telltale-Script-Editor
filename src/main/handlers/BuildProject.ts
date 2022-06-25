@@ -265,7 +265,7 @@ export const buildProject = async (log: Logger, state: AppState, { projectPath, 
 	log('============== Building temp directory from cache...');
 	const cacheDir = await fs.opendir(cachePath);
 	for await (const file of cacheDir) {
-		if (file.isDirectory() || !file.name.endsWith('.ttarch2')) continue;
+		if (file.isDirectory() || (!file.name.endsWith('.ttarch2') && !file.name.endsWith('.lua'))) continue;
 
 		tempDirTasks.push(fs.cp(path.join(cachePath, file.name), path.join(tempPath, file.name), {recursive: true}));
 	}

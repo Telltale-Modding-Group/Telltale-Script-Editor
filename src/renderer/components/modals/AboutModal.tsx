@@ -5,7 +5,7 @@ export const AboutModal = () => {
 	return <Container>
 		<Stack align="center">
 			<Title order={1}>Telltale Script Editor</Title>
-			<Text>Version 2.2.1</Text>
+			<Text>Version 2.2.2</Text>
 		</Stack>
 	</Container>
 };

@@ -10,7 +10,7 @@ import crypto from 'crypto';
 import { getFilesInDirectory } from '../utils';
 
 const generateHash = (string: string) => {
-	const hash = crypto.createHash('sha256');
+	const hash = crypto.createHash('md5');
 	hash.update(string);
 
 	return hash.digest('hex');
@@ -194,6 +194,7 @@ export const buildProject = async (log: Logger, state: AppState, { projectPath, 
 			// Clear the previous cache for that file.
 			if (!currentArchiveCache[file]) {
 				log(`============== Clearing cached file ${file} as it is no longer needed...`);
+				generateTtarchArchives.add(archiveName);
 				tasks.push(fs.rm(path.join(cachePath, archiveName, file), { recursive: true }).catch());
 			}
 		})
@@ -213,9 +214,7 @@ export const buildProject = async (log: Logger, state: AppState, { projectPath, 
 	} catch (e) {
 		log(`============== There was an error building the project!`);
 		log(`${e}`);
-		log(`============== Cleaning up...`);
 
-		await fs.rmdir(tempPath, {recursive: true});
 		return;
 	}
 

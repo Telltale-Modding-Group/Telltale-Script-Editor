@@ -38,6 +38,8 @@ export const useBuildProject = () => {
 	};
 
 	const buildProjectAndRun = async () => {
+		if (!projectPath || !project) return;
+
 		let gamePath = gameExePath;
 
 		if (!gamePath) {
@@ -48,11 +50,7 @@ export const useBuildProject = () => {
 			dispatch(StorageActions.setGamePath(gamePath));
 		}
 
-		const buildZipPath = await buildProject();
-
-		if (!buildZipPath) return;
-
-		await MainProcess.runProject({ buildZipPath, gamePath });
+		await MainProcess.runProject({ projectPath, project, gamePath });
 	};
 
 	return {

@@ -1,7 +1,8 @@
 import {BrowserWindow, dialog, shell, Menu} from 'electron';
 import * as fs from 'fs/promises';
-import {getFiles, getIPCMainChannelSource, openBuildsDirectory} from '../utils';
-import {AppState, EditorFile} from '../../shared/types';
+import * as fsNormal from 'fs';
+import { getFiles, getFilesInDirectory, getIPCMainChannelSource, openBuildsDirectory } from '../utils';
+import { AppState, EditorFile, generateModInfoFilename, ModInfo } from '../../shared/types';
 import {
 	BuildProjectChannel,
 	BuildProjectLogChannel,
@@ -27,6 +28,9 @@ import AdmZip from 'adm-zip';
 import {updateEditorMenu} from '../EditorMenu';
 import {buildProject} from './BuildProject';
 import Store from 'electron-store';
+import { format } from 'date-fns';
+import { createWriteStream } from 'fs';
+import archiver from 'archiver';
 
 const localstore = new Store();
 
@@ -218,14 +222,101 @@ export const registerIPCHandlers = (window: BrowserWindow) => {
 		buildProjectLogChannel.send(message);
 	}
 
-	BuildProjectChannel(source).handle(data => buildProject(log, state, data));
+	BuildProjectChannel(source).handle(async data => {
+		const modInfo = await buildProject(log, state, data);
 
-	RunProjectChannel(source).handle(async ({ buildZipPath, gamePath }) => {
+		if (!modInfo) return;
+
+		const buildsPath = path.join(data.projectPath, 'Builds');
+		const cachePath = path.join(buildsPath, 'cache');
+
+		const zipFileName = `build-${format(new Date(), "yyyy-MM-dd'T'HH-mm-ss")}.zip`;
+		log(`============== Creating ${zipFileName}...`);
+
+		const zipFilePath = path.join(data.projectPath, 'Builds', zipFileName);
+		const zipFile = createWriteStream(zipFilePath);
+		const zip = archiver('zip', {zlib: {level: 9}});
+		zip.pipe(zipFile);
+		modInfo.ModFiles.forEach(file => {
+			const filePath = path.join(cachePath, file);
+			zip.append(fsNormal.createReadStream(filePath), { name: file });
+		});
+		zip.append(JSON.stringify(modInfo, null, 2), { name: generateModInfoFilename(modInfo) });
+		await zip.finalize();
+
+		log('============== Cleaning up...');
+
+		const maximumBuildsToKeep = state.storage.maximumBuildsToKeep;
+		if (maximumBuildsToKeep > 0) {
+			const buildsDirectory = await fs.opendir(buildsPath);
+			const buildsDirectoryFiles = await getFilesInDirectory(buildsDirectory);
+
+			// There may be other files present in the Builds directory, no need to touch those
+			const builds = buildsDirectoryFiles.filter(file => file.name.match(/build-.+?\.zip/g));
+			if (builds.length > maximumBuildsToKeep) {
+				const totalBuildsToRemove = builds.length - maximumBuildsToKeep;
+				log(`============== Removing ${totalBuildsToRemove} old build${totalBuildsToRemove !== 1 ? 's' : ''}...`);
+
+				const oldBuilds = builds.slice(0, totalBuildsToRemove);
+				for (const oldBuild of oldBuilds) {
+					log(`============== Removing ${oldBuild.path}...`);
+					await fs.rm(oldBuild.path, { recursive: true });
+				}
+			}
+		}
+
+		log('============== BUILD SUCCESSFUL!');
+
+		return zipFileName;
+	});
+
+	type PreviousInstall = {
+		modinfo?: string
+	};
+
+	RunProjectChannel(source).handle(async ({ project, projectPath, gamePath }) => {
 		const archivesPath = path.join(path.dirname(gamePath), 'Archives');
+		const cachePath = path.join(projectPath, 'Builds', 'cache');
+
+		const modInfo = await buildProject(log, state, {project, projectPath});
+
+		if (!modInfo) return;
+
+		let previousInstall: PreviousInstall = {};
+		try {
+			const previousInstallText = await fs.readFile(path.join(cachePath, 'previousinstall.json'), 'utf8');
+			previousInstall = JSON.parse(previousInstallText) as PreviousInstall;
+			// eslint-disable-next-line no-empty
+		} catch {}
+
+		const previousModinfoFilename = previousInstall.modinfo;
+		if (previousModinfoFilename) {
+			log('============== Clearing existing mod installation...');
+			const previousModInfoPath = path.join(archivesPath, previousModinfoFilename);
+			const previousModInfoContents = await fs.readFile(previousModInfoPath, 'utf8');
+			const previousModInfo = JSON.parse(previousModInfoContents) as ModInfo;
+
+			const tasks: Promise<unknown>[] = [];
+
+			previousModInfo.ModFiles.forEach(file => {
+				tasks.push(fs.rm(path.join(archivesPath, file), { recursive: true }).catch());
+			});
+
+			tasks.push(fs.rm(previousModInfoPath, { recursive: true }).catch());
+
+			await Promise.all(tasks);
+		}
+
 		log(`============== Installing mod into ${archivesPath}...`);
 
-		const zip = new AdmZip(buildZipPath);
-		zip.extractAllTo(archivesPath, true);
+		const tasks: Promise<unknown>[] = [];
+		modInfo.ModFiles.forEach(file => {
+			tasks.push(fs.cp(path.join(cachePath, file), path.join(archivesPath, file), { recursive: true }));
+		});
+
+		tasks.push(fs.writeFile(path.join(archivesPath, generateModInfoFilename(modInfo)), JSON.stringify(modInfo, null, 2)));
+
+		await Promise.all(tasks);
 
 		log('============== Mod installed! Launching game...');
 

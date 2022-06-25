@@ -42,7 +42,7 @@ export const CreateDirectoryChannel = createInvokableChannel<string, string>('cr
 export const BuildProjectChannel = createInvokableChannel<{ projectPath: string, project: Project }, string | undefined>('buildproject');
 export const GetGamePathChannel = createInvokableChannel<void, string | undefined>('getgamepath');
 export const GetLocalStoreChannel = createInvokableChannel<void, AppState["storage"]>('getlocalstore');
-export const RunProjectChannel = createInvokableChannel<{ buildZipPath: string, gamePath: string }, void>('runproject');
+export const RunProjectChannel = createInvokableChannel<{ projectPath: string, project: Project, gamePath: string }, void>('runproject');
 
 export const OpenInExplorerChannel = createChannel<string>('openinexplorer');
 export const MenuNewProjectChannel = createChannel('menu:newproject');

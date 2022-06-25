@@ -41,7 +41,7 @@ export const createProject = (name: string, version: string, author: string, pri
 
 export const getDefaultProject = () => createProject('ProjectName', '0.0.1', 'ProjectAuthor', 950);
 
-type ModInfo = {
+export type ModInfo = {
 	ModDisplayName: string,
 	ModVersion: string,
 	ModAuthor: string,
@@ -49,12 +49,14 @@ type ModInfo = {
 	ModFiles: string[]
 };
 
-export const createModInfo = (name: string, version: string, author: string, files: string[]): ModInfo => ({
-	ModDisplayName: name,
-	ModVersion: version,
-	ModAuthor: author,
+export const createModInfo = (project: Project, files: string[]): ModInfo => ({
+	ModDisplayName: project.mod.name,
+	ModVersion: project.mod.version,
+	ModAuthor: project.mod.author,
 	ModCompatibility: 'The_Walking_Dead_Definitive_Edition',
 	ModFiles: files
 });
+
+export const generateModInfoFilename = (modInfo: ModInfo) => `modinfo_${modInfo.ModDisplayName}.json`;
 
 export type AppState = ReturnType<typeof store.getState>;

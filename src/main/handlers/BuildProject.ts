@@ -157,7 +157,13 @@ export const buildProject = async (log: Logger, state: AppState, { projectPath, 
 		// Clear the previous cache for that archive.
 		if (!newCache[archive]) {
 			log(`============== Clearing cached archive ${archive} as it is no longer needed...`);
+			const ttarch = generateTtarchName(project, archive);
+			const resdesc = createResourceDescription(project, ttarch);
+			const resdescFilename = generateResourceDescriptionName(project, resdesc);
+
 			tasks.push(fs.rm(path.join(cachePath, archive), { recursive: true }));
+			tasks.push(fs.rm(path.join(cachePath, ttarch)));
+			tasks.push(fs.rm(path.join(cachePath, resdescFilename)));
 		}
 	});
 

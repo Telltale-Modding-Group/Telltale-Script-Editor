@@ -314,7 +314,9 @@ export const registerIPCHandlers = (window: BrowserWindow) => {
 			tasks.push(fs.cp(path.join(cachePath, file), path.join(archivesPath, file), { recursive: true }));
 		});
 
-		tasks.push(fs.writeFile(path.join(archivesPath, generateModInfoFilename(modInfo)), JSON.stringify(modInfo, null, 2)));
+		const modInfoFilename = generateModInfoFilename(modInfo);
+		tasks.push(fs.writeFile(path.join(cachePath, 'previousinstall.json'), JSON.stringify({ modinfo: modInfoFilename })));
+		tasks.push(fs.writeFile(path.join(archivesPath, modInfoFilename), JSON.stringify(modInfo, null, 2)));
 
 		await Promise.all(tasks);
 

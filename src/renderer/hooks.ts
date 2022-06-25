@@ -39,6 +39,8 @@ export const useBuildProject = () => {
 
 	const buildProjectAndRun = async () => {
 		if (!projectPath || !project) return;
+		dispatch(BuildsActions.clearLogs());
+		dispatch(SidebarActions.setActiveTab('logs'));
 
 		let gamePath = gameExePath;
 
@@ -51,6 +53,7 @@ export const useBuildProject = () => {
 		}
 
 		await MainProcess.runProject({ projectPath, project, gamePath });
+		dispatch(FileTreeAsyncActions.refreshRootDirectory());
 	};
 
 	return {

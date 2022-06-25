@@ -61,14 +61,7 @@ const compileLua = async (filePath: string, projectPath: string, cachePath: stri
 
 export const buildProject = async (log: Logger, state: AppState, { projectPath, project }: { projectPath: string, project: Project }): Promise<ModInfo | void> => {
 	const buildsPath = path.join(projectPath, 'Builds');
-	const tempPath = path.join(buildsPath, 'temp');
 	const cachePath = path.join(buildsPath, 'cache');
-
-	log('============== Clearing any existing temp files...');
-	try {
-		await fs.rm(tempPath, { recursive: true });
-		// eslint-disable-next-line no-empty
-	} catch {}
 
 	let previousCache: Cache;
 

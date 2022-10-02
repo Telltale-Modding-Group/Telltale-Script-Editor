@@ -10,14 +10,16 @@ interface StorageState {
 	gamePath?: string,
 	sidebarWidth: number,
 	recentProjects: RecentProject[],
-	maximumBuildsToKeep: number
+	maximumBuildsToKeep: number,
+	saveFilesOnBuild: boolean
 }
 
 const initialState: StorageState = {
 	initialised: false,
 	sidebarWidth: 250,
 	recentProjects: [],
-	maximumBuildsToKeep: 5
+	maximumBuildsToKeep: 5,
+	saveFilesOnBuild: true
 };
 
 // NOTE: This is automatically synchronised with a config file on disk to persist data between application restarts.
@@ -39,6 +41,9 @@ export const StorageSlice = createSlice({
 		},
 		setMaximumBuildsToKeep: (state, {payload}: PayloadAction<number>) => {
 			state.maximumBuildsToKeep = payload >= 0 ? payload : 0
+		},
+		setSaveFilesOnBuild: (state, {payload}: PayloadAction<boolean>) => {
+			state.saveFilesOnBuild = payload
 		},
 		setStorageState: (state, {payload}: PayloadAction<StorageState>) => payload
 	}

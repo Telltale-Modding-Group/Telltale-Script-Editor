@@ -52,7 +52,17 @@ export const useBuildProject = () => {
 			dispatch(StorageActions.setGamePath(gamePath));
 		}
 
-		await MainProcess.runProject({ projectPath, project, gamePath });
+		try {
+			await MainProcess.runProject({ projectPath, project, gamePath });
+		} catch {
+			showNotification({
+				title: 'Unexpected Error',
+				message: 'An error occurred while either building the project, or while trying to open the game. Try just building to rule out a build error, and check if the game is already open in the background. Check the logs for more details.',
+				color: 'red',
+				autoClose: 10 * 1000
+			});
+		}
+
 		dispatch(FileTreeAsyncActions.refreshRootDirectory());
 	};
 

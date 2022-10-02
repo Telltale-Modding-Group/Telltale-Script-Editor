@@ -25,6 +25,16 @@ const saveFile = createAsyncThunk('editor/savefile', async (index: number, api) 
 	return index;
 });
 
+const saveAllFiles = createAsyncThunk('editor/saveallfiles', async (_, api) => {
+	const state = api.getState() as AppState;
+
+	for (const file of state.editor.openFiles) {
+		await MainProcess.saveFile({ path: file.file.path, contents: file.contents });
+	}
+
+	return;
+});
+
 const saveFileAndClose = createAsyncThunk('editor/savefileandclose', async (index: number, api) => {
 	const state = api.getState() as AppState;
 	const file = state.editor.openFiles[index];
@@ -99,6 +109,11 @@ export const EditorSlice = createSlice({
 			.addCase(saveFile.fulfilled, (state, { payload: index }) => {
 				state.openFiles[index].hasUnsavedChanges = false;
 			})
+			.addCase(saveAllFiles.fulfilled, (state) => {
+				for (const file of state.openFiles) {
+					file.hasUnsavedChanges = false;
+				}
+			})
 			.addCase(saveFileAndClose.fulfilled, (state, action) => {
 				closeFileReducer(state, action);
 			})
@@ -107,4 +122,4 @@ export const EditorSlice = createSlice({
 
 export const EditorReducer = EditorSlice.reducer;
 export const EditorActions = EditorSlice.actions;
-export const EditorAsyncActions = { openFile, saveFile, saveFileAndClose };
+export const EditorAsyncActions = { openFile, saveFile, saveAllFiles, saveFileAndClose };

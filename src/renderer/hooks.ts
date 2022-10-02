@@ -5,15 +5,19 @@ import {FileTreeAsyncActions} from './slices/FileTreeSlice';
 import {showNotification} from '@mantine/notifications';
 import {useAppDispatch, useAppSelector} from './slices/store';
 import {StorageActions} from './slices/StorageSlice';
+import {EditorAsyncActions} from "./slices/EditorSlice";
 
 export const useBuildProject = () => {
 	const dispatch = useAppDispatch();
 	const projectPath = useAppSelector(state => state.filetree.root?.path);
 	const project = useAppSelector(state => state.project.currentProject);
 	const gameExePath = useAppSelector(state => state.storage.gamePath);
+	const saveFilesOnBuild = useAppSelector(state => state.storage.saveFilesOnBuild);
 
 	const buildProject = async () => {
 		if (!projectPath || !project) return;
+
+		if (saveFilesOnBuild) await dispatch(EditorAsyncActions.saveAllFiles());
 
 		dispatch(BuildsActions.clearLogs());
 		dispatch(SidebarActions.setActiveTab('logs'));
@@ -39,6 +43,9 @@ export const useBuildProject = () => {
 
 	const buildProjectAndRun = async () => {
 		if (!projectPath || !project) return;
+
+		if (saveFilesOnBuild) await dispatch(EditorAsyncActions.saveAllFiles());
+
 		dispatch(BuildsActions.clearLogs());
 		dispatch(SidebarActions.setActiveTab('logs'));
 

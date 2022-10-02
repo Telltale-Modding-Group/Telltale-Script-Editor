@@ -8,9 +8,11 @@ import {EditorActions, EditorAsyncActions} from '../../slices/EditorSlice';
 import {ProjectSettings} from '../ProjectSettings';
 import {ProjectActions} from '../../slices/ProjectSlice';
 import {Editor} from './Editor';
+import {useBuildProject} from "../../hooks";
 
 export const EditorContainer = () => {
 	const dispatch = useAppDispatch();
+	const { buildProject, buildProjectAndRun } = useBuildProject();
 
 	const activeFileIndex = useAppSelector(state => state.editor.activeFileIndex);
 	const openFiles = useAppSelector(state => state.editor.openFiles);
@@ -21,6 +23,13 @@ export const EditorContainer = () => {
 		const listener = (event: DocumentEventMap['keydown']) => {
 			if (event.key === 's' && event.ctrlKey && activeFileIndex !== undefined) {
 				dispatch(EditorAsyncActions.saveFile(activeFileIndex))
+			// .toLowerCase() needed as 'B' will be returned if holding Shift
+			} else if (event.key.toLowerCase() === 'b' && event.ctrlKey) {
+				if (event.shiftKey) {
+					void buildProjectAndRun();
+				} else {
+					void buildProject();
+				}
 			}
 		};
 

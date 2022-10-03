@@ -10,6 +10,7 @@ import {FileTreeActions} from '../../slices/FileTreeSlice';
 import {ProjectActions} from '../../slices/ProjectSlice';
 import {formatProjectName} from '../../../shared/utils';
 import {OverlayActions} from '../../slices/OverlaySlice';
+import {StorageActions} from "../../slices/StorageSlice";
 
 export const NewProjectModal = ({context, id}: ContextModalProps) => {
 	const dispatch = useAppDispatch();
@@ -32,6 +33,12 @@ export const NewProjectModal = ({context, id}: ContextModalProps) => {
 
 		dispatch(FileTreeActions.setRootDirectory(root));
 		dispatch(ProjectActions.setProject(project));
+
+		if (root.directory && root.children) {
+			const tseprojPath = root.children.find(child => child.path.endsWith('.tseproj'))?.path;
+
+			if (tseprojPath) dispatch(StorageActions.addRecentProject({project, tseprojPath}));
+		}
 
 		context.closeModal(id);
 	};

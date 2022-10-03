@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {ActionIcon, Button, Container, Group, NumberInput, Space, Stack, TextInput, Title, Checkbox} from '@mantine/core';
+import {ActionIcon, Button, Container, Group, NumberInput, Space, Stack, TextInput, Title, Checkbox, Select} from '@mantine/core';
 import {AiOutlineFolder} from 'react-icons/ai';
 import {MainProcess} from '../../MainProcessUtils';
 import {useAppDispatch, useAppSelector} from '../../slices/store';
@@ -12,6 +12,7 @@ export const SettingsModal = ({context, id}: ContextModalProps) => {
 	const gameExePath = useAppSelector(state => state.storage.gamePath);
 	const maximumBuildsToKeep = useAppSelector(state => state.storage.maximumBuildsToKeep);
 	const saveFilesOnBuild = useAppSelector(state => state.storage.saveFilesOnBuild);
+	const selectedTheme = useAppSelector(state => state.storage.selectedTheme);
 
 	const handleFolderClicked = async () => {
 		dispatch(OverlayActions.show());
@@ -47,6 +48,19 @@ export const SettingsModal = ({context, id}: ContextModalProps) => {
 				label="Automatically save all open files on Build"
 				checked={saveFilesOnBuild}
 				onChange={e => dispatch(StorageActions.setSaveFilesOnBuild(e.currentTarget.checked))}
+			/>
+			<Select
+				required
+				label="Editor Theme"
+				placeholder="Pick one"
+				defaultValue={selectedTheme}
+				data={[
+					{ value: 'light', label: 'A New Day' },
+					{ value: 'dark', label: 'No Time Left' },
+					{ value: 'darkAlt', label: 'All That Remains' },
+					{ value: 'midnight', label: 'A House Divided' },
+				]}
+				onChange={e => dispatch(StorageActions.setTheme(e ?? 'light'))}
 			/>
 			<Space h="xl" />
 			<Group position="right">

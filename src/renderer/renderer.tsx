@@ -27,7 +27,7 @@
  */
 
 import * as React from 'react';
-import {createRoot} from 'react-dom/client';
+import {createRoot, Root} from 'react-dom/client';
 import {App} from './components/App';
 import {NotificationsProvider} from '@mantine/notifications';
 import {Provider} from 'react-redux';
@@ -36,19 +36,78 @@ import {ModalsProvider} from '@mantine/modals';
 import {NewProjectModal} from './components/modals/NewProjectModal';
 import {AboutModal} from './components/modals/AboutModal';
 import {SettingsModal} from './components/modals/SettingsModal';
+import {MantineProvider} from "@mantine/core";
 
 const container = document.querySelector('#app');
 
+let selectedTheme = 'light';
+
+// TODO: Replace with a better type, if possible?
+const themes: {[key: string]: [(string | undefined), (string | undefined), (string | undefined), (string | undefined), (string | undefined), (string | undefined), (string | undefined), (string | undefined), (string | undefined), (string | undefined)] | undefined} = {
+	// No Time Left
+	"dark": [
+		'#C1C2C5',
+		'#A6A7AB',
+		'#909296',
+		'#5C5F66',
+		'#373A40',
+		'#2C2E33',
+		'#25262B',
+		'#1A1B1E',
+		'#141517',
+		'#101113'
+	],
+	// All That Remains
+	"darkAlt": [
+		'#F8F9FA',
+		'#F1F3F5',
+		'#E9ECEF',
+		'#DEE2E6',
+		'#CED4DA',
+		'#ADB5BD',
+		'#868E96',
+		'#495057',
+		'#343A40',
+		'#212529'
+	],
+	// A House Divided
+	"midnight": [
+		'#d5d7e0',
+		'#acaebf',
+		'#8c8fa3',
+		'#666980',
+		'#4d4f66',
+		'#34354a',
+		'#2b2c3d',
+		'#1d1e30',
+		'#0c0d21',
+		'#01010a'
+	]
+};
+
+const getProviders = () => {
+	return <React.StrictMode>
+		<Provider store={store}>
+			<MantineProvider theme={{ colorScheme: selectedTheme === 'light' ? 'light' : 'dark', colors: { dark: themes[selectedTheme === 'light' ? 'dark' : selectedTheme] /* If using 'light', 'dark' colors are not changed */ }}} withGlobalStyles withNormalizeCSS>
+				<NotificationsProvider>
+					<ModalsProvider modalProps={{ overlayColor: selectedTheme === 'light' ? 'light' : 'dark' }} modals={{ newproject: NewProjectModal, about: AboutModal, settings: SettingsModal }}>
+						<App />
+					</ModalsProvider>
+				</NotificationsProvider>
+			</MantineProvider>
+		</Provider>
+	</React.StrictMode>;
+}
+
+const renderRoot = (root: Root) => root.render(getProviders());
+
 if (!container) throw new Error('Element with ID "app" not found! Unable to start application!');
 
-createRoot(container).render(
-	<React.StrictMode>
-		<Provider store={store}>
-			<NotificationsProvider>
-				<ModalsProvider modals={{ newproject: NewProjectModal, about: AboutModal, settings: SettingsModal }}>
-					<App />
-				</ModalsProvider>
-			</NotificationsProvider>
-		</Provider>
-	</React.StrictMode>
-);
+const root = createRoot(container);
+
+renderRoot(root);
+
+export const setSelectedTheme = (theme: string) => {
+	selectedTheme = theme;
+	renderRoot(root);
+}

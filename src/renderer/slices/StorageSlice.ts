@@ -4,6 +4,7 @@ import {MainProcess} from '../MainProcessUtils';
 import {useAppDispatch, useAppSelector} from './store';
 import {RecentProject} from '../types';
 import {createDebouncer} from '../utils';
+import {setSelectedTheme} from '../renderer';
 
 interface StorageState {
 	initialised: boolean,
@@ -11,7 +12,8 @@ interface StorageState {
 	sidebarWidth: number,
 	recentProjects: RecentProject[],
 	maximumBuildsToKeep: number,
-	saveFilesOnBuild: boolean
+	saveFilesOnBuild: boolean,
+	selectedTheme: string
 }
 
 const initialState: StorageState = {
@@ -19,7 +21,8 @@ const initialState: StorageState = {
 	sidebarWidth: 250,
 	recentProjects: [],
 	maximumBuildsToKeep: 5,
-	saveFilesOnBuild: true
+	saveFilesOnBuild: true,
+	selectedTheme: "light"
 };
 
 // NOTE: This is automatically synchronised with a config file on disk to persist data between application restarts.
@@ -45,6 +48,11 @@ export const StorageSlice = createSlice({
 		setSaveFilesOnBuild: (state, {payload}: PayloadAction<boolean>) => {
 			state.saveFilesOnBuild = payload
 		},
+		setTheme: (state, {payload}: PayloadAction<string>) => {
+			state.selectedTheme = payload;
+
+			setSelectedTheme(payload);
+		},
 		setStorageState: (state, {payload}: PayloadAction<StorageState>) => payload
 	}
 });
@@ -68,7 +76,11 @@ export const useStorageStateSync = () => {
 
 				setInitialised(true);
 			} else {
-				debounce(() => MainProcess.updateAppState(state), 500);
+				debounce(() => {
+					MainProcess.updateAppState(state);
+
+					setSelectedTheme(state.storage.selectedTheme);
+				}, 500);
 			}
 		})();
 	}, [initialised, state]);

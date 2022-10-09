@@ -109,7 +109,7 @@ export const NoProjectOpen = () => {
 				</div>
 			</Col>
 			{ hasRecentProjects &&
-				<Col span={3} style={{ backgroundColor: '#ebebeb', height: '100%', display: 'flex', flexDirection: 'column' }} p={0}>
+				<Col span={3} style={{ height: '100%', display: 'flex', flexDirection: 'column' }} p={0}>
 					<Title order={3} style={{ textAlign: 'center', borderBottom: '1px solid black' }} py="1rem">Recent Projects</Title>
 					<div style={{ overflowY: 'auto', flexGrow: 1, minHeight: 0 }}>
 						{recentProjects.map(recentProject =>

@@ -1,12 +1,12 @@
 import styles from './Sidebar.module.css';
-import {ActionIcon, Button, Code, Group, MediaQuery, Stack} from '@mantine/core';
+import {ActionIcon, Button, Code, Group, Stack} from '@mantine/core';
 import * as React from 'react';
 import {useAppDispatch, useAppSelector} from '../slices/store';
 import {BuildsActions} from '../slices/BuildsSlice';
 import {MainProcess} from '../MainProcessUtils';
 import {BsFillTrashFill} from 'react-icons/bs';
 import {showNotification} from '@mantine/notifications';
-import {FileTreeActions, FileTreeAsyncActions} from '../slices/FileTreeSlice';
+import {FileTreeAsyncActions} from "../slices/FileTreeSlice";
 
 export const Builds = () => {
 	const dispatch = useAppDispatch();

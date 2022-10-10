@@ -8,7 +8,7 @@ import {MainProcess} from '../MainProcessUtils';
 import {RecentProject} from '../types';
 import {OverlayActions} from '../slices/OverlaySlice';
 import {showNotification} from '@mantine/notifications';
-import {StorageActions, StorageSlice} from '../slices/StorageSlice';
+import {StorageActions} from '../slices/StorageSlice';
 import {handleOpenProject, openProject} from '../ProjectUtils';
 import {dirname} from '../utils';
 import {useState} from 'react';

@@ -24,7 +24,6 @@ import {
 import * as path from 'path';
 import {formatProjectName} from '../../shared/utils';
 import {execFile} from 'child_process';
-import AdmZip from 'adm-zip';
 import {updateEditorMenu} from '../EditorMenu';
 import {buildProject} from './BuildProject';
 import Store from 'electron-store';

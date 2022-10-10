@@ -15,8 +15,8 @@ export const openProject = (dispatch: AppDispatch, root: EditorFile, project: Pr
 	dispatch(FileTreeActions.setRootDirectory(root));
 	dispatch(ProjectActions.setProject(project));
 
-	const tseprojPath = root.children.find(child => child.path.endsWith('.tseproj'))!.path;
-	dispatch(StorageActions.addRecentProject({project, tseprojPath}));
+	const tseprojPath = root.children.find(child => child.path.endsWith('.tseproj'))?.path;
+	if (tseprojPath) dispatch(StorageActions.addRecentProject({project, tseprojPath}));
 };
 
 export const handleOpenProject = async (dispatch: AppDispatch) => {

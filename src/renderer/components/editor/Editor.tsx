@@ -60,7 +60,7 @@ export const Editor = ({ onChange, mode }: EditorProps) => {
 		defaultLanguage={mode}
 		defaultValue={activeFile.contents}
 		theme="vs-dark"
-		onChange={contents => handleEditorChange(contents!)}
+		onChange={contents => handleEditorChange(contents as string)}
 		onMount={monaco => editorRef.current = monaco}
 	/>
 };

@@ -5,10 +5,14 @@ import {FileTreeAsyncActions} from './slices/FileTreeSlice';
 import {showNotification} from '@mantine/notifications';
 import {useAppDispatch, useAppSelector} from './slices/store';
 import {StorageActions} from './slices/StorageSlice';
-import {EditorAsyncActions} from "./slices/EditorSlice";
+import {EditorActions, EditorAsyncActions} from "./slices/EditorSlice";
+import {EditorFile} from "../shared/types";
+import * as parser from 'luaparse';
+import {LuaSyntaxError} from "./types";
 
 export const useBuildProject = () => {
 	const dispatch = useAppDispatch();
+	const projectRoot = useAppSelector(state => state.filetree.root);
 	const projectPath = useAppSelector(state => state.filetree.root?.path);
 	const project = useAppSelector(state => state.project.currentProject);
 	const gameExePath = useAppSelector(state => state.storage.gamePath);
@@ -18,6 +22,8 @@ export const useBuildProject = () => {
 		if (!projectPath || !project) return;
 
 		if (saveFilesOnBuild) await dispatch(EditorAsyncActions.saveAllFiles());
+
+		if (!await checkLuaFiles()) return;
 
 		dispatch(BuildsActions.clearLogs());
 		dispatch(SidebarActions.setActiveTab('logs'));
@@ -46,6 +52,8 @@ export const useBuildProject = () => {
 
 		if (saveFilesOnBuild) await dispatch(EditorAsyncActions.saveAllFiles());
 
+		if (!await checkLuaFiles()) return;
+
 		dispatch(BuildsActions.clearLogs());
 		dispatch(SidebarActions.setActiveTab('logs'));
 
@@ -72,6 +80,44 @@ export const useBuildProject = () => {
 
 		dispatch(FileTreeAsyncActions.refreshRootDirectory());
 	};
+
+	const checkLuaFiles = async () => {
+		if (!projectRoot || !projectRoot.directory) return false;
+
+		const luaFiles: EditorFile[] = [];
+		const cb = (e: EditorFile) => {
+			if (e.name.endsWith(".lua")) luaFiles.push(e);
+			if (e.directory && e.name !== "Builds" && e.children.length > 0) e.children.forEach(cb);
+		}
+
+		projectRoot.children.forEach(cb);
+
+		let errorEncountered = false;
+
+		for (const file of luaFiles) {
+			try {
+				parser.parse(await MainProcess.getFileContents(file.path));
+			} catch (e) {
+				const syntaxError = e as LuaSyntaxError;
+
+				errorEncountered = true;
+
+				showNotification({
+					title: 'LUA Syntax Error',
+					message: `In ${file.name}, Line ${syntaxError.line}, Column ${syntaxError.column}.`,
+					color: 'red',
+					autoClose: 10 * 1000
+				});
+
+				dispatch(EditorActions.setSyntaxErrorLineNumber(syntaxError.line));
+				
+				await dispatch(EditorAsyncActions.openFile(file));
+				return;
+			}
+		}
+
+		return !errorEncountered;
+	}
 
 	return {
 		buildProject,

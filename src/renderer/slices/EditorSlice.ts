@@ -5,7 +5,8 @@ import {MainProcess} from '../MainProcessUtils';
 
 interface EditorState {
 	openFiles: OpenFile[],
-	activeFileIndex?: number
+	activeFileIndex?: number,
+	syntaxErrorLineNumber?: number
 }
 
 const initialState: EditorState = {
@@ -92,6 +93,9 @@ export const EditorSlice = createSlice({
 
 				closeFileReducer(state, { payload: index, type: '' });
 			});
+		},
+		setSyntaxErrorLineNumber: (state, { payload }: PayloadAction<number | undefined>) => {
+			state.syntaxErrorLineNumber = payload;
 		},
 		clear: () => initialState
 	},

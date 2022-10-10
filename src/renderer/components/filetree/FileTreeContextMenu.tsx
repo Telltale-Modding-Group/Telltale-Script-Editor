@@ -97,15 +97,16 @@ export const FileTreeContextMenu = () => {
 	const [showDeleteModal, setShowDeleteModal] = useState(false);
 	const hideDeleteModal = () => setShowDeleteModal(false);
 
-	const handleDeleteDirectory = async () => {
+	const handleDelete = async () => {
 		if (!selectedFile) return;
 
 		hideDeleteModal();
 
 		await MainProcess.deleteFile(selectedFile);
 
-		handleRefreshRootDirectory()
+		handleRefreshRootDirectory();
 		dispatch(EditorActions.handleFileDeleted(selectedFile));
+		dispatch(FileTreeActions.clear());
 	};
 
 	const handleRename = () => {
@@ -155,7 +156,7 @@ export const FileTreeContextMenu = () => {
 				<Space h="md" />
 				<Group position="right" spacing="xs">
 					<Button color="gray" onClick={hideDeleteModal}>Cancel</Button>
-					<Button color="red" onClick={handleDeleteDirectory}>
+					<Button color="red" onClick={handleDelete}>
 						Delete
 					</Button>
 				</Group>
